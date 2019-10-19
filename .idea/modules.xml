@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../../private_projects/3Games/.idea/3Games.iml" filepath="$PROJECT_DIR$/../../../private_projects/3Games/.idea/3Games.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Fridgify_Backend.iml" filepath="$PROJECT_DIR$/.idea/Fridgify_Backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../private_projects/GameMarketAPI/.idea/GameMarketAPI.iml" filepath="$PROJECT_DIR$/../../../private_projects/GameMarketAPI/.idea/GameMarketAPI.iml" />
     </modules>
   </component>
 </project>

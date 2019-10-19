@@ -18,6 +18,8 @@
     </content>
     <orderEntry type="jdk" jdkName="Python 3.7 (backend)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="3Games" />
+    <orderEntry type="module" module-name="GameMarketAPI" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />
