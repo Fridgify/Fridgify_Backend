@@ -1,6 +1,6 @@
 #!/bin/bash
 
-read -p "Are you in the root folder of Fridgify? (y/n)" -r choice
+read -p "Are you in the root folder of Fridgify? (y/n) " -r choice
 case "$choice" in
   y|Y ) echo "Alright. Kicking off process...";;
   n|N ) echo "Please make sure you are in the root folder."; exit 1;;
@@ -13,6 +13,14 @@ case "$choice" in
   n|N ) echo "Well, then get back to committing my dude!"; exit 1;;
   * ) echo "Please. Don't do this. Don't try to be funny. Just type in what you're supposed to. Thanks -.-"; exit 1;;
 esac
+
+remote=$(basename -s .git "$(git config --get remote.origin.url)")
+end=""
+if [[ $remote == *"Backend"* ]]; then
+  end="Backend"
+else
+  end="Frontend"
+fi
 
 name=$(git config user.name)
 email=$(git config user.email)
@@ -42,33 +50,40 @@ if [ ! -d "./documentation/uc/features" ]; then
   mkdir ./documentation/uc/features
 fi
 
-echo "Copy feature files to destination..."
-find .. -type f -name "*.feature" -exec mv {} ./documentation/uc/features \;
+if [ ! -d "./documentation/uc/features/$end" ]; then
+  echo "No $end folder. Creating one..."
+  mkdir "./documentation/uc/features/$end"
+fi
 
-for file in ./documentation/uc/features/*.feature
+echo "Copy feature files to destination..."
+find .. -type f -name "*.feature" -exec mv {} ./documentation/uc/features/"$end" \;
+
+for file in ./documentation/uc/features/"$end"/*.feature
 do
-  content=$(printf "\`\`\`.feature\n%s\n\`\`\`", "$(cat "$file")")
+  content=$(printf "$end\n\`\`\` .feature\n%s\n\`\`\`" "$(cat "$file")")
   filename=$(basename -- "$file")
-  mdfn="${filename%.*}".md
-  # Something is up with my regex. Replacing works totally fin
-  perl -pi.bak -e "s/./a/g" ./documentation/uc/fridgeContent/getContent/getFridgeContentUseCase.md
+  mdfn="${filename%.*}"UseCase.md
+  mdfp="$(find ./documentation/uc -name "$mdfn")"
+  echo "Replacing .feature file content inside of $mdfp"
+  perl -0pi.bak -e "s/$end\s+\`\`\`\s.feature\s+([0-9A-Za-z:,\"\-()>]|\s)+\`\`\`/$content/" "$mdfp"
 done
 
-#echo "Set configuration information..."
-#git config user.name "$name"
-#git config user.email "$email"
+echo "Set configuration information..."
+git config user.name "$name"
+git config user.email "$email"
 
-#echo "Track changes..."
-#git add ./documentation/uc/features
+echo "Track changes..."
+git status
+git add ./documentation
 
-#echo "Commit changes..."
-#git commit -m "Feature File System: Automatic Update"
+echo "Commit changes..."
+git commit -m "Feature File System: Automatic Update"
 
-#echo "Push changes..."
-#git push
+echo "Push changes..."
+git push
 
-#echo "Remove tmp folder"
-#cd ../..
-#rm -r -f ./tmp
+echo "Remove tmp folder"
+cd ../..
+rm -r -f ./tmp
 
 echo "Process finished."
