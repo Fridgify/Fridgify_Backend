@@ -1,7 +1,5 @@
 FROM python:3.7.4-buster
 
-#ADD . /fridgify
-
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
@@ -19,7 +17,6 @@ RUN pipenv install --system
 
 ADD . /fridgify/
 
-#EXPOSE 9000
+EXPOSE 9000
 
-#CMD [ "python", "./manage.py", "runserver", "localhost:9000" ]
-
+CMD [ "python", "manage.py", "runserver", "0.0.0.0:9000" ]
