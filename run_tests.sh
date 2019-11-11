@@ -1,3 +1,11 @@
 #!/../bin/sh
-echo "Running run_docker_tests.sh FAILED"
-exit 1
+echo "testing"
+
+if python manage.py test ; then
+    echo "Command succeeded"
+    exit 0
+else
+    echo "Command failed"
+    exit 1
+fi
+
