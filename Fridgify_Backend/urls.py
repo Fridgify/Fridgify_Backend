@@ -17,10 +17,20 @@ from django.contrib import admin
 from django.urls import path, include
 
 from Fridgify_Backend import view
-from Fridgify_Backend.authentication import auth_urls
+
+from Fridgify_Backend.urls.authentication import auth_urls
+from Fridgify_Backend.urls.fridge import fridge_urls
+from Fridgify_Backend.urls.stores import stores_urls
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # Example View
     path('', view.hello_world, ),
-    path('auth/', include(auth_urls))
+    # Admin Page - can be removed, keeping it just for the lols right now
+    path('admin/', admin.site.urls),
+    # Authentication Endpoint
+    path('auth/', include(auth_urls)),
+    # Fridge Endpoint
+    path('fridge/', include(fridge_urls)),
+    # Stores Endpoint
+    path('stores/', include(stores_urls))
 ]
