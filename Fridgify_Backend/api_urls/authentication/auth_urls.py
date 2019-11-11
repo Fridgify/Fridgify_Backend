@@ -1,10 +1,12 @@
 from django.urls import path, include
 
+from Fridgify_Backend import view
+
 urlpatterns = [
     # POST
-    path('register/', ),
+    path('register/', view.hello_world),
     # POST
-    path('login/', ),
+    path('login/', view.hello_world),
     # GET
-    path('token/', ),
+    path('token/', view.hello_world),
 ]
