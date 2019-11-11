@@ -26,7 +26,7 @@ urlpatterns = [
     # Example View
     path('', view.hello_world, ),
     # Admin Page - can be removed, keeping it just for the lols right now
-    path('admin/', admin.site.api_urls),
+    path('admin/', admin.site.urls),
     # Authentication Endpoint
     path('auth/', include(auth_urls)),
     # Fridge Endpoint
