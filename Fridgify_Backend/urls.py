@@ -10,17 +10,17 @@ Class-based views
     1. Add an import:  from other_app.views import Home
     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
 Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+    1. Import the include() function: from django.api_urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.api_urls'))
 """
 from django.contrib import admin
 from django.urls import path, include
 
 from Fridgify_Backend import view
 
-from Fridgify_Backend.urls.authentication import auth_urls
-from Fridgify_Backend.urls.fridge import fridge_urls
-from Fridgify_Backend.urls.stores import stores_urls
+from Fridgify_Backend.api_urls.authentication import auth_urls
+from Fridgify_Backend.api_urls.fridge import fridge_urls
+from Fridgify_Backend.api_urls.stores import stores_urls
 
 urlpatterns = [
     # Example View
