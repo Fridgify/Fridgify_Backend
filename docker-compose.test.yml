@@ -1,7 +1,7 @@
 sut:
   build: .
   command: bash -c "chmod +x ./run_tests.sh && ./run_tests.sh"
-  link:
+  links:
     - db_test
 db_test:
     image: postgres:12.0-alpine
