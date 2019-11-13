@@ -1,3 +1,11 @@
 sut:
   build: .
   command: bash -c "chmod +x ./run_tests.sh && ./run_tests.sh"
+  depends_on:
+    - db_test
+db_test:
+    image: postgres:12.0-alpine
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=backend_test

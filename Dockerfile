@@ -19,4 +19,4 @@ ADD . /fridgify/
 
 EXPOSE 9000
 
-CMD [ "python", "manage.py", "runserver", "0.0.0.0:9000" ]
+CMD [ "python", "manage.py", "runserver", "0.0.0.0:9000", "--settings=Fridgify_Backend.settings.production" ]

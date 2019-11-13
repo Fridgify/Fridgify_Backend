@@ -23,9 +23,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'fhk725ux#z9m+o(oh%(t2+j5l16$&$bxz!9xso7heo#vhw6%z@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Handled by settings
+# DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', "fridgapi.donkz.dev"]
+# Handled by settings
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', "fridgapi.donkz.dev"]
 
 
 # Application definition
@@ -75,17 +77,7 @@ WSGI_APPLICATION = 'Fridgify_Backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'backend_dev',
-        'USER': 'admin',
-        'PASSWORD': 'admin',
-        'HOST': 'db',
-        'PORT': '5432',
-    }
-}
-
+# Add databases in specific settings
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
