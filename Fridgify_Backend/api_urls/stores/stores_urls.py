@@ -1,8 +1,8 @@
 from django.urls import path, include
 
-from Fridgify_Backend import view
+from Fridgify_Backend.views.stores import stores
 
 urlpatterns = [
     # GET, POST
-    path('', view.hello_world),
+    path('', stores.entry_point),
 ]
