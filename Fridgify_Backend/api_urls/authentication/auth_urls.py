@@ -1,13 +1,14 @@
 from django.urls import path, include
 
-from Fridgify_Backend import view
-from Fridgify_Backend.views.authentication import login_view
+from Fridgify_Backend.views.authentication import login
+from Fridgify_Backend.views.authentication import register
+from Fridgify_Backend.views.authentication import token
 
 urlpatterns = [
     # POST
-    path('register/', view.hello_world),
+    path('register/', register.entry_point),
     # POST
-    path('login/', login_view.hello_world),
+    path('login/', login.entry_point),
     # GET
-    path('token/', view.hello_world),
+    path('token/', token.entry_point),
 ]
