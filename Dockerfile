@@ -19,4 +19,7 @@ ADD . /fridgify/
 
 EXPOSE 9000
 
-CMD [ "python", "manage.py", "runserver", "0.0.0.0:9000" ]
+CMD [ "python", "manage.py", "makemigrations", "Fridgify_Backend", "--settings=Fridgify_Backend.settings.production" ]
+CMD [ "python", "manage.py", "migrate", "Fridgify_Backend", "--settings=Fridgify_Backend.settings.production" ]
+# Beware. It seems like runserver should not be used in production. We should setup some kind of WSGI?
+CMD [ "python", "manage.py", "runserver", "0.0.0.0:9000", "--settings=Fridgify_Backend.settings.production" ]
