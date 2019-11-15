@@ -258,3 +258,7 @@ fabric.properties
 /venv
 
 #/.idea
+
+# Local Testing should be ignored
+backend_test
+*/migrations
