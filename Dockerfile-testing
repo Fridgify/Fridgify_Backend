@@ -17,6 +17,6 @@ RUN pipenv install --system
 
 ADD . /fridgify/
 
-CMD [ "python", "manage.py", "makemigrations", "Fridgify_Backend", "--settings=Fridgify_Backend.settings.testing" ]
-CMD [ "python", "manage.py", "migrate", "Fridgify_Backend", "--settings=Fridgify_Backend.settings.testing" ]
+EXPOSE 9000
+
 CMD [ "python", "manage.py", "runserver", "0.0.0.0:9000", "--settings=Fridgify_Backend.settings.testing" ]
