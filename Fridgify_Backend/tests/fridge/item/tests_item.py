@@ -1,11 +1,11 @@
 from django.test import TestCase
-from Fridgify_Backend import view
+from Fridgify_Backend.views.fridge.item import item
 import json
 
 
 class ItemTestCasesItem(TestCase):
 
-    """Hello World test case"""
+    """Get item test case"""
     def test_hello_world(self):
-        response = json.loads(view.hello_world("dummy").content)
-        self.assertEqual(response["message"], "Hello World", "Hello world")
+        response = json.loads(item.entry_point("dummy").content)
+        self.assertEqual(response["message"], "Get item", "Get item")

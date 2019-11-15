@@ -12,8 +12,8 @@ def get_store(request):
 
 
 HTTP_ENDPOINT_FUNCTION = {
-    "GET": add_store,
-    "POST": get_store
+    "GET": get_store,
+    "POST": add_store
 }
 
 

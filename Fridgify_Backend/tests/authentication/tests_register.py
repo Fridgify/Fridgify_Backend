@@ -1,11 +1,11 @@
 from django.test import TestCase
-from Fridgify_Backend import view
+from Fridgify_Backend.views.authentication import register
 import json
 
 
 class AuthenticationTestCasesRegister(TestCase):
 
-    """Hello World test case"""
-    def test_hello_world(self):
-        response = json.loads(view.hello_world("dummy").content)
-        self.assertEqual(response["message"], "Hello World", "Hello world")
+    """Register test case"""
+    def test_register(self):
+        response = json.loads(register.entry_point("dummy").content)
+        self.assertEqual(response["message"], "register", "Test register")

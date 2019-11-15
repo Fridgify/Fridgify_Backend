@@ -1,11 +1,11 @@
 from django.test import TestCase
-from Fridgify_Backend import view
+from Fridgify_Backend.views.authentication import login
 import json
 
 
 class AuthenticationTestCasesLogin(TestCase):
 
-    """Hello World test case"""
-    def test_hello_world(self):
-        response = json.loads(view.hello_world("dummy").content)
-        self.assertEqual(response["message"], "Hello World", "Hello world")
+    """Login test case"""
+    def test_login(self):
+        response = json.loads(login.entry_point("dummy").content)
+        self.assertEqual(response["message"], "login", "Test login")
