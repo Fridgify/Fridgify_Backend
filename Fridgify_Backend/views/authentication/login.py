@@ -1,8 +1,9 @@
-from django.http import JsonResponse
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 import secrets
 
 
+@csrf_exempt
 def entry_point(request):
     if request.method == "POST":
         login(request)
