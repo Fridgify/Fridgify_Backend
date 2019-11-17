@@ -26,7 +26,10 @@ def generate_token(request, internal_provider):
         db_token = Accesstokens()
         db_token.accesstoken = token
         db_token.provider = Providers.objects.filter(name=internal_provider).first()
-        db_token.valid_till = timezone.now() + timezone.timedelta(days=14)
+        if internal_provider == "Fridgify":
+            db_token.valid_till = timezone.now() + timezone.timedelta(days=14)
+        else:
+            db_token.valid_till = timezone.now() + timezone.timedelta(hours=1)
         db_token.user = Users.objects.filter(username=reqj["username"]).first()
         db_token.save()
 
