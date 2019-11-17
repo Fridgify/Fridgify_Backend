@@ -2,7 +2,8 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 import secrets
 
-from Fridgify_Backend.utils.login_handler import *
+import Fridgify_Backend.utils.login_handler as login_handler
+import Fridgify_Backend.utils.token_handler as token_handler
 
 
 def entry_point(request):
@@ -17,9 +18,10 @@ def login(request):
         print("Authorization header exists...")
 
     # Check Credentials
-    cred_check = check_credentials(request)
+    cred_check = login_handler.check_credentials(request)
     if cred_check == 1:
-        return JsonResponse(status=200, data={"token": "Token A"})
+        token = token_handler.generate_token(request, "Fridgify")
+        return JsonResponse(status=200, data={"token": token})
     elif cred_check == 0:
         return HttpResponse(status=401, content="Wrong Credentials")
     else:
