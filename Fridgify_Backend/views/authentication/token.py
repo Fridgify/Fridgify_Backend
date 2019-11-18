@@ -1,19 +1,9 @@
 from django.http import HttpResponse
 from django.http import JsonResponse
 import jwt
+import collections
 
 import Fridgify_Backend.utils.token_handler as token_handler
-
-
-def entry_point(request):
-    if request.method == "GET":
-        token = get_token(request)
-        if token is None:
-            return HttpResponse(content="Not Authorized", status=401)
-        else:
-            return JsonResponse(data={"token": token, "validation_time": 3600}, status=200, )
-    else:
-        return error_response()
 
 
 def get_token(request):
@@ -30,7 +20,23 @@ def get_token(request):
     return None
 
 
-def error_response():
+def error_response(request):
     res = HttpResponse(status=405)
     res["Allow"] = "GET"
     return res
+
+
+def get_response(request):
+    token = get_token(request)
+    if token is None:
+        return HttpResponse(content="Not Authorized", status=401)
+    else:
+        return JsonResponse(data={"token": token, "validation_time": 3600}, status=200, )
+
+
+HTTP_ENDPOINT_FUNCTION = collections.defaultdict(lambda: error_response)
+HTTP_ENDPOINT_FUNCTION["GET"] = get_response
+
+
+def entry_point(request):
+    return HTTP_ENDPOINT_FUNCTION[request.method](request)

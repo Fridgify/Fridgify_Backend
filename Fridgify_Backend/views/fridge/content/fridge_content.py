@@ -16,5 +16,5 @@ HTTP_ENDPOINT_FUNCTION = {
 
 
 def entry_point(request):
-    response = HTTP_ENDPOINT_FUNCTION[request](request)
+    response = HTTP_ENDPOINT_FUNCTION[request.method](request)
     return response

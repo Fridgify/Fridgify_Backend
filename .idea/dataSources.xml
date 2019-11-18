@@ -7,5 +7,11 @@
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:C:\Users\ducvo\Documents\projects\Fridgify_Backend\backend_test</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="backend_test" uuid="1a10ef89-1816-4bad-9d30-d1a53fd03b5a">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/backend_test</jdbc-url>
+    </data-source>
   </component>
 </project>

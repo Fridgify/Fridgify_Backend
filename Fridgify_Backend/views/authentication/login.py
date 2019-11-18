@@ -7,13 +7,6 @@ import Fridgify_Backend.utils.login_handler as login_handler
 import Fridgify_Backend.utils.token_handler as token_handler
 
 
-def entry_point(request):
-    if request.method == "POST":
-        return login(request)
-    else:
-        return error_response()
-
-
 def login(request):
     if "Authorization" in request.headers:
         print("Authorization header exists...")
@@ -29,7 +22,19 @@ def login(request):
         return HttpResponse(status=400, content="Bad Request")
 
 
-def error_response():
+def error_response(request):
     res = HttpResponse(status=405)
     res["Allow"] = "POST"
     return res
+
+
+HTTP_ENDPOINT_FUNCTION = {
+    "POST": login,
+    "GET": error_response,
+    "DELETE": error_response,
+    "PUT": error_response
+}
+
+
+def entry_point(request):
+    return HTTP_ENDPOINT_FUNCTION[request.method](request)
