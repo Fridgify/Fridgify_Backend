@@ -9,7 +9,11 @@ import Fridgify_Backend.utils.token_handler as token_handler
 
 def login(request):
     if "Authorization" in request.headers:
-        print("Authorization header exists...")
+        token = token_handler.existing_tokens(request.headers["Authorization"], "Fridgify")
+        if token is None:
+            return HttpResponse(status=401, content="Invalid Token")
+        else:
+            return JsonResponse(status=200, data={"token": token})
 
     # Check Credentials
     cred_check = login_handler.check_credentials(request)
