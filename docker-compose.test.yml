@@ -1,6 +1,6 @@
 sut:
   build: .
-  dockerfile: Dockerfile-testing
+  dockerfile: Dockerfile.testing
   command: bash -c "chmod +x ./run_tests.sh && ./run_tests.sh"
   links:
     - db_test
