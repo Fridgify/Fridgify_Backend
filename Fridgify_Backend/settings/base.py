@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'Fridgify_Backend'
+    'Fridgify_Backend',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
