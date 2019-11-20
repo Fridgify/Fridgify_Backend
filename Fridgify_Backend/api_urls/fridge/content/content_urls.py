@@ -1,10 +1,11 @@
 from django.urls import path, include
 
-from Fridgify_Backend import view
+from Fridgify_Backend.views.fridge.content import fridge_content
+from Fridgify_Backend.views.fridge.content import fridge_content_item
 
 urlpatterns = [
     # GET, POST
-    path('<int:fridge_id>/', view.hello_world),
+    path('<int:fridge_id>/', fridge_content.entry_point),
     # GET, DELETE, POST
-    path('<int:fridge_id>/<int:item_id>', view.hello_world),
+    path('<int:fridge_id>/<int:item_id>', fridge_content_item.entry_point),
 ]

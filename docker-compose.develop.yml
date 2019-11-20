@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+  db_develop:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data_develop:/var/lib/postgresql/develop/data/
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=backend_develop
+  backend_develop:
+    build:
+      context: .
+      dockerfile: Dockerfile.develop
+    ports:
+      - 9999:9999
+    depends_on:
+      - db_develop
+volumes:
+  postgres_data_develop:

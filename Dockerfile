@@ -7,10 +7,6 @@ RUN mkdir /fridgify
 
 WORKDIR /fridgify
 
-COPY requirements.txt /fridgify/
-
-RUN pip install -r requirements.txt
-
 RUN pip install pipenv
 COPY Pipfile Pipfile.lock /fridgify/
 RUN pipenv install --system
@@ -19,4 +15,4 @@ ADD . /fridgify/
 
 EXPOSE 9000
 
-CMD [ "python", "manage.py", "runserver", "0.0.0.0:9000" ]
+CMD bash ./start_server_production.sh
