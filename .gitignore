@@ -262,3 +262,6 @@ fabric.properties
 # Local Testing should be ignored
 backend_test
 */migrations
+.idea/Fridgify_Backend.iml
+.idea/misc.xml
+.idea/dataSources.xml

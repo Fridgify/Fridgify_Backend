@@ -8,9 +8,11 @@ services:
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=backend_dev
+      - POSTGRES_DB=backend
   backend:
-    build:  .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - 9000:9000
     depends_on:
