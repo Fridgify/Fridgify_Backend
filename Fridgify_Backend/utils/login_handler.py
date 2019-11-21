@@ -49,7 +49,7 @@ def create_dummyuser():
     user.name = "Dummy"
     user.surname = "Name"
     user.email = "dummy@d.de"
-    # encrypted password
+    # encrypted password = password
     user.password = "$2b$12$1hKYhKg4AU54eyES8qjRYOjInIgObjn0JJ8SlWPOpR9MzKcseMDVS"
     user.birth_date = datetime.date(2000, 10, 17)
     user.save()
