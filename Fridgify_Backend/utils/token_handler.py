@@ -68,6 +68,17 @@ def is_token_valid(token_objs):
     :return: valid - True | invalid - False
     """
     print("Check validity of token...")
+
+    # Token object
+    if isinstance(token_objs, Accesstokens):
+        valid_till = token_objs.valid_till
+        if timezone.now() > valid_till:
+            Accesstokens.objects.filter(token_id=token_objs.token_id).delete()
+            return False
+        else:
+            return True
+
+    # Token queryset
     valid_till = token_objs.values_list("valid_till").first()
 
     if timezone.now() > valid_till[0]:
@@ -75,3 +86,13 @@ def is_token_valid(token_objs):
         return False
     else:
         return True
+
+
+def get_data_for_token(token):
+    """ Check if a token exists
+
+    :param token: Token from request
+    :return: Token object or None
+    """
+    print("Get data for token")
+    return Accesstokens.objects.get(accesstoken=token)
