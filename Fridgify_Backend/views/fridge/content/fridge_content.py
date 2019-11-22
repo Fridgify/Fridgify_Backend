@@ -1,3 +1,4 @@
+import json
 from django.http import JsonResponse
 
 
@@ -18,3 +19,9 @@ HTTP_ENDPOINT_FUNCTION = {
 def entry_point(request):
     response = HTTP_ENDPOINT_FUNCTION[request.method](request)
     return response
+
+
+def check_req_add(req_body):
+    if all(x in req_body for x in ["name", "description", "buy_date", "expiration_date", "amount", "unit", "store"]):
+        return True
+    return False

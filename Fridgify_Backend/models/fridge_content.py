@@ -10,3 +10,6 @@ class FridgeContent(models.Model):
     unit = models.CharField(max_length=25)
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('fridge', 'item',)
