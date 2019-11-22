@@ -22,8 +22,9 @@ def generate_token(username, internal_provider):
 
     # If no token existing, create a new one
     if token is None:
-        client_secret = secrets.token_hex(8)
+        client_secret = ""
         if internal_provider == "Fridgify":
+            client_secret = secrets.token_hex(8)
             token = jwt.encode(payload={"user": username, "secret": client_secret}, key=client_secret,
                                algorithm="HS256").decode("utf-8")
         else:

@@ -40,16 +40,3 @@ def retrieve_password(username):
         print("Something went horribly wrong... There are multiple hits for the given username :(")
     for obj in objects:
         return obj.password
-
-
-# TODO: Use this in tests
-def create_dummyuser():
-    user = Users()
-    user.username = "dummy_name"
-    user.name = "Dummy"
-    user.surname = "Name"
-    user.email = "dummy@d.de"
-    # encrypted password = password
-    user.password = "$2b$12$1hKYhKg4AU54eyES8qjRYOjInIgObjn0JJ8SlWPOpR9MzKcseMDVS"
-    user.birth_date = datetime.date(2000, 10, 17)
-    user.save()
