@@ -1,5 +1,4 @@
 import django.db
-from typing import Union
 
 from Fridgify_Backend.models.fridges import Fridges
 from Fridgify_Backend.models.user_fridge import UserFridge
