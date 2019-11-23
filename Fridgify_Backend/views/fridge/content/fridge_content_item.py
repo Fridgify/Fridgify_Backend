@@ -1,8 +1,9 @@
 from django.http import JsonResponse
 
+from Fridgify_Backend.utils import test_utils
+
 
 # GET, DELETE, POST
-
 def add_item_to_fridge(request):
     return JsonResponse({"message": "Add item"})
 
