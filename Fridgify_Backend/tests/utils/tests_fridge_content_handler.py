@@ -1,6 +1,4 @@
 from django.utils import timezone
-import datetime
-from rest_framework import status
 from unittest import mock
 from django.test import TestCase, RequestFactory
 
@@ -17,7 +15,7 @@ class UtilsTestCaseFridgeContentHandler(TestCase):
         self.factory = RequestFactory()
         test_utils.setup()
         test_utils.create_dummyuser()
-        test_utils.create_dummyfridge()
+        Fridges.objects.create(name="Dummy Fridge", description="This is a dummy fridge")
         test_utils.connect_fridge_user()
         test_utils.create_login_token(timezone.now() + timezone.timedelta(hours=1))
         test_utils.create_api_token(timezone.now() + timezone.timedelta(hours=1))
@@ -25,7 +23,7 @@ class UtilsTestCaseFridgeContentHandler(TestCase):
     @mock.patch("Fridgify_Backend.utils.fridge_content_handler.check_item_exists")
     @mock.patch("Fridgify_Backend.utils.fridge_content_handler.get_fridge")
     def test_fridgeAddItem_ValidDataItemNotExisting_Added(self, mock_get_fridge, mock_check_exists):
-        mock_get_fridge.return_value = Fridges.objects.filter(fridge_id=1).first()
+        mock_get_fridge.return_value = Fridges.objects.filter(name="Dummy Fridge").first()
         mock_check_exists.return_value = None
         request = {"name": "Item 1", "description": "This is a item",
                    "buy_date": "2019-10-17", "expiration_date": "2019-11-23",
@@ -38,7 +36,7 @@ class UtilsTestCaseFridgeContentHandler(TestCase):
     @mock.patch("Fridgify_Backend.utils.fridge_content_handler.check_item_exists")
     @mock.patch("Fridgify_Backend.utils.fridge_content_handler.get_fridge")
     def test_fridgeAddItem_ValidDataItemExisting_Added(self, mock_get_fridge, mock_check_exists):
-        mock_get_fridge.return_value = Fridges.objects.filter(fridge_id=1).first()
+        mock_get_fridge.return_value = Fridges.objects.filter(name="Dummy Fridge").first()
         mock_check_exists.return_value = test_utils.create_items("")
         request = {"name": "Item A", "description": "Description",
                    "buy_date": "2019-01-01", "expiration_date": "2019-01-01",
@@ -51,7 +49,7 @@ class UtilsTestCaseFridgeContentHandler(TestCase):
     @mock.patch("Fridgify_Backend.utils.fridge_content_handler.check_item_exists")
     @mock.patch("Fridgify_Backend.utils.fridge_content_handler.get_fridge")
     def test_fridgeAddItem_ItemError_minus1(self, mock_get_fridge, mock_check_exists):
-        mock_get_fridge.return_value = Fridges.objects.filter(fridge_id=1).first()
+        mock_get_fridge.return_value = Fridges.objects.filter(name="Dummy Fridge").first()
         mock_check_exists.return_value = -1
         request = {"name": "Item A", "description": "Description",
                    "buy_date": "2019-01-01", "expiration_date": "2019-01-01",
@@ -62,7 +60,7 @@ class UtilsTestCaseFridgeContentHandler(TestCase):
     @mock.patch("Fridgify_Backend.utils.fridge_content_handler.check_item_exists")
     @mock.patch("Fridgify_Backend.utils.fridge_content_handler.get_fridge")
     def test_fridgeAddItem_fridgeNotExisting_0(self, mock_get_fridge, mock_check_exists):
-        mock_get_fridge.return_value = Fridges.objects.filter(fridge_id=2).first()
+        mock_get_fridge.return_value = Fridges.objects.filter(name="Not Fridge").first()
         mock_check_exists.return_value = -1
         request = {"name": "Item A", "description": "Description",
                    "buy_date": "2019-01-01", "expiration_date": "2019-01-01",
