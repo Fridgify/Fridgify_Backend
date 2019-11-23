@@ -1,4 +1,5 @@
 import django.db
+from typing import Union
 
 from Fridgify_Backend.models.fridges import Fridges
 from Fridgify_Backend.models.user_fridge import UserFridge
@@ -23,7 +24,11 @@ def fridge_add_item(fridge_id, user_id, req_body):
     if len_uf == 1:
         # Check if item already exists
         item = check_item_exists(req_body["name"], req_body["store"])
-        if item is not None:
+        if item == -1:
+            # Think about a possible error message
+            print("Mistake")
+            return -1
+        elif item is not None:
             # Create the content with existing item
             try:
                 FridgeContent.objects.create(item=item, fridge=fridge, amount=req_body["amount"],
@@ -31,10 +36,6 @@ def fridge_add_item(fridge_id, user_id, req_body):
             except django.db.IntegrityError:
                 return -1
             return 1
-        elif item == -1:
-            # Think about a possible error message
-            print("Mistake")
-            return -1
         else:
             # Create an item
             item = create_item(req_body)

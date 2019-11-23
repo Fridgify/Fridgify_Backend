@@ -4,7 +4,6 @@ from django.http import HttpResponse
 
 from Fridgify_Backend.utils import token_handler
 from Fridgify_Backend.utils import fridge_content_handler
-from Fridgify_Backend.utils import test_utils
 
 
 def add_content_to_fridge(request, fridge_id):
