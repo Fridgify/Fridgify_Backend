@@ -45,7 +45,7 @@ class UtilsTestCaseFridgeContentHandler(TestCase):
         request = {"name": "Item A", "description": "Description",
                    "buy_date": "2019-01-01", "expiration_date": "2019-01-01",
                    "amount": 1, "unit": "kg", "store": "Rewe"}
-        result = fridge_content_handler.fridge_add_item(self.user, self.fridge, request)
+        result = fridge_content_handler.fridge_add_item(self.fridge, self.user, request)
         self.assertEqual(result, 1)
         self.assertEqual(len(FridgeContent.objects.filter(item__name="Item A")), 1)
         self.assertEqual(len(Items.objects.filter(name="Item A")), 1)
@@ -58,7 +58,7 @@ class UtilsTestCaseFridgeContentHandler(TestCase):
         request = {"name": "Item A", "description": "Description",
                    "buy_date": "2019-01-01", "expiration_date": "2019-01-01",
                    "amount": 1, "unit": "kg", "store": "Rewe"}
-        result = fridge_content_handler.fridge_add_item(self.user, self.fridge, request)
+        result = fridge_content_handler.fridge_add_item(self.fridge, self.user, request)
         self.assertEqual(result, -1)
 
     @mock.patch("Fridgify_Backend.utils.fridge_content_handler.check_item_exists")
