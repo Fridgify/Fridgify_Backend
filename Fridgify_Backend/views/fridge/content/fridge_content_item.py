@@ -2,7 +2,6 @@ from django.http import JsonResponse
 
 
 # GET, DELETE, POST
-
 def add_item_to_fridge(request):
     return JsonResponse({"message": "Add item"})
 
