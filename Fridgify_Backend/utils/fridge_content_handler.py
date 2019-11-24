@@ -17,6 +17,7 @@ def fridge_add_item(fridge_id, user_id, req_body):
     """
     # Check if there is a User Fridge combination
     user_fridges = UserFridge.objects.filter(user_id=user_id, fridge_id=fridge_id)
+    print(user_fridges)
     # Get fridge
     fridge = get_fridge(fridge_id)
     len_uf = len(user_fridges)
