@@ -7,6 +7,22 @@ from Fridgify_Backend.models.items import Items
 from Fridgify_Backend.models.stores import Stores
 
 
+def fridge_get_item(fridge_id, user_id):
+    user_fridges = UserFridge.objects.filter(user_id=user_id, fridge_id=fridge_id)
+    len_uf = len(user_fridges)
+    if len_uf == 1:
+        content = FridgeContent.objects.values("item__name", "expiration_date", "amount",
+                                               "unit").filter(fridge_id=fridge_id)
+        return content
+    elif len_uf > 1:
+        print("Mistake")
+        return -1
+    else:
+        if get_fridge(fridge_id) is None:
+            return None
+        return 0
+
+
 def fridge_add_item(fridge_id, user_id, req_body):
     """
     Add an item to a fridge

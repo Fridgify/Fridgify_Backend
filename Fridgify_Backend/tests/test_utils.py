@@ -6,6 +6,7 @@ from Fridgify_Backend.models.accesstokens import Accesstokens
 from Fridgify_Backend.models.stores import Stores
 from Fridgify_Backend.models.providers import Providers
 from Fridgify_Backend.models.items import Items
+from Fridgify_Backend.models.fridge_content import FridgeContent
 
 
 def setup():
@@ -65,3 +66,24 @@ def create_items(name):
         name = "Item A"
     Items.objects.create(name=name, description="Description", store=Stores.objects.filter(name="Rewe").first())
     return Items.objects.filter(name="Item A").first()
+
+
+def get_fridge(name):
+    return Fridges.objects.filter(name=name)
+
+
+def get_user(name):
+    return Users.objects.filter(username=name)
+
+
+def get_item(name):
+    return Items.objects.filter(name=name)
+
+
+def get_fridge_items(fridge):
+    return FridgeContent.objects.filter(fridge_id=fridge)
+
+
+def create_fridge_content(item_id, fridge_id):
+    FridgeContent.objects.create(fridge_id=fridge_id, item_id=item_id, expiration_date=datetime.date(2019, 12, 12),
+                                 amount=50, unit="g")

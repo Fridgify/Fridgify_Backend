@@ -80,3 +80,37 @@ class UtilsTestCaseFridgeContentHandler(TestCase):
     def test_checkItemExists_ItemNotExisting_None(self):
         result = fridge_content_handler.check_item_exists("Item A", "Rewe")
         self.assertIsNone(result)
+
+    def test_fridgeGetItem_ValidFridgeUserSingle_SingleContent(self):
+        test_utils.create_items("Item A")
+        item_id1 = test_utils.get_item("Item A").values("item_id").first()["item_id"]
+        test_utils.create_fridge_content(item_id1, self.fridge)
+
+        result = fridge_content_handler.fridge_get_item(self.fridge, self.user)
+        self.assertIsNotNone(result)
+        self.assertEqual(list(result)[0]["item__name"], "Item A")
+
+    def test_fridgeGetItem_ValidFridgeUserMulti_MultiContent(self):
+        test_utils.create_items("Item A")
+        test_utils.create_items("Item B")
+        item_id1 = test_utils.get_item("Item A").values("item_id").first()["item_id"]
+        item_id2 = test_utils.get_item("Item B").values("item_id").first()["item_id"]
+        test_utils.create_fridge_content(item_id1, self.fridge)
+        test_utils.create_fridge_content(item_id2, self.fridge)
+
+        result = fridge_content_handler.fridge_get_item(self.fridge, self.user)
+        self.assertIsNotNone(result)
+        result_l = list(result)
+        self.assertEqual(len(result_l), 2)
+        self.assertEqual(result_l[0]["item__name"], "Item A")
+        self.assertEqual(result_l[1]["item__name"], "Item B")
+
+    def test_fridgeGetItem_NoContentUserNotAuth4Fridge_0(self):
+        result = fridge_content_handler.fridge_get_item(self.fridge, 1000)
+        self.assertIsNotNone(result)
+        self.assertEqual(result, 0)
+
+    def test_fridgeGetItem_FridgeNotExisting_None(self):
+        result = fridge_content_handler.fridge_get_item(1000, self.user)
+        self.assertIsNone(result)
+
