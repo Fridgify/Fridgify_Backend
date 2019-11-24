@@ -53,8 +53,6 @@ class UtilsTestCaseFridgeContentHandler(TestCase):
     @mock.patch("Fridgify_Backend.utils.fridge_content_handler.check_item_exists")
     @mock.patch("Fridgify_Backend.utils.fridge_content_handler.get_fridge")
     def test_fridgeAddItem_ItemError_minus1(self, mock_get_fridge, mock_check_exists):
-        Fridges.objects.create(name="Dummy Fridge", description="This is a dummy fridge")
-        test_utils.connect_fridge_user()
         mock_get_fridge.return_value = Fridges.objects.filter(name="Dummy Fridge").first()
         mock_check_exists.return_value = -1
         request = {"name": "Item A", "description": "Description",
