@@ -8,8 +8,7 @@ from Fridgify_Backend.utils import fridge_content_handler
 
 def add_content_to_fridge(request, fridge_id):
     if "Authorization" in request.headers:
-        api_token = request.headers["Authorization"]
-        user_id = token_handler.token_info(api_token, "Fridgify-API")
+        user_id = get_user(request)
         if user_id is None:
             return HttpResponse(status=403, content="Token not valid")
         try:
@@ -29,7 +28,20 @@ def add_content_to_fridge(request, fridge_id):
 
 
 def get_content_in_fridge(request, fridge_id):
-    return JsonResponse({"message": "Get content"})
+    if "Authorization" in request.headers:
+        user_id = get_user(request)
+        if user_id is None:
+            return HttpResponse(status=403, content="Token not valid")
+        content = fridge_content_handler.fridge_get_item(fridge_id, user_id)
+        if content == -1:
+            return HttpResponse(status=500, content="Error retrieving fridge content.")
+        elif content is None:
+            return HttpResponse(status=404, content="Fridge not existing")
+        elif content == 0:
+            return HttpResponse(status=403, content="User not authorized for fridge")
+
+        return JsonResponse(list(content), safe=False)
+    return HttpResponse(status=401, content="User not authorized")
 
 
 HTTP_ENDPOINT_FUNCTION = {
@@ -47,3 +59,8 @@ def check_req_add(req_body):
     if all(x in req_body for x in ["name", "description", "buy_date", "expiration_date", "amount", "unit", "store"]):
         return True
     return False
+
+
+def get_user(request):
+    api_token = request.headers["Authorization"]
+    return token_handler.token_info(api_token, "Fridgify-API")

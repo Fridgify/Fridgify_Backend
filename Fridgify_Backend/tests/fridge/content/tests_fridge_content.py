@@ -1,5 +1,6 @@
 from django.utils import timezone
 import datetime
+import json
 from rest_framework import status
 from unittest import mock
 from django.test import TestCase, RequestFactory
@@ -16,6 +17,8 @@ class ContentApiTestCasesFridgeContent(TestCase):
         test_utils.create_dummyuser()
         test_utils.create_dummyfridge()
         test_utils.connect_fridge_user()
+        test_utils.create_items("Item A")
+        test_utils.create_items("Item B")
         test_utils.create_login_token(timezone.now() + timezone.timedelta(hours=1))
         test_utils.create_api_token(timezone.now() + timezone.timedelta(hours=1))
 
@@ -99,3 +102,79 @@ class ContentApiTestCasesFridgeContent(TestCase):
         # response = json.loads(fridge_content.entry_point(obj).content)
         # self.assertEqual(response["message"], "Get content", "Get content")
         self.assertEqual(0,0)
+
+    @mock.patch("Fridgify_Backend.utils.fridge_content_handler.fridge_get_item")
+    def test_getFridgeContent_ValidFridgeAndTokenWithContent_200Content(self, mock_get_content):
+        fridge_id = test_utils.get_fridge("Dummy Fridge").values("fridge_id").first()["fridge_id"]
+        item_id = test_utils.get_item("Item A").values("item_id").first()["item_id"]
+        test_utils.create_fridge_content(item_id, fridge_id)
+        item = test_utils.get_fridge_items(fridge_id).values("item__name", "expiration_date", "amount", "unit")
+        mock_get_content.return_value = item
+        request = self.factory.get("/fridge/1")
+        request.META["HTTP_AUTHORIZATION"] = "APIToken"
+
+        res = fridge_content.get_content_in_fridge(request, fridge_id)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(body[0]["item__name"], "Item A")
+
+    @mock.patch("Fridgify_Backend.utils.fridge_content_handler.fridge_get_item")
+    def test_getFridgeContent_ValidFridgeAndTokenWithMultiContent_200MultiContent(self, mock_get_content):
+        fridge_id = test_utils.get_fridge("Dummy Fridge").values("fridge_id").first()["fridge_id"]
+        item_id1 = test_utils.get_item("Item A").values("item_id").first()["item_id"]
+        item_id2 = test_utils.get_item("Item B").values("item_id").first()["item_id"]
+        test_utils.create_fridge_content(item_id1, fridge_id)
+        test_utils.create_fridge_content(item_id2, fridge_id)
+        item = test_utils.get_fridge_items(fridge_id).values("item__name", "expiration_date", "amount", "unit")
+        mock_get_content.return_value = item
+        request = self.factory.get("/fridge/1")
+        request.META["HTTP_AUTHORIZATION"] = "APIToken"
+
+        res = fridge_content.get_content_in_fridge(request, fridge_id)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(body[0]["item__name"], "Item A")
+        self.assertEqual(body[1]["item__name"], "Item B")
+
+    @mock.patch("Fridgify_Backend.utils.fridge_content_handler.fridge_get_item")
+    def test_getFridgeContent_ErrorGettingItems_500(self, mock_get_content):
+        fridge_id = test_utils.get_fridge("Dummy Fridge").values("fridge_id").first()["fridge_id"]
+        mock_get_content.return_value = -1
+        request = self.factory.get("/fridge/1")
+        request.META["HTTP_AUTHORIZATION"] = "APIToken"
+
+        res = fridge_content.get_content_in_fridge(request, fridge_id)
+        self.assertEqual(res.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def test_getFridgeContent_InvalidToken_403(self):
+        request = self.factory.get("/fridge/1")
+        request.META["HTTP_AUTHORIZATION"] = "NotAValidToken"
+
+        res = fridge_content.get_content_in_fridge(request, 1)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+    @mock.patch("Fridgify_Backend.utils.fridge_content_handler.fridge_get_item")
+    def test_getFridgeContent_ContentNone_404(self, mock_get_content):
+        fridge_id = test_utils.get_fridge("Dummy Fridge").values("fridge_id").first()["fridge_id"]
+        mock_get_content.return_value = None
+        request = self.factory.get("/fridge/1")
+        request.META["HTTP_AUTHORIZATION"] = "APIToken"
+
+        res = fridge_content.get_content_in_fridge(request, fridge_id)
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_getFridgeContent_NoToken_401(self):
+        request = self.factory.get("/fridge/1")
+
+        res = fridge_content.get_content_in_fridge(request, 1)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    @mock.patch("Fridgify_Backend.utils.fridge_content_handler.fridge_get_item")
+    def test_getFridgeContent_UserNotAuthForFridge_401(self, mock_get_content):
+        fridge_id = test_utils.get_fridge("Dummy Fridge").values("fridge_id").first()["fridge_id"]
+        mock_get_content.return_value = 0
+        request = self.factory.get("/fridge/1")
+        request.META["HTTP_AUTHORIZATION"] = "APIToken"
+
+        res = fridge_content.get_content_in_fridge(request, fridge_id)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)

@@ -89,14 +89,18 @@ def is_token_valid(token_objs):
 
       
 def token_info(token, provider):
-    token_obj = Accesstokens.objects.filter(accesstoken=token, provider__name=provider).values_list("user")
+    token_obj = Accesstokens.objects.filter(accesstoken=token, provider__name=provider)
     if len(token_obj) > 1:
         print("Something went wrong. There seem to be multiple accesstokens for provider")
         return None
     elif len(token_obj) < 1:
         print("No Token found")
         return None
-    return token_obj.first()[0]
+    if is_token_valid(token_obj.first()):
+        return token_obj.values_list("user").first()[0]
+    else:
+        print("Token outdated")
+        return None
   
 
 def get_data_for_token(token):
