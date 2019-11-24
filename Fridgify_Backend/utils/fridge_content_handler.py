@@ -16,7 +16,7 @@ def fridge_add_item(fridge_id, user_id, req_body):
     :return: 1 - Creation Success | 0 - User has no access to Fridge | -1 - Creation Failed
     """
     # Check if there is a User Fridge combination
-    user_fridges = UserFridge.objects.filter(user=user_id, fridge=fridge_id)
+    user_fridges = UserFridge.objects.filter(user_id=user_id, fridge_id=fridge_id)
     # Get fridge
     fridge = get_fridge(fridge_id)
     len_uf = len(user_fridges)
