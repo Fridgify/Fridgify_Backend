@@ -6,6 +6,7 @@ from Fridgify_Backend.models.fridges import Fridges
 from Fridgify_Backend.models.user_fridge import UserFridge
 from Fridgify_Backend.views.fridge.management import create_fridge
 from Fridgify_Backend.views.authentication import login
+from Fridgify_Backend.utils.test_utils import create_providers
 
 import json
 import datetime
@@ -19,8 +20,7 @@ class ManagementTestCasesCreateFridge(TestCase):
         user = Users.objects.create(username="dummy_name", name="Dummy", surname="Name", email="dummy@dumdum.dum",
                              password="$2b$12$1hKYhKg4AU54eyES8qjRYOjInIgObjn0JJ8SlWPOpR9MzKcseMDVS",
                              birth_date=datetime.date(2000, 1, 1))
-        Providers.objects.create(name="Fridgify")
-        Providers.objects.create(name="Fridgify-API")
+        create_providers()
         fridge = Fridges.objects.create(name="Miau", description="adsdsadad")
         request = self.factory.post("/auth/login/", {"username": "dummy_name", "password": "password"},
                                     content_type="application/json")
