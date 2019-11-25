@@ -37,7 +37,10 @@ def generate_token(username, internal_provider):
             db_token.valid_till = timezone.now() + timezone.timedelta(days=14)
         else:
             db_token.valid_till = timezone.now() + timezone.timedelta(hours=1)
-        db_token.user = Users.objects.filter(username=username).first()
+        user = Users.objects.filter(username=username).first()
+        if user is None:
+            user = Users.objects.filter(email=username).first()
+        db_token.user = user
         db_token.client_id = username
         db_token.client_secret = client_secret
         db_token.save()
