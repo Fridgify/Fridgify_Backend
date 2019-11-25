@@ -6,11 +6,26 @@ from Fridgify_Backend.models.providers import Providers
 
 
 def create_dummyuser(request):
+    users = [
+        {
+            "name": "Dummy",
+            "email": "dummy@d.de",
+            "password": "password"
+        },
+        {
+            "name": "Test",
+            "email": "test@user.de",
+            "password": "password"
+        }
+    ]
     print(request.method)
     if request.method != "OPTIONS":
         return HttpResponse(status=400, content="Nice try")
     if Providers.objects.filter().exists():
-        return HttpResponse(status=400, content="You´re already dumb")
+        return JsonResponse(status=400, data={
+            "message": "You´re already dumb",
+            "reminder": users
+        })
     provider = Providers()
     provider.name = "Fridgify"
     provider.save()
@@ -35,6 +50,7 @@ def create_dummyuser(request):
     user2.password = "$2b$12$1hKYhKg4AU54eyES8qjRYOjInIgObjn0JJ8SlWPOpR9MzKcseMDVS"
     user2.birth_date = datetime.date(2000, 10, 17)
     user2.save()
+
     return JsonResponse(status=200, data={
-        "message": "Users are dummy_name and testUser. Password is password"
+        "users": users
     })
