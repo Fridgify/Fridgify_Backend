@@ -35,8 +35,11 @@ def check_credentials(request):
 def retrieve_password(username):
     print("Retrieve password for user from database...")
     # Only one object should be inside of here
-    objects = Users.objects.filter(username=username)
+    objects = Users.objects.filter(username=username).values()
     if len(objects) > 1:
         print("Something went horribly wrong... There are multiple hits for the given username :(")
-    for obj in objects:
-        return obj.password
+    elif len(objects) == 0:
+        objects = Users.objects.filter(email=username).values()
+    if objects.first() is None:
+        return None
+    return objects.first()["password"]
