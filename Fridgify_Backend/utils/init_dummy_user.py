@@ -8,12 +8,12 @@ from Fridgify_Backend.models.providers import Providers
 def create_dummyuser(request):
     users = [
         {
-            "name": "Dummy",
+            "name": "dummy_name",
             "email": "dummy@d.de",
             "password": "password"
         },
         {
-            "name": "Test",
+            "name": "testUser",
             "email": "test@user.de",
             "password": "password"
         }
