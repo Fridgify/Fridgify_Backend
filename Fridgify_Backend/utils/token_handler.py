@@ -19,7 +19,7 @@ def generate_token(username, internal_provider):
     print("Generating token for internal provider...")
     # Retrieve existing tokens, wipe outdated tokens
     token = existing_tokens(username, internal_provider)
-
+    print(token)
     # If no token existing, create a new one
     if token is None:
         client_secret = ""
@@ -59,6 +59,11 @@ def existing_tokens(username, internal_provider):
             return token_objs.values("accesstoken").first()["accesstoken"]
         else:
             return None
+
+    token_objs = Accesstokens.objects.filter(user__email=username, provider__name=internal_provider)
+    if len(token_objs) < 1:
+        return None
+    return token_objs.values("accesstoken").first()["accesstoken"]
 
 
 def is_token_valid(token_objs):
