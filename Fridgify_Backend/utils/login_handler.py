@@ -12,7 +12,10 @@ def check_credentials(request):
     """
     print("Checking credentials...")
     # Get request body as JSON
-    req_body = json.loads(request.body)
+    try:
+        req_body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return -1
     # Check if keys are existing
     if "username" not in req_body:
         return -1
