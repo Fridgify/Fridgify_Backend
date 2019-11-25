@@ -4,6 +4,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', "fridgapi-dev.donkz.dev"]
 
+DEBUG_PROPAGATE_EXCEPTIONS = True
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
