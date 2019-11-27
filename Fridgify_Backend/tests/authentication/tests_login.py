@@ -1,6 +1,7 @@
 import json
 import collections
 import datetime
+from django.utils import timezone
 from django.test import RequestFactory, TestCase
 from unittest import mock
 from rest_framework import status
@@ -8,6 +9,7 @@ from rest_framework import status
 from Fridgify_Backend.views.authentication import login
 from Fridgify_Backend.models.users import Users
 from Fridgify_Backend.models.providers import Providers
+from Fridgify_Backend.models.accesstokens import Accesstokens
 
 
 def request_post(request):
@@ -26,6 +28,9 @@ class AuthenticationTestCasesLogin(TestCase):
                              birth_date=datetime.date(2000, 1, 1))
         Providers.objects.create(name="Fridgify")
         Providers.objects.create(name="Fridgify-API")
+        Accesstokens.objects.create(accesstoken="Token", provider=Providers.objects.filter(name="Fridgify").first(),
+                                    valid_till=timezone.now() + datetime.timedelta(days=14),
+                                    user=Users.objects.filter(username="dummy_name").first())
 
     @mock.patch('Fridgify_Backend.utils.login_handler.check_credentials')
     @mock.patch('Fridgify_Backend.utils.token_handler.generate_token')
@@ -56,12 +61,12 @@ class AuthenticationTestCasesLogin(TestCase):
 
     @mock.patch('Fridgify_Backend.utils.token_handler.existing_tokens')
     def test_login_AuthorizationTokenValid_Token(self, mock_existing_token):
-        mock_existing_token.return_value = "token"
+        mock_existing_token.return_value = "Token"
         request = self.factory.post("/auth/login/", {"username": "dummy_name", "password": "lol wrong pw"},
                                     content_type="application/json", )
         request.META["HTTP_AUTHORIZATION"] = "Token"
         response = login.login(request)
-        self.assertEqual(json.loads(response.content.decode("utf-8"))["token"], "token",
+        self.assertEqual(json.loads(response.content)["token"], "Token",
                          "Authorization header not respected")
 
     @mock.patch('Fridgify_Backend.utils.token_handler.existing_tokens')
