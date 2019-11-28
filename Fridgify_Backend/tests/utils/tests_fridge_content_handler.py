@@ -114,3 +114,22 @@ class UtilsTestCaseFridgeContentHandler(TestCase):
         result = fridge_content_handler.fridge_get_item(1000, self.user)
         self.assertIsNone(result)
 
+    def test_removeItem_ExistingFridgeItem_Removed(self):
+        test_utils.create_items("Item A")
+        item_id = test_utils.get_item("Item A").values()[0]["item_id"]
+        fridge_id = test_utils.get_fridge("Dummy Fridge").values()[0]["fridge_id"]
+        test_utils.create_fridge_content(item_id, fridge_id)
+        res = fridge_content_handler.remove_item(fridge_id, item_id)
+        self.assertEqual(res, 1)
+        obj = FridgeContent.objects.filter(item_id=item_id, fridge_id=fridge_id)
+        self.assertEqual(len(obj), 0)
+
+    def test_removeItem_NoExistingItem_Removed(self):
+        test_utils.create_items("Item A")
+        item_id = test_utils.get_item("Item A").values()[0]["item_id"]
+        fridge_id = test_utils.get_fridge("Dummy Fridge").values()[0]["fridge_id"]
+        test_utils.create_fridge_content(item_id, fridge_id)
+        res = fridge_content_handler.remove_item(1000, 1000)
+        self.assertEqual(res, 0)
+        obj = FridgeContent.objects.filter(item_id=item_id, fridge_id=fridge_id)
+        self.assertEqual(len(obj), 1)

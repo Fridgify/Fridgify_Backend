@@ -75,6 +75,20 @@ def fridge_add_item(fridge_id, user_id, req_body):
         return -1
 
 
+def remove_item(fridge_id, item_id):
+    try:
+        item = FridgeContent.objects.filter(fridge_id=fridge_id, item_id=item_id)
+    except django.db.DatabaseError:
+        return -1
+    if len(item) == 0:
+        return 0
+    try:
+        item.delete()
+    except django.db.DatabaseError:
+        return -1
+    return 1
+
+
 def check_item_exists(name, store):
     """
     Check if an item exists
