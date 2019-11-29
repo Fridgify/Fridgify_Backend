@@ -31,7 +31,7 @@ def get_fridges(request):
             "content": "tbd"
         })
 
-    return JsonResponse(status=201, data={"fridges": payload})
+    return JsonResponse(status=200, data={"fridges": payload})
 
 
 def error_response(request):
