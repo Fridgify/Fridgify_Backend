@@ -103,13 +103,14 @@ def create_item(req_body):
     """
     # Get Store
     store_id = store_exists(req_body["store"])
-    if store_id is not None:
-        # Create the item
-        Items.objects.create(name=req_body["name"], description=req_body["description"], store=store_id)
-        # Return the item instance
-        return Items.objects.filter(name=req_body["name"], description=req_body["description"],
-                                    store=store_id).first()
-    return None
+    if store_id is None:
+        Stores.objects.create(name=req_body["store"])
+        store_id = store_exists(req_body["store"])
+    # Create the item
+    Items.objects.create(name=req_body["name"], description=req_body["description"], store=store_id)
+    # Return the item instance
+    return Items.objects.filter(name=req_body["name"], description=req_body["description"],
+                                store=store_id).first()
 
 
 # TODO: Outsource into own File
