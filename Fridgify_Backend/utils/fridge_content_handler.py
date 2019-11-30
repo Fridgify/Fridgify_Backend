@@ -11,7 +11,7 @@ def fridge_get_item(fridge_id, user_id):
     user_fridges = UserFridge.objects.filter(user_id=user_id, fridge_id=fridge_id)
     len_uf = len(user_fridges)
     if len_uf == 1:
-        content = FridgeContent.objects.values("item__name", "expiration_date", "amount",
+        content = FridgeContent.objects.values("item_id", "item__name", "expiration_date", "amount",
                                                "unit").filter(fridge_id=fridge_id)
         return content
     elif len_uf > 1:
