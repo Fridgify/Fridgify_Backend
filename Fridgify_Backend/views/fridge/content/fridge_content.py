@@ -46,7 +46,7 @@ def get_content_in_fridge(request, fridge_id):
 
 HTTP_ENDPOINT_FUNCTION = {
     "GET": get_content_in_fridge,
-    "POST": add_content_to_fridge
+    "POST": add_content_to_fridge,
 }
 
 

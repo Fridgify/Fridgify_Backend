@@ -12,7 +12,10 @@ def check_credentials(request):
     """
     print("Checking credentials...")
     # Get request body as JSON
-    req_body = json.loads(request.body)
+    try:
+        req_body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return -1
     # Check if keys are existing
     if "username" not in req_body:
         return -1
@@ -35,8 +38,11 @@ def check_credentials(request):
 def retrieve_password(username):
     print("Retrieve password for user from database...")
     # Only one object should be inside of here
-    objects = Users.objects.filter(username=username)
+    objects = Users.objects.filter(username=username).values()
     if len(objects) > 1:
         print("Something went horribly wrong... There are multiple hits for the given username :(")
-    for obj in objects:
-        return obj.password
+    elif len(objects) == 0:
+        objects = Users.objects.filter(email=username).values()
+    if objects.first() is None:
+        return None
+    return objects.first()["password"]

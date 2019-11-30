@@ -19,7 +19,7 @@ def generate_token(username, internal_provider):
     print("Generating token for internal provider...")
     # Retrieve existing tokens, wipe outdated tokens
     token = existing_tokens(username, internal_provider)
-
+    print(token)
     # If no token existing, create a new one
     if token is None:
         client_secret = ""
@@ -37,7 +37,10 @@ def generate_token(username, internal_provider):
             db_token.valid_till = timezone.now() + timezone.timedelta(days=14)
         else:
             db_token.valid_till = timezone.now() + timezone.timedelta(hours=1)
-        db_token.user = Users.objects.filter(username=username).first()
+        user = Users.objects.filter(username=username).first()
+        if user is None:
+            user = Users.objects.filter(email=username).first()
+        db_token.user = user
         db_token.client_id = username
         db_token.client_secret = client_secret
         db_token.save()
@@ -54,6 +57,29 @@ def existing_tokens(username, internal_provider):
     """
     print("Check if token already exists...")
     token_objs = Accesstokens.objects.filter(user__username=username, provider__name=internal_provider)
+    print(token_objs)
+    if len(token_objs) > 0:
+        if is_token_valid(token_objs):
+            return token_objs.values("accesstoken").first()["accesstoken"]
+        else:
+            return None
+
+    token_objs = Accesstokens.objects.filter(user__email=username, provider__name=internal_provider)
+    if len(token_objs) < 1:
+        return None
+    return token_objs.values("accesstoken").first()["accesstoken"]
+
+
+def check_token(accesstoken, internal_provider):
+    """ Check if a token already exists
+
+        :param accesstoken: accesstoken
+        :param internal_provider: Either Fridgify or Fridgify-API
+        :return: existing token or none
+        """
+    print("Check if token already exists...")
+    token_objs = Accesstokens.objects.filter(accesstoken=accesstoken, provider__name=internal_provider)
+    print(token_objs)
     if len(token_objs) > 0:
         if is_token_valid(token_objs):
             return token_objs.values("accesstoken").first()["accesstoken"]

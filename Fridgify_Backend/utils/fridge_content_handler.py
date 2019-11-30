@@ -11,7 +11,7 @@ def fridge_get_item(fridge_id, user_id):
     user_fridges = UserFridge.objects.filter(user_id=user_id, fridge_id=fridge_id)
     len_uf = len(user_fridges)
     if len_uf == 1:
-        content = FridgeContent.objects.values("item__name", "expiration_date", "amount",
+        content = FridgeContent.objects.values("item_id", "item__name", "expiration_date", "amount",
                                                "unit").filter(fridge_id=fridge_id)
         return content
     elif len_uf > 1:
@@ -73,6 +73,20 @@ def fridge_add_item(fridge_id, user_id, req_body):
     elif len_uf > 1:
         print("Something went wrong. Seems like there are multiple fridges with the same id for that user")
         return -1
+
+
+def remove_item(fridge_id, item_id):
+    try:
+        item = FridgeContent.objects.filter(fridge_id=fridge_id, item_id=item_id)
+    except django.db.DatabaseError:
+        return -1
+    if len(item) == 0:
+        return 0
+    try:
+        item.delete()
+    except django.db.DatabaseError:
+        return -1
+    return 1
 
 
 def check_item_exists(name, store):

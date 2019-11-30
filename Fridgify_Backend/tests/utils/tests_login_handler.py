@@ -45,3 +45,35 @@ class UtilsTestCasesLoginHandler(TestCase):
                                     content_type="application/json")
         auth = login_handler.check_credentials(request)
         self.assertEqual(0, auth)
+
+    @mock.patch('Fridgify_Backend.utils.login_handler.retrieve_password')
+    def test_checkCredentials_Mail_Password(self, mock_retrieve_password):
+        mock_retrieve_password.return_value = "$2b$12$1hKYhKg4AU54eyES8qjRYOjInIgObjn0JJ8SlWPOpR9MzKcseMDVS"
+        request = self.factory.post("/auth/login/", {"username": "dummy@dumdum.dum", "password": "password"},
+                                    content_type="application/json")
+        auth = login_handler.check_credentials(request)
+        self.assertEqual(1, auth)
+
+    @mock.patch('Fridgify_Backend.utils.login_handler.retrieve_password')
+    def test_checkCredentials_WrongMail_Password(self, mock_retrieve_password):
+        mock_retrieve_password.return_value = None
+        request = self.factory.post("/auth/login/", {"username": "dummy@dumdum.dum", "password": "password"},
+                                    content_type="application/json")
+        auth = login_handler.check_credentials(request)
+        self.assertEqual(0, auth)
+
+    def test_retrievePassword_UsernameExists_Password(self):
+        password = login_handler.retrieve_password("dummy_name")
+        self.assertEqual("$2b$12$1hKYhKg4AU54eyES8qjRYOjInIgObjn0JJ8SlWPOpR9MzKcseMDVS", password)
+
+    def test_retrievePassword_EmailExists_Password(self):
+        password = login_handler.retrieve_password("dummy@dumdum.dum")
+        self.assertEqual("$2b$12$1hKYhKg4AU54eyES8qjRYOjInIgObjn0JJ8SlWPOpR9MzKcseMDVS", password)
+
+    def test_retrievePassword_UsernameNotExisting_NoPassword(self):
+        password = login_handler.retrieve_password("NotAUser")
+        self.assertEqual(None, password)
+
+    def test_retrievePassword_EmailNotExisting_NoPassword(self):
+        password = login_handler.retrieve_password("NotAEmail")
+        self.assertEqual(None, password)
