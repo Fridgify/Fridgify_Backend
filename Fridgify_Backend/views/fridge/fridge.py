@@ -1,7 +1,10 @@
 from django.http import JsonResponse, HttpResponse
+from datetime import datetime, timedelta
+from django.utils import timezone
 from Fridgify_Backend.utils import token_handler
 from Fridgify_Backend.models.fridges import Fridges
 from Fridgify_Backend.models.user_fridge import UserFridge
+from Fridgify_Backend.models.fridge_content import FridgeContent
 import collections
 
 
@@ -24,14 +27,45 @@ def get_fridges(request):
 
     for user_fridge in user_fridges:
         fridge = Fridges.objects.get(fridge_id=user_fridge.fridge_id)
+        content = check_content(fridge)
         payload.append({
             "id": fridge.fridge_id,
             "name": fridge.name,
             "description": fridge.description,
-            "content": "tbd"
+            "content": content
         })
 
     return JsonResponse(status=200, data={"fridges": payload})
+
+
+def check_content(fridge):
+    fresh = 0
+    due_soon = 0
+    over_due = 0
+    total = 0
+    content = FridgeContent.objects.filter(fridge_id=fridge.fridge_id)
+
+    for item in content:
+        expiration_date = datetime(year=item.expiration_date.year, month=item.expiration_date.month, day=item.expiration_date.day)
+        created_at = datetime(year=item.created_at.year, month=item.created_at.month, day=item.created_at.day)
+        delta = expiration_date - datetime.today()
+        if delta.days < 0:
+            over_due += 1
+            continue
+        if 5 > delta.days >= 0:
+            due_soon += 1
+            continue
+        if (created_at - datetime.today()).days < 5:
+            fresh += 1
+            continue
+        total += 1
+
+    return {
+        "total": total + fresh + due_soon + over_due,
+        "fresh": fresh,
+        "dueSoon": due_soon,
+        "overDue": over_due
+    }
 
 
 def error_response(request):

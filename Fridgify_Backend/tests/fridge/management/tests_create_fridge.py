@@ -5,7 +5,7 @@ from Fridgify_Backend.models.providers import Providers
 from Fridgify_Backend.models.fridges import Fridges
 from Fridgify_Backend.models.user_fridge import UserFridge
 from Fridgify_Backend.views.fridge.management import create_fridge
-from Fridgify_Backend.views.authentication import login
+from Fridgify_Backend.views.authentication import login, token
 from Fridgify_Backend.utils.test_utils import create_providers
 
 import json
@@ -22,10 +22,14 @@ class ManagementTestCasesCreateFridge(TestCase):
                              birth_date=datetime.date(2000, 1, 1))
         create_providers()
         fridge = Fridges.objects.create(name="Miau", description="adsdsadad")
-        request = self.factory.post("/auth/login/", {"username": "dummy_name", "password": "password"},
+        request_login = self.factory.post("/auth/login/", {"username": "dummy_name", "password": "password"},
                                     content_type="application/json")
+        api_token = json.loads(login.login(request_login).content)["token"]
+        request_token = self.factory.get("/auth/token/")
+        header = {"Authorization": api_token}
+        request_token.__setattr__("headers", header)
+        self.token = json.loads(token.get_response(request_token).content)["token"]
         UserFridge.objects.create(fridge_id=fridge.fridge_id, user_id=user.user_id)
-        self.token = json.loads(login.login(request).content)["token"]
 
     """Create fridge test case"""
     def test_create_fridge_body_validation(self):
