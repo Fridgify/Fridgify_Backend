@@ -136,4 +136,5 @@ def get_data_for_token(token):
     :return: Token object or None
     """
     print("Get data for token")
-    return Accesstokens.objects.get(accesstoken=token)
+    provider = Providers.objects.get(name="Fridgify-API")
+    return Accesstokens.objects.get(accesstoken=token, provider=provider.provider_id)
