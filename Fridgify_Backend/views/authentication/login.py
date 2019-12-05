@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.http import HttpResponse
 import secrets
+import collections
 import json
 
 import Fridgify_Backend.utils.login_handler as login_handler
@@ -9,7 +10,7 @@ import Fridgify_Backend.utils.token_handler as token_handler
 
 def login(request):
     if "Authorization" in request.headers:
-        token = token_handler.existing_tokens(request.headers["Authorization"], "Fridgify")
+        token = token_handler.check_token(request.headers["Authorization"], "Fridgify")
         if token is None:
             return HttpResponse(status=401, content="Invalid Token")
         else:
@@ -32,12 +33,8 @@ def error_response(request):
     return res
 
 
-HTTP_ENDPOINT_FUNCTION = {
-    "POST": login,
-    "GET": error_response,
-    "DELETE": error_response,
-    "PUT": error_response
-}
+HTTP_ENDPOINT_FUNCTION = collections.defaultdict(lambda: error_response)
+HTTP_ENDPOINT_FUNCTION["POST"] = login
 
 
 def entry_point(request):

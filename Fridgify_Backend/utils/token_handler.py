@@ -19,11 +19,12 @@ def generate_token(username, internal_provider):
     print("Generating token for internal provider...")
     # Retrieve existing tokens, wipe outdated tokens
     token = existing_tokens(username, internal_provider)
-
+    print(token)
     # If no token existing, create a new one
     if token is None:
-        client_secret = secrets.token_hex(8)
+        client_secret = ""
         if internal_provider == "Fridgify":
+            client_secret = secrets.token_hex(8)
             token = jwt.encode(payload={"user": username, "secret": client_secret}, key=client_secret,
                                algorithm="HS256").decode("utf-8")
         else:
@@ -36,7 +37,10 @@ def generate_token(username, internal_provider):
             db_token.valid_till = timezone.now() + timezone.timedelta(days=14)
         else:
             db_token.valid_till = timezone.now() + timezone.timedelta(hours=1)
-        db_token.user = Users.objects.filter(username=username).first()
+        user = Users.objects.filter(username=username).first()
+        if user is None:
+            user = Users.objects.filter(email=username).first()
+        db_token.user = user
         db_token.client_id = username
         db_token.client_secret = client_secret
         db_token.save()
@@ -53,6 +57,29 @@ def existing_tokens(username, internal_provider):
     """
     print("Check if token already exists...")
     token_objs = Accesstokens.objects.filter(user__username=username, provider__name=internal_provider)
+    print(token_objs)
+    if len(token_objs) > 0:
+        if is_token_valid(token_objs):
+            return token_objs.values("accesstoken").first()["accesstoken"]
+        else:
+            return None
+
+    token_objs = Accesstokens.objects.filter(user__email=username, provider__name=internal_provider)
+    if len(token_objs) < 1:
+        return None
+    return token_objs.values("accesstoken").first()["accesstoken"]
+
+
+def check_token(accesstoken, internal_provider):
+    """ Check if a token already exists
+
+        :param accesstoken: accesstoken
+        :param internal_provider: Either Fridgify or Fridgify-API
+        :return: existing token or none
+        """
+    print("Check if token already exists...")
+    token_objs = Accesstokens.objects.filter(accesstoken=accesstoken, provider__name=internal_provider)
+    print(token_objs)
     if len(token_objs) > 0:
         if is_token_valid(token_objs):
             return token_objs.values("accesstoken").first()["accesstoken"]
@@ -67,6 +94,17 @@ def is_token_valid(token_objs):
     :return: valid - True | invalid - False
     """
     print("Check validity of token...")
+
+    # Token object
+    if isinstance(token_objs, Accesstokens):
+        valid_till = token_objs.valid_till
+        if timezone.now() > valid_till:
+            Accesstokens.objects.filter(token_id=token_objs.token_id).delete()
+            return False
+        else:
+            return True
+
+    # Token queryset
     valid_till = token_objs.values_list("valid_till").first()
 
     if timezone.now() > valid_till[0]:
@@ -74,3 +112,29 @@ def is_token_valid(token_objs):
         return False
     else:
         return True
+
+      
+def token_info(token, provider):
+    token_obj = Accesstokens.objects.filter(accesstoken=token, provider__name=provider)
+    if len(token_obj) > 1:
+        print("Something went wrong. There seem to be multiple accesstokens for provider")
+        return None
+    elif len(token_obj) < 1:
+        print("No Token found")
+        return None
+    if is_token_valid(token_obj.first()):
+        return token_obj.values_list("user").first()[0]
+    else:
+        print("Token outdated")
+        return None
+  
+
+def get_data_for_token(token):
+    """ Check if a token exists
+
+    :param token: Token from request
+    :return: Token object or None
+    """
+    print("Get data for token")
+    provider = Providers.objects.get(name="Fridgify-API")
+    return Accesstokens.objects.get(accesstoken=token, provider=provider.provider_id)
