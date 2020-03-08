@@ -267,3 +267,6 @@ backend_test
 .idea/dataSources.xml
 .idea/dataSources.xml
 .idea/dataSources.xml
+
+# VSCode
+/.vscode
