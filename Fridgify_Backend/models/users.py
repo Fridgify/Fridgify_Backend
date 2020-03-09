@@ -11,3 +11,5 @@ class Users(models.Model):
     birth_date = models.DateField()
     createdAt = models.DateTimeField(auto_now_add=True)
     lastUpdatedAt = models.DateTimeField(auto_now=True)
+    is_authenticated = False
+    token_authentication = None

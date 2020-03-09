@@ -9,7 +9,7 @@ urlpatterns = [
     # POST
     path('register/', register.entry_point),
     # POST
-    path('login/', login.entry_point),
+    path('login/', login.login_view),
     # GET
     path('token/', token.entry_point),
     # INFO Temporary for dummy users
