@@ -7,7 +7,7 @@ from Fridgify_Backend.utils.init_dummy_user import setup_database
 
 urlpatterns = [
     # POST
-    path('register/', register.entry_point),
+    path('register/', register.register_view),
     # POST
     path('login/', login.login_view),
     # GET
