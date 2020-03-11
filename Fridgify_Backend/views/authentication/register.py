@@ -1,5 +1,6 @@
 import json
 
+import bcrypt
 from django.db import IntegrityError
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import APIException
@@ -17,9 +18,10 @@ unique_keys = ("username", "password", "email", "name", "surname", "birth_date")
 def register_view(request):
     body = json.loads(request.body.decode("utf-8"))
     try:
+        password = bcrypt.hashpw(body["password"].encode("utf-8"), bcrypt.gensalt())
         obj, created = Users.objects.get_or_create(
             username=body["username"],
-            password=body["password"],
+            password=password.decode("utf-8"),
             email=body["email"],
             name=body["name"],
             surname=body["surname"],
