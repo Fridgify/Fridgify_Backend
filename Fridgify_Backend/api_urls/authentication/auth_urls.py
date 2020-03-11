@@ -11,7 +11,7 @@ urlpatterns = [
     # POST
     path('login/', login.login_view),
     # GET
-    path('token/', token.entry_point),
+    path('token/', token.token_view),
     # INFO Temporary for dummy users
     path('dummy/', setup_database)
 
