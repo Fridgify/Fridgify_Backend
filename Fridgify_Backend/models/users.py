@@ -13,3 +13,18 @@ class Users(models.Model):
     lastUpdatedAt = models.DateTimeField(auto_now=True)
     is_authenticated = False
     token_authentication = None
+
+    def __dir__(self):
+        return [
+            "user_id",
+            "username",
+            "name",
+            "surname",
+            "email",
+            "password",
+            "birth_date",
+            "createdAt",
+            "lastUpdatedAt",
+            "is_authenticated",
+            "token_authentication"
+        ]
