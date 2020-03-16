@@ -4,5 +4,5 @@ from Fridgify_Backend.views.fridge.item import item
 
 urlpatterns = [
     # GET
-    path('', item.entry_point),
+    path('barcode<str:barcode>&item_id<int:item_id>', item.item_view),
 ]
