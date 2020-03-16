@@ -32,10 +32,10 @@ class UserAuthentication(authentication.BaseAuthentication):
             return exceptions.AuthenticationFailed
 
     @staticmethod
-    def authenticate_token(token):
+    def authenticate_token(req_token):
         try:
             token = Accesstokens.objects.get(
-                accesstoken=token,
+                accesstoken=req_token,
                 provider__name="Fridgify",
                 valid_till__gte=timezone.now()
             )

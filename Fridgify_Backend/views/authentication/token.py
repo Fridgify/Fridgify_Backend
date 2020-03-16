@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from Fridgify_Backend.utils import token_utils
-from Fridgify_Backend.models.backends.user_authentication import UserAuthentication
+from Fridgify_Backend.models.backends import UserAuthentication
 
 
 @api_view(["GET"])
