@@ -21,23 +21,20 @@ class UserAuthentication(authentication.BaseAuthentication):
     @check_body("username", "password")
     def authenticate_credentials(request):
         body = request.body.decode("utf-8")
-        if body == "":
-            pass
         try:
             credentials = json.loads(body)
+            try:
+                user = Users.objects.get(username=credentials["username"])
+            except Users.DoesNotExist:
+                raise exceptions.AuthenticationFailed()
+
+            if bcrypt.checkpw(credentials["password"].encode("utf-8"), user.password.encode("utf-8")):
+                user.is_authenticated = True
+                return user, None
+            else:
+                raise exceptions.AuthenticationFailed
         except json.JSONDecodeError:
-            raise exceptions.ParseError
-
-        try:
-            user = Users.objects.get(username=credentials["username"])
-        except Users.DoesNotExist:
-            raise exceptions.AuthenticationFailed()
-
-        if bcrypt.checkpw(credentials["password"].encode("utf-8"), user.password.encode("utf-8")):
-            user.is_authenticated = True
-            return user, None
-        else:
-            raise exceptions.AuthenticationFailed
+            pass
 
     @staticmethod
     def authenticate_token(req_token):

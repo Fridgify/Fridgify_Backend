@@ -1,5 +1,4 @@
 from django.utils import timezone
-import datetime
 import json
 from rest_framework import status
 from unittest import mock
@@ -60,9 +59,7 @@ class ContentApiTestCasesFridgeContent(TestCase):
         response = fridge_content.fridge_content_view(request, 1)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    @mock.patch("Fridgify_Backend.utils.fridge_content_handler.fridge_add_item")
-    def test_addFridgeContent_NotAuthorized_401(self, mock_add_item):
-        mock_add_item.return_value = 0
+    def test_addFridgeContent_NotAuthorized_401(self):
         request = self.factory.post("/fridge/1", {"name": "Item A", "description": "This is a item",
                                                   "buy_date": "2019-10-17", "expiration_date": "2019-11-23",
                                                   "amount": 9, "unit": "kg", "store": "Rewe"},
@@ -88,13 +85,11 @@ class ContentApiTestCasesFridgeContent(TestCase):
         # self.assertEqual(response["message"], "Get content", "Get content")
         self.assertEqual(0, 0)
 
-    @mock.patch("Fridgify_Backend.utils.fridge_content_handler.fridge_get_item")
-    def test_getFridgeContent_ValidFridgeAndTokenWithContent_200Content(self, mock_get_content):
+    def test_getFridgeContent_ValidFridgeAndTokenWithContent_200Content(self):
         fridge_id = test_utils.get_fridge("Dummy Fridge").values("fridge_id").first()["fridge_id"]
         item_id = test_utils.get_item("Item A").values("item_id").first()["item_id"]
         test_utils.create_fridge_content(item_id, fridge_id)
         item = test_utils.get_fridge_items(fridge_id).values("item__name", "expiration_date", "amount", "unit")
-        mock_get_content.return_value = item
         request = self.factory.get("/fridge/1")
         request.META["HTTP_AUTHORIZATION"] = "APIToken"
 
@@ -140,10 +135,8 @@ class ContentApiTestCasesFridgeContent(TestCase):
         res = fridge_content.fridge_content_view(request, 1)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
-    @mock.patch("Fridgify_Backend.utils.fridge_content_handler.fridge_get_item")
-    def test_getFridgeContent_UserNotAuthForFridge_401(self, mock_get_content):
+    def test_getFridgeContent_UserNotAuthForFridge_401(self):
         fridge_id = test_utils.get_fridge("Dummy Fridge").values("fridge_id").first()["fridge_id"]
-        mock_get_content.return_value = 0
         request = self.factory.get("/fridge/1")
         request.META["HTTP_AUTHORIZATION"] = "APIToken2"
 

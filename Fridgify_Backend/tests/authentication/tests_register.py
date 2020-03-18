@@ -16,36 +16,27 @@ class AuthenticationTestCasesRegister(TestCase):
     def tearDown(self):
         test_utils.clean()
 
-    @mock.patch("Fridgify_Backend.utils.register_handler.register")
-    def test_register_ValidRequest_201(self, mock_register):
-        mock_register.return_value = 1
+    def test_register_ValidRequest_201(self):
         request = self.factory.post("/auth/register/", {"username": "newbie", "password": "password2",
                                                        "email": "newbie@nub.de", "name": "Newbie", "surname": "Noob",
                                                        "birth_date": "2000-12-17"}, content_type="application/json")
         response = register.register_view(request)
-        print(request.body.decode("utf-8"))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    @mock.patch("Fridgify_Backend.utils.register_handler.register")
-    def test_register_InvalidRequest_400(self, mock_register):
-        mock_register.return_value = 0
+    def test_register_InvalidRequest_400(self):
         request = self.factory.post("/auth/register/", {"username": "newbie", "password": "password2",
                                                        "birth_date": "2000-12-17"}, content_type="application/json")
         response = register.register_view(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    @mock.patch("Fridgify_Backend.utils.register_handler.register")
-    def test_register_UsernameExisting_409(self, mock_register):
-        mock_register.return_value = -2
+    def test_register_UsernameExisting_409(self):
         request = self.factory.post("/auth/register/", {"username": "dummy_name", "password": "password",
                                                        "email": "dummy@d.de", "name": "Dummy", "surname": "Name",
                                                        "birth_date": "2000-12-17"}, content_type="application/json")
         response = register.register_view(request)
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
-    @mock.patch("Fridgify_Backend.utils.register_handler.register")
-    def test_register_EmailExisting_409(self, mock_register):
-        mock_register.return_value = -3
+    def test_register_EmailExisting_409(self):
         request = self.factory.post("/auth/register/", {"username": "dummyDumDam", "password": "password",
                                                        "email": "dummy@d.de", "name": "Dummy", "surname": "Name",
                                                        "birth_date": "2000-12-17"}, content_type="application/json")

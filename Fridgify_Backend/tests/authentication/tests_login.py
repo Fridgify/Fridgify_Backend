@@ -50,9 +50,7 @@ class AuthenticationTestCasesLogin(TestCase):
         self.assertEqual(json.loads(response.render().content)["token"], "Token",
                          "Authorization header not respected")
 
-    @mock.patch('Fridgify_Backend.utils.token_handler.existing_tokens')
-    def test_login_AuthorizationTokenInvalid_403(self, mock_existing_token):
-        mock_existing_token.return_value = None
+    def test_login_AuthorizationTokenInvalid_403(self):
         request = self.factory.post("/auth/login/", {"username": "dummy_name", "password": "lol wrong pw"},
                                     content_type="application/json", )
         request.META["HTTP_AUTHORIZATION"] = "Absolutely wrong"

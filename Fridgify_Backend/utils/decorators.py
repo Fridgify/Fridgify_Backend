@@ -10,10 +10,13 @@ def check_body(*keys):
     def decorator(func):
         @wraps(func)
         def wrapper(request=None, *args, **kwargs):
-            body = json.loads(request.body.decode("utf-8"))
-            for key in keys:
-                if key not in body:
-                    raise ParseError(detail="Missing arguments")
+            try:
+                body = json.loads(request.body.decode("utf-8"))
+                for key in keys:
+                    if key not in body:
+                        raise ParseError(detail="Missing arguments")
+            except json.JSONDecodeError:
+                pass
             return func(request, *args, **kwargs)
         return wrapper
     return decorator
