@@ -6,6 +6,7 @@ from rest_framework import exceptions
 from django.utils import timezone
 
 from Fridgify_Backend.models import Users, Accesstokens
+from Fridgify_Backend.utils.decorators import check_body
 
 
 class UserAuthentication(authentication.BaseAuthentication):
@@ -14,22 +15,29 @@ class UserAuthentication(authentication.BaseAuthentication):
             return self.authenticate_token(request.headers["Authorization"])
         else:
             if request.method != "GET":
-                body = request.body.decode("utf-8")
-                credentials = json.loads(body)
-                return self.authenticate_credentials(credentials["username"], credentials["password"])
+                return self.authenticate_credentials(request)
 
     @staticmethod
-    def authenticate_credentials(username, password):
+    @check_body("username", "password")
+    def authenticate_credentials(request):
+        body = request.body.decode("utf-8")
+        if body == "":
+            pass
         try:
-            user = Users.objects.get(username=username)
+            credentials = json.loads(body)
+        except json.JSONDecodeError:
+            raise exceptions.ParseError
+
+        try:
+            user = Users.objects.get(username=credentials["username"])
         except Users.DoesNotExist:
             raise exceptions.AuthenticationFailed()
 
-        if bcrypt.checkpw(password.encode("utf-8"), user.password.encode("utf-8")):
+        if bcrypt.checkpw(credentials["password"].encode("utf-8"), user.password.encode("utf-8")):
             user.is_authenticated = True
             return user, None
         else:
-            return exceptions.AuthenticationFailed
+            raise exceptions.AuthenticationFailed
 
     @staticmethod
     def authenticate_token(req_token):

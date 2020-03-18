@@ -23,6 +23,7 @@ def check_fridge_access():
     def decorator(func):
         @wraps(func)
         def wrapper(request=None, fridge_id=None, *args, **kwargs):
+            print(request.user)
             user = request.user
             if UserFridge.objects.filter(fridge_id=fridge_id, user=user).exists():
                 return func(request, fridge_id, *args, **kwargs)

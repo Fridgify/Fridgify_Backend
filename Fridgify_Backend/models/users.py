@@ -6,7 +6,7 @@ class Users(models.Model):
     username = models.TextField(unique=True)
     name = models.TextField()
     surname = models.TextField()
-    email = models.TextField()
+    email = models.TextField(unique=True)
     password = models.CharField(max_length=60, )
     birth_date = models.DateField()
     createdAt = models.DateTimeField(auto_now_add=True)

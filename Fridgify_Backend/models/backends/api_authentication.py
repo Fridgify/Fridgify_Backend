@@ -18,8 +18,7 @@ class APIAuthentication(authentication.BaseAuthentication):
                 )
                 token.user.is_authenticated = True
                 token.user.token_authentication = token.accesstoken
+                return token.user, None
             except Accesstokens.DoesNotExist or Accesstokens.MultipleObjectsReturned:
                 raise exceptions.AuthenticationFailed
-
-            return token.user, None
         raise exceptions.AuthenticationFailed

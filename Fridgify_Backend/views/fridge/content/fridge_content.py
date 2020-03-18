@@ -22,9 +22,9 @@ keys = ("name", "description", "buy_date", "expiration_date", "amount", "unit", 
 
 
 @api_view(["GET", "POST"])
-@authentication_classes([APIAuthentication])
-@permission_classes([IsAuthenticated])
 @check_fridge_access()
+@permission_classes([IsAuthenticated])
+@authentication_classes([APIAuthentication])
 def fridge_content_view(request, fridge_id):
     response = get_content(request, fridge_id) if request.method == "GET" else add_content(request, fridge_id)
     return response

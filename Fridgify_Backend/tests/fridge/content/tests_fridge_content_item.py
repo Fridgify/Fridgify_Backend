@@ -18,6 +18,7 @@ class ContentApiTestCasesFridgeContentItem(TestCase):
         test_utils.create_login_token(timezone.now() + timezone.timedelta(days=14))
         test_utils.create_api_token(timezone.now() + timezone.timedelta(days=14))
         test_utils.create_items("Item A")
+        test_utils.create_items("Item B")
         test_utils.create_fridge_content(test_utils.get_item("Item A").values()[0]["item_id"],
                                          test_utils.get_fridge("Dummy Fridge").values()[0]["fridge_id"])
 
@@ -34,60 +35,31 @@ class ContentApiTestCasesFridgeContentItem(TestCase):
         # self.assertEqual(response["message"], "Get item", "Get item")
         pass
 
-    @mock.patch("Fridgify_Backend.utils.fridge_content_handler.remove_item")
-    def test_removeContentInFridge_ValidRequest_200(self, mock_remove_item):
-        mock_remove_item.return_value = 1
-        request = self.factory.post("/fridge/content/1/1", {"name": "Item A", "store": "Rewe",
-                                                            "description": "This is an item", "amount": 10,
-                                                            "unit": "kg", "buy_date": "2019-09-12",
-                                                            "expiration_date": "2019-10-12"},
-                                    content_type="application/json")
+    def test_removeContentInFridge_ValidRequest_200(self):
+        request = self.factory.delete("/fridge/content/1/1", content_type="application/json")
         request.META["HTTP_AUTHORIZATION"] = "APIToken"
-        res = fridge_content_item.remove_content_in_fridge(request,
-                                                           test_utils.get_fridge("Dummy Fridge").values("fridge_id").first(),
-                                                           test_utils.get_item("Item A").values("item_id").first())
+        res = fridge_content_item.fridge_content_item_view(request,
+                                                           test_utils.get_fridge("Dummy Fridge").values("fridge_id").first()["fridge_id"],
+                                                           test_utils.get_item("Item A").values("item_id").first()["item_id"])
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    @mock.patch("Fridgify_Backend.utils.fridge_content_handler.remove_item")
-    def test_removeContentInFridge_MissingAuthorization_401(self, mock_remove_item):
-        mock_remove_item.return_value = 1
-        request = self.factory.post("/fridge/content/1/1", {"name": "Item A", "store": "Rewe",
-                                                            "description": "This is an item", "amount": 10,
-                                                            "unit": "kg", "buy_date": "2019-09-12",
-                                                            "expiration_date": "2019-10-12"},
-                                    content_type="application/json")
-        res = fridge_content_item.remove_content_in_fridge(request,
+    def test_removeContentInFridge_MissingAuthorization_401(self):
+        request = self.factory.delete("/fridge/content/1/1")
+        res = fridge_content_item.fridge_content_item_view(request,
                                                            test_utils.get_fridge("Dummy Fridge").values(
-                                                               "fridge_id").first(),
-                                                           test_utils.get_item("Item A").values("item_id").first())
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+                                                               "fridge_id").first()["fridge_id"],
+                                                           test_utils.get_item("Item A").values("item_id").first()["item_id"])
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
-    @mock.patch("Fridgify_Backend.utils.fridge_content_handler.remove_item")
-    def test_removeContentInFridge_NoItem_200(self, mock_remove_item):
-        mock_remove_item.return_value = 0
-        request = self.factory.post("/fridge/content/1/1", {"name": "Item B", "store": "Rewe",
-                                                            "description": "This is an item", "amount": 10,
-                                                            "unit": "kg", "buy_date": "2019-09-12",
-                                                            "expiration_date": "2019-10-12"},
-                                    content_type="application/json")
+    def test_removeContentInFridge_NoItem_200(self):
+        request = self.factory.delete("/fridge/content/1/1")
         request.META["HTTP_AUTHORIZATION"] = "APIToken"
-        res = fridge_content_item.remove_content_in_fridge(request,
+        test_utils.create_fridge_content(
+            test_utils.get_item("Item B").first().item_id,
+            test_utils.get_fridge("Dummy Fridge").first().fridge_id,
+        )
+        res = fridge_content_item.fridge_content_item_view(request,
                                                            test_utils.get_fridge("Dummy Fridge").values(
-                                                               "fridge_id").first(),
-                                                           test_utils.get_item("Item B").values("item_id").first())
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
-
-    @mock.patch("Fridgify_Backend.utils.fridge_content_handler.remove_item")
-    def test_removeContentInFridge_InternalError_500(self, mock_remove_item):
-        mock_remove_item.return_value = -1
-        request = self.factory.post("/fridge/content/1/1", {"name": "Item A", "store": "Rewe",
-                                                            "description": "This is an item", "amount": 10,
-                                                            "unit": "kg", "buy_date": "2019-09-12",
-                                                            "expiration_date": "2019-10-12"},
-                                    content_type="application/json")
-        request.META["HTTP_AUTHORIZATION"] = "APIToken"
-        res = fridge_content_item.remove_content_in_fridge(request,
-                                                           test_utils.get_fridge("Dummy Fridge").values(
-                                                               "fridge_id").first(),
-                                                           test_utils.get_item("Item A").values("item_id").first())
-        self.assertEqual(res.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+                                                               "fridge_id").first()["fridge_id"],
+                                                           test_utils.get_item("Item B").values("item_id").first()["item_id"])
+        self.assertEqual(res.status_code, status.HTTP_200_OK)

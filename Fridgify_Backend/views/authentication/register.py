@@ -7,6 +7,7 @@ from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 
 from Fridgify_Backend.models import Users
+from Fridgify_Backend.models import exceptions
 from Fridgify_Backend.utils import api_utils
 from Fridgify_Backend.utils.decorators import check_body
 
@@ -31,7 +32,7 @@ def register_view(request):
             return Response(data="Created", status=201)
         else:
             duplicate_keys = api_utils.non_unique_keys(body, Users, *unique_keys)
-            raise APIException(detail=f"{' and '.join(duplicate_keys)} already exist(s)", code=409)
+            raise exceptions.ConflictException(detail=f"{' and '.join(duplicate_keys)} already exist(s)")
     except IntegrityError:
         duplicate_keys = api_utils.non_unique_keys(body, Users, *unique_keys)
-        raise APIException(detail=f"{' and '.join(duplicate_keys)} already exist(s)", code=409)
+        raise exceptions.ConflictException(detail=f"{' and '.join(duplicate_keys)} already exist(s)")

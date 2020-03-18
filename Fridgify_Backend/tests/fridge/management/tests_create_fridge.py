@@ -1,70 +1,53 @@
 from django.test import TestCase, RequestFactory
+from django.utils import timezone
+
 from rest_framework import status
-from Fridgify_Backend.models.users import Users
-from Fridgify_Backend.models.providers import Providers
-from Fridgify_Backend.models.fridges import Fridges
-from Fridgify_Backend.models.user_fridge import UserFridge
 from Fridgify_Backend.views.fridge.management import create_fridge
-from Fridgify_Backend.views.authentication import login, token
-from Fridgify_Backend.utils.test_utils import create_providers
+from Fridgify_Backend.tests import test_utils
 
 import json
-import datetime
 
 
 class ManagementTestCasesCreateFridge(TestCase):
-
-
     def setUp(self):
         self.factory = RequestFactory()
-        user = Users.objects.create(username="dummy_name", name="Dummy", surname="Name", email="dummy@dumdum.dum",
-                             password="$2b$12$1hKYhKg4AU54eyES8qjRYOjInIgObjn0JJ8SlWPOpR9MzKcseMDVS",
-                             birth_date=datetime.date(2000, 1, 1))
-        create_providers()
-        fridge = Fridges.objects.create(name="Miau", description="adsdsadad")
-        request_login = self.factory.post("/auth/login/", {"username": "dummy_name", "password": "password"},
-                                    content_type="application/json")
-        api_token = json.loads(login.login(request_login).content)["token"]
-        request_token = self.factory.get("/auth/token/")
-        header = {"Authorization": api_token}
-        request_token.__setattr__("headers", header)
-        self.token = json.loads(token.get_response(request_token).content)["token"]
-        UserFridge.objects.create(fridge_id=fridge.fridge_id, user_id=user.user_id)
+        test_utils.setup()
+        user = test_utils.create_dummyuser(username="User")
+        test_utils.create_login_token(timezone.now() + timezone.timedelta(days=1), username=user.username)
+        test_utils.create_api_token(timezone.now() + timezone.timedelta(days=1), t="API Token", username=user.username)
+        # fridge = test_utils.create_dummyfridge()
+        # test_utils.connect_fridge_user(user.username, fridge.name)
 
-    """Create fridge test case"""
     def test_create_fridge_body_validation(self):
-        request_no_body = self.factory.post("/fridge/management/create/", content_type="application/json")
-        header = {"Authorization": self.token}
-        request_no_body.__setattr__("headers", header)
-        response_no_body = create_fridge.entry_point(request_no_body)
-        self.assertEqual(response_no_body.status_code, status.HTTP_400_BAD_REQUEST, "Body is not present")
-        self.assertEqual(json.loads(response_no_body.content)["message"], "Missing parameters. Required are name and description"
-                         , "Body is not present")
-
-        request_wrong_keys = self.factory.post("/fridge/management/create/", {
-            "Cat": "Miau",
-            "askdakdmlkad": "adsdsadad"
+        request = self.factory.post("/fridge/management/create/", {
+            "name": "Fridge A",
+            "description": "Fridge Test"
         }, content_type="application/json")
-        request_wrong_keys.__setattr__("headers", header)
-        response_wrong_keys = create_fridge.entry_point(request_wrong_keys)
-        self.assertEqual(response_wrong_keys.status_code, status.HTTP_400_BAD_REQUEST, "Body is not present")
-        self.assertEqual(json.loads(response_wrong_keys.content)["message"], "Missing parameters. Required are name and description"
-                         , "Body is not present")
+        request.META["HTTP_AUTHORIZATION"] = "API Token"
 
-        request_duplicate_entry = self.factory.post("/fridge/management/create/", {
-            "name": "Miau",
-            "description": "adsdsadad"
-        }, content_type="application/json")
-        request_duplicate_entry.__setattr__("headers", header)
-        response_duplicate_entry = create_fridge.entry_point(request_duplicate_entry)
-        self.assertEqual(response_duplicate_entry.status_code, status.HTTP_409_CONFLICT, "Duplicate fridge")
-        self.assertEqual(json.loads(response_duplicate_entry.content)["message"], "Fridge Miau already exists for user", "Duplicate fridge")
+        response = create_fridge.create_fridge_view(request)
 
-        request_correct = self.factory.post("/fridge/management/create/", {
-            "name": "Wuff",
-            "description": "adsdsadad"
+        content = json.loads(response.render().content)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(content["name"], "Fridge A")
+        self.assertEqual(content["description"], "Fridge Test")
+
+    def test_create_fridge_not_authorized_403(self):
+        request = self.factory.post("/fridge/management/create/")
+
+        response = create_fridge.create_fridge_view(request)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_create_fridge_already_exists(self):
+        request = self.factory.post("/fridge/management/create/", {
+            "name": "Fridge A",
+            "description": "Fridge Test"
         }, content_type="application/json")
-        request_correct.__setattr__("headers", header)
-        response_correct = create_fridge.entry_point(request_correct)
-        self.assertEqual(response_correct.status_code, status.HTTP_201_CREATED, "Created fridge")
-        self.assertEqual(json.loads(response_correct.content)["message"], "Created", "Created fridge")
+        fridge = test_utils.create_dummyfridge("Fridge A")
+        test_utils.connect_fridge_user("User", fridge.name)
+
+        request.META["HTTP_AUTHORIZATION"] = "API Token"
+
+        response = create_fridge.create_fridge_view(request)
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
