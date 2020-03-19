@@ -1,14 +1,10 @@
 from django.test import TestCase, RequestFactory
-from rest_framework import status
 from Fridgify_Backend.models.users import Users
 from Fridgify_Backend.models.fridges import Fridges
 from Fridgify_Backend.models.user_fridge import UserFridge
 from Fridgify_Backend.utils.init_dummy_user import fill_fridges
-from Fridgify_Backend.views.fridge.management import create_fridge
-from Fridgify_Backend.views.authentication import login
 from Fridgify_Backend.utils.test_utils import create_providers
 
-import json
 import datetime
 
 

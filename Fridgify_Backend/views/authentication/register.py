@@ -1,32 +1,38 @@
-import collections
-from django.http import HttpResponse
+import json
 
-from Fridgify_Backend.utils import register_handler
+import bcrypt
+from django.db import IntegrityError
+from rest_framework.decorators import api_view
+from rest_framework.exceptions import APIException
+from rest_framework.response import Response
 
+from Fridgify_Backend.models import Users
+from Fridgify_Backend.models import exceptions
+from Fridgify_Backend.utils import api_utils
+from Fridgify_Backend.utils.decorators import check_body
 
-RESPONSE = {
-    1: HttpResponse(status=201, content="Successfully created"),
-    0: HttpResponse(status=400, content="Missing arguments"),
-    -1: HttpResponse(status=500, content="Database Error. Contact your administrator"),
-    -2: HttpResponse(status=409, content="Username already existing"),
-    -3: HttpResponse(status=409, content="E-Mail already existing"),
-}
-
-
-def register(request):
-    result = register_handler.register(request)
-    return RESPONSE[result]
+unique_keys = ("username", "password", "email", "name", "surname", "birth_date")
 
 
-def error_response(request):
-    res = HttpResponse(status=405)
-    res["Allow"] = "POST"
-    return res
-
-
-HTTP_ENDPOINT_FUNCTION = collections.defaultdict(lambda: error_response)
-HTTP_ENDPOINT_FUNCTION["POST"] = register
-
-
-def entry_point(request):
-    return HTTP_ENDPOINT_FUNCTION[request.method](request)
+@api_view(["POST"])
+@check_body(*unique_keys)
+def register_view(request):
+    body = json.loads(request.body.decode("utf-8"))
+    try:
+        password = bcrypt.hashpw(body["password"].encode("utf-8"), bcrypt.gensalt())
+        obj, created = Users.objects.get_or_create(
+            username=body["username"],
+            password=password.decode("utf-8"),
+            email=body["email"],
+            name=body["name"],
+            surname=body["surname"],
+            birth_date=body["birth_date"],
+        )
+        if created:
+            return Response(data="Created", status=201)
+        else:
+            duplicate_keys = api_utils.non_unique_keys(body, Users, *unique_keys)
+            raise exceptions.ConflictException(detail=f"{' and '.join(duplicate_keys)} already exist(s)")
+    except IntegrityError:
+        duplicate_keys = api_utils.non_unique_keys(body, Users, *unique_keys)
+        raise exceptions.ConflictException(detail=f"{' and '.join(duplicate_keys)} already exist(s)")

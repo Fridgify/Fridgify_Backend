@@ -14,3 +14,16 @@ class Accesstokens(models.Model):
 
     class Meta:
         unique_together = ('provider', 'user',)
+
+    def __dir__(self):
+        return [
+            "token_id",
+            "accesstoken",
+            "client_id",
+            "client_secret",
+            "provider",
+            "valid_till",
+            "created_at",
+            "updated_at",
+            "user"
+        ]

@@ -1,82 +1,54 @@
-from django.http import JsonResponse, HttpResponse
-from datetime import datetime, timedelta
+from django.db.models import Count, Case, When, IntegerField, Q
 from django.utils import timezone
-from Fridgify_Backend.utils import token_handler
-from Fridgify_Backend.models.fridges import Fridges
-from Fridgify_Backend.models.user_fridge import UserFridge
-from Fridgify_Backend.models.fridge_content import FridgeContent
-import collections
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.permissions import IsAuthenticated
+
+from Fridgify_Backend.models.backends import APIAuthentication
+from Fridgify_Backend.models import FridgeContent
 
 
-def get_fridges(request):
-    if "Authorization" not in request.headers:
-        return JsonResponse(status=403, data={"message": "Authorization missing"})
-    request_token = request.headers["Authorization"]
-    token = token_handler.get_data_for_token(request_token)
+@api_view(["GET"])
+@authentication_classes([APIAuthentication])
+@permission_classes([IsAuthenticated])
+def fridge_view(request):
+    content = FridgeContent.objects.values(
+        "fridge_id",
+        "fridge__name",
+        "fridge__description",
+    ).annotate(
+        total=Count("item_id"),
+        fresh=Count(Case(
+            When(expiration_date__gt=timezone.now() + timezone.timedelta(5), then=1),
+            output_field=IntegerField()
+        )),
+        dueSoon=Count(Case(
+            When(
+                Q(expiration_date__gte=timezone.now()) & Q(expiration_date__lte=timezone.now() + timezone.timedelta(5)),
+                then=1
+            ),
+            output_field=IntegerField()
+        )),
+        overDue=Count(Case(
+            When(expiration_date__lt=timezone.now(), then=1),
+            output_field=IntegerField()
+        )),
+    ).filter(fridge__userfridge__user=request.user).order_by("fridge_id")
 
-    if token is None:
-        return JsonResponse(status=403, data={"message": "Authorization token is invalid"})
-
-    if not token_handler.is_token_valid(token):
-        return JsonResponse(status=401, data={"message": "Token expired. Request a new one",
-                                              "tokenUrl": "auth/token/"})
-
-    user_fridges = UserFridge.objects.filter(user_id=token.user_id)
-
+    # TODO: If we can change the structure slightly to be flat, we do not need the for loop
     payload = []
-
-    for user_fridge in user_fridges:
-        fridge = Fridges.objects.get(fridge_id=user_fridge.fridge_id)
-        content = check_content(fridge)
-        payload.append({
-            "id": fridge.fridge_id,
-            "name": fridge.name,
-            "description": fridge.description,
-            "content": content
-        })
-
-    return JsonResponse(status=200, data={"fridges": payload})
-
-
-def check_content(fridge):
-    fresh = 0
-    due_soon = 0
-    over_due = 0
-    total = 0
-    content = FridgeContent.objects.filter(fridge_id=fridge.fridge_id)
-
     for item in content:
-        expiration_date = datetime(year=item.expiration_date.year, month=item.expiration_date.month, day=item.expiration_date.day)
-        created_at = datetime(year=item.created_at.year, month=item.created_at.month, day=item.created_at.day)
-        delta = expiration_date - datetime.today()
-        if delta.days < 0:
-            over_due += 1
-            continue
-        if 5 > delta.days >= 0:
-            due_soon += 1
-            continue
-        if (created_at - datetime.today()).days < 5:
-            fresh += 1
-            continue
-        total += 1
+        fridge_state = {
+            "id": item["fridge_id"],
+            "name": item["fridge__name"],
+            "description": item["fridge__description"],
+            "content": {
+                "total": item["total"],
+                "fresh": item["fresh"],
+                "dueSoon": item["dueSoon"],
+                "overDue": item["overDue"]
+            }
+        }
+        payload.append(fridge_state)
 
-    return {
-        "total": total + fresh + due_soon + over_due,
-        "fresh": fresh,
-        "dueSoon": due_soon,
-        "overDue": over_due
-    }
-
-
-def error_response(request):
-    res = HttpResponse(status=405)
-    res["Allow"] = "GET"
-    return res
-
-
-def entry_point(request):
-    return HTTP_ENDPOINT_FUNCTION[request.method](request)
-
-
-HTTP_ENDPOINT_FUNCTION = collections.defaultdict(lambda: error_response)
-HTTP_ENDPOINT_FUNCTION["GET"] = get_fridges
+    return Response(data=payload, status=200)

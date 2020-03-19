@@ -8,7 +8,7 @@ from Fridgify_Backend.api_urls.fridge.management import management_urls
 
 urlpatterns = [
     # GET
-    path('', fridge.get_fridges),
+    path('', fridge.fridge_view),
     # Content Endpoint
     path('content/', include(content_urls)),
     # Item Endpoint

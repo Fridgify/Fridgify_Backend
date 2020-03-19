@@ -13,3 +13,8 @@ class FridgeContent(models.Model):
 
     class Meta:
         unique_together = ('fridge', 'item',)
+
+    def __dir__(self):
+        return [
+            "id", "fridge", "item", "amount", "expiration_date", "unit", "created_at", "last_updated"
+        ]
