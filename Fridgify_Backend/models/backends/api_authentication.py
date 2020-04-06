@@ -7,6 +7,10 @@ from Fridgify_Backend.models import Accesstokens
 
 
 class APIAuthentication(authentication.BaseAuthentication):
+    """
+    Backend is responsible for API authentication via a valid API-Token.
+    A request header is required to have an "Authorization"-Header, which contains the valid API-Token.
+    """
     def authenticate(self, request):
         if "Authorization" in request.headers:
             req_token = request.headers["Authorization"]

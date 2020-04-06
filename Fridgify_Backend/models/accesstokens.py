@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Accesstokens(models.Model):
+    """Accesstoken of a :model:`user.Users`"""
     token_id = models.AutoField(primary_key=True, unique=True)
     accesstoken = models.TextField()
     client_id = models.TextField(null=True)

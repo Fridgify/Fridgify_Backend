@@ -1,7 +1,11 @@
 from django.db import models
+from rest_framework import serializers
 
 
 class Items(models.Model):
+    """
+    Stores all existing items with a related :model:`store.Stores`
+    """
     item_id = models.AutoField(primary_key=True, unique=True)
     barcode = models.TextField(default="")
     name = models.TextField()
@@ -10,3 +14,9 @@ class Items(models.Model):
 
     def __dir__(self):
         return ["item_id", "barcode", "name", "description", "store"]
+
+
+class ItemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Items
+        fields = "__all__"
