@@ -14,7 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.api_urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework import permissions
 
 from Fridgify_Backend import view
 
@@ -22,15 +25,26 @@ from Fridgify_Backend.api_urls.authentication import auth_urls
 from Fridgify_Backend.api_urls.fridge import fridge_urls
 from Fridgify_Backend.api_urls.stores import stores_urls
 
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Fridgify API",
+        default_version="v1",
+        description="API documentation for Fridgify",
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
+
 urlpatterns = [
-    # Example View
-    path('', view.hello_world, ),
-    # Admin Page - can be removed, keeping it just for the lols right now
-    path('admin/', admin.site.urls),
-    # Authentication Endpoint
+    #  Documentation
+    path('', schema_view.with_ui('swagger', cache_timeout=0)),
+    #  Authentication Endpoint
     path('auth/', include(auth_urls)),
-    # Fridge Endpoint
+    #  Fridge Endpoint
     path('fridge/', include(fridge_urls)),
-    # Stores Endpoint
-    path('stores/', include(stores_urls))
+    #  Stores Endpoint
+    path('stores/', include(stores_urls)),
+    #  Admin Page - can be removed, keeping it just for the lols right now
+    #  path('admin/', admin.site.urls),
 ]

@@ -1,22 +1,56 @@
-from django.http import JsonResponse
+import json
 
-# GET POST
+from django.db import IntegrityError
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.exceptions import APIException
 
-
-def add_store(request):
-    return JsonResponse({"message": "Add store"})
-
-
-def get_store(request):
-    return JsonResponse({"message": "Get store"})
-
-
-HTTP_ENDPOINT_FUNCTION = {
-    "GET": get_store,
-    "POST": add_store
-}
+from Fridgify_Backend.models.backends import APIAuthentication
+from Fridgify_Backend.utils.decorators import check_body
+from Fridgify_Backend.models import StoresSerializer, Stores
 
 
-def entry_point(request):
-    response = HTTP_ENDPOINT_FUNCTION[request](request)
-    return response
+@swagger_auto_schema(
+    method="get",
+    operation_description="Retrieve all stores, which currently exist",
+    responses={
+        200: openapi.Response("All stores", StoresSerializer(many=True))
+    },
+    security=[{'FridgifyAPI_Token_Auth': []}]
+)
+@swagger_auto_schema(
+    method="post",
+    operation_description="Create a new store",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            "name": openapi.Schema(type=openapi.TYPE_STRING)
+        }
+    ),
+    responses={
+        200: openapi.Response("All stores", StoresSerializer)
+    },
+    security=[{'FridgifyAPI_Token_Auth': []}]
+)
+@api_view(["GET", "POST"])
+@authentication_classes([APIAuthentication])
+@permission_classes([IsAuthenticated])
+def stores_view(request):
+    if request.method == "GET":
+        stores = Stores.objects.all()
+        return Response(data=[StoresSerializer(store) for store in stores], status=200)
+    else:
+        return create_store(request)
+
+
+@check_body("name")
+def create_store(request):
+    body = json.loads(request.body)
+    try:
+        store = Stores.objects.create(name=body["name"])
+        return Response(data=StoresSerializer(store), status=201)
+    except IntegrityError:
+        raise APIException(detail="Store already exists", code=409)

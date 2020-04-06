@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Accesstokens(models.Model):
+    """Accesstoken of a :model:`user.Users`"""
     token_id = models.AutoField(primary_key=True, unique=True)
     accesstoken = models.TextField()
     client_id = models.TextField(null=True)
@@ -14,3 +15,16 @@ class Accesstokens(models.Model):
 
     class Meta:
         unique_together = ('provider', 'user',)
+
+    def __dir__(self):
+        return [
+            "token_id",
+            "accesstoken",
+            "client_id",
+            "client_secret",
+            "provider",
+            "valid_till",
+            "created_at",
+            "updated_at",
+            "user"
+        ]
