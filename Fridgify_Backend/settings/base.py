@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'Fridgify_Backend',
-    'django_extensions'
+    'django_extensions',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -118,5 +119,26 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Fridgify_Basic_Auth': {
+            'type': 'basic',
+            'description': 'Authenticate via credentials, to gain access to a login token'
+        },
+        'Fridgify_Token_Auth': {
+            'type': 'apiKey',
+            'description': 'Authenticate via an existing login token, to authenticate',
+            'name': 'Authorization',
+            'in': 'header'
+        },
+        'FridgifyAPI_Token_Auth': {
+            'type': 'apiKey',
+            'description': 'Authenticate via an API token, to interact with the API endpoints',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
 
 

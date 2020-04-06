@@ -1,7 +1,11 @@
 from django.db import models
+from rest_framework import serializers
 
 
 class Users(models.Model):
+    """
+    Stores a user
+    """
     user_id = models.AutoField(primary_key=True, unique=True)
     username = models.TextField(unique=True)
     name = models.TextField()
@@ -28,3 +32,21 @@ class Users(models.Model):
             "is_authenticated",
             "token_authentication"
         ]
+
+
+class EssentialUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ["username", "password"]
+
+
+class RegisterUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ["username", "name", "surname", "email", "birth_date"]
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ["username", "password", "name", "surname", "email", "birth_date"]

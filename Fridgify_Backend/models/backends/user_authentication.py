@@ -10,6 +10,11 @@ from Fridgify_Backend.utils.decorators import check_body
 
 
 class UserAuthentication(authentication.BaseAuthentication):
+    """
+    Backend is responsible for authenticating the user during the login process.
+    If the request header contains "Authorization", a valid Login-Token is required. Otherwise the request body should
+    have username and password.
+    """
     def authenticate(self, request):
         if "Authorization" in request.headers:
             return self.authenticate_token(request.headers["Authorization"])
@@ -20,6 +25,11 @@ class UserAuthentication(authentication.BaseAuthentication):
     @staticmethod
     @check_body("username", "password")
     def authenticate_credentials(request):
+        """
+        Authentication check via user credentials
+        :param request
+        :return: (user instance, None)
+        """
         body = request.body.decode("utf-8")
         try:
             credentials = json.loads(body)
@@ -38,6 +48,11 @@ class UserAuthentication(authentication.BaseAuthentication):
 
     @staticmethod
     def authenticate_token(req_token):
+        """
+        Authentication via login token
+        :param req_token: Login-Token
+        :return: (user instance, None)
+        """
         try:
             token = Accesstokens.objects.get(
                 accesstoken=req_token,
