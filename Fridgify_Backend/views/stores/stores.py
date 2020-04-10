@@ -65,6 +65,6 @@ def create_store(request):
     body = json.loads(request.body)
     try:
         store = Stores.objects.create(name=body["name"])
-        return Response(data=StoresSerializer(store), status=201)
+        return Response(data=StoresSerializer(store).data, status=201)
     except IntegrityError:
         raise APIException(detail="Store already exists", code=409)
