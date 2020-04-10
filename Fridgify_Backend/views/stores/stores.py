@@ -55,7 +55,7 @@ from Fridgify_Backend.models import StoresSerializer, Stores
 def stores_view(request):
     if request.method == "GET":
         stores = Stores.objects.all()
-        return Response(data=[StoresSerializer(store) for store in stores], status=200)
+        return Response(data=[StoresSerializer(store).data for store in stores], status=200)
     else:
         return create_store(request)
 
