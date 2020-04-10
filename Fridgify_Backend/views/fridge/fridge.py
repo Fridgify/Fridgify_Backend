@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.permissions import IsAuthenticated
 
 from Fridgify_Backend.models.backends import APIAuthentication
-from Fridgify_Backend.models import FridgeContent
+from Fridgify_Backend.models import FridgeContent, UserFridge
 
 
 @swagger_auto_schema(
@@ -50,8 +50,6 @@ from Fridgify_Backend.models import FridgeContent
 def fridge_view(request):
     content = FridgeContent.objects.values(
         "fridge_id",
-        "fridge__name",
-        "fridge__description",
     ).annotate(
         total=Count("item_id"),
         fresh=Count(Case(
@@ -73,18 +71,35 @@ def fridge_view(request):
 
     # TODO: If we can change the structure slightly to be flat, we do not need the for loop
     payload = []
-    for item in content:
-        fridge_state = {
-            "id": item["fridge_id"],
-            "name": item["fridge__name"],
-            "description": item["fridge__description"],
+
+    fridges = UserFridge.objects.values(
+        "fridge_id",
+        "fridge__name",
+        "fridge__description"
+    ).filter(user=request.user).order_by("fridge_id")
+
+    c = 0
+    for fridge in fridges:
+        fridge_inst = {
+            "id": fridge["fridge_id"],
+            "name": fridge["fridge__name"],
+            "description": fridge["fridge__description"],
             "content": {
-                "total": item["total"],
-                "fresh": item["fresh"],
-                "dueSoon": item["dueSoon"],
-                "overDue": item["overDue"]
+                "total": 0,
+                "fresh": 0,
+                "dueSoon": 0,
+                "overDue": 0
             }
         }
-        payload.append(fridge_state)
+        if len(content) > 0:
+            item = content[c]
+            if fridge["fridge_id"] == item["fridge_id"]:
+                fridge_inst["content"]["total"] = item["total"]
+                fridge_inst["content"]["fresh"] = item["fresh"]
+                fridge_inst["content"]["dueSoon"] = item["dueSoon"]
+                fridge_inst["content"]["overDue"] = item["overDue"]
+                c += 1
+
+        payload.append(fridge_inst)
 
     return Response(data=payload, status=200)
