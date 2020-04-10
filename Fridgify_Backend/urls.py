@@ -13,17 +13,16 @@ Including another URLconf
     1. Import the include() function: from django.api_urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.api_urls'))
 """
-from django.contrib import admin
-from django.urls import path, include, re_path
+from django.urls import path, include
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
 
-from Fridgify_Backend import view
 
 from Fridgify_Backend.api_urls.authentication import auth_urls
 from Fridgify_Backend.api_urls.fridge import fridge_urls
 from Fridgify_Backend.api_urls.stores import stores_urls
+from Fridgify_Backend.api_urls.users import users_urls
 
 
 schema_view = get_schema_view(
@@ -45,6 +44,8 @@ urlpatterns = [
     path('fridge/', include(fridge_urls)),
     #  Stores Endpoint
     path('stores/', include(stores_urls)),
+    #  Users Endpoint
+    path('users/', include(users_urls)),
     #  Admin Page - can be removed, keeping it just for the lols right now
     #  path('admin/', admin.site.urls),
 ]
