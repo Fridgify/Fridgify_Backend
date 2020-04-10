@@ -27,15 +27,12 @@ def setup_database(request):
     print(request.method)
     if request.method != "OPTIONS":
         return HttpResponse(status=400, content="Nice try")
-    if Providers.objects.filter().exists():
-        return JsonResponse(status=400, data={
-            "message": "You´re already dumb",
-            "reminder": response_users
-        })
     users = create_users()
-    create_providers()
     fridge = create_fridges(users)
     fill_fridges(fridge)
+
+    if not Providers.objects.filter().exists():
+        create_providers()
 
     return JsonResponse(status=200, data={
         "users": response_users
