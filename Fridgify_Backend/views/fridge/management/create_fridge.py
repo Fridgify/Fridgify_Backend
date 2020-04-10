@@ -16,6 +16,13 @@ from Fridgify_Backend.utils.decorators import check_body
 
 @swagger_auto_schema(
     method="post",
+    manual_parameters=[openapi.Parameter(
+        "Authorization",
+        openapi.IN_HEADER,
+        "API-Token",
+        required=True,
+        type=openapi.TYPE_STRING
+    )],
     operation_description="Create a new fridge",
     request_body=FridgeSerializer,
     responses={

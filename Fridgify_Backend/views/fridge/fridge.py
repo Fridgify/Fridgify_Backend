@@ -12,6 +12,13 @@ from Fridgify_Backend.models import FridgeContent
 
 @swagger_auto_schema(
     method="get",
+    manual_parameters=[openapi.Parameter(
+        "Authorization",
+        openapi.IN_HEADER,
+        "API-Token",
+        required=True,
+        type=openapi.TYPE_STRING
+    )],
     operation_description="Retrieve all fridges and its contents for a user",
     responses={
         200: openapi.Schema(

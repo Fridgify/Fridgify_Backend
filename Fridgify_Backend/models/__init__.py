@@ -1,4 +1,4 @@
-from .users import Users, EssentialUserSerializer, UserSerializer, RegisterUserSerializer
+from .users import Users, UserSerializer
 from .fridges import Fridges, FridgeSerializer
 from .items import Items, ItemsSerializer
 from .stores import Stores, StoresSerializer

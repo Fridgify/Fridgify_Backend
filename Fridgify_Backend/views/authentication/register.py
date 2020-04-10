@@ -7,7 +7,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from Fridgify_Backend.models import Users, UserSerializer, RegisterUserSerializer
+from Fridgify_Backend.models import Users, UserSerializer
 from Fridgify_Backend.models import exceptions
 from Fridgify_Backend.utils import api_utils
 from Fridgify_Backend.utils.decorators import check_body
@@ -27,7 +27,7 @@ unique_keys = ("username", "password", "email", "name", "surname", "birth_date")
                 "name": openapi.Schema(type=openapi.TYPE_STRING),
                 "surname": openapi.Schema(type=openapi.TYPE_STRING),
                 "email": openapi.Schema(type=openapi.TYPE_STRING),
-                "birth_date": openapi.Schema(type=openapi.TYPE_STRING),
+                "birth_date": openapi.Schema(type=openapi.TYPE_STRING, pattern="YYYY-mm-dd"),
             }
         )),
         409: "User already exists. Body contains duplicate keys",

@@ -34,18 +34,6 @@ class Users(models.Model):
         ]
 
 
-class EssentialUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Users
-        fields = ["username", "password"]
-
-
-class RegisterUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Users
-        fields = ["username", "name", "surname", "email", "birth_date"]
-
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users

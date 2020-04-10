@@ -16,6 +16,13 @@ from Fridgify_Backend.models import FridgeContent, FridgeContentSerializer, Item
 @swagger_auto_schema(
     operation_id="fridge_content_item_read",
     method="get",
+    manual_parameters=[openapi.Parameter(
+        "Authorization",
+        openapi.IN_HEADER,
+        "API-Token",
+        required=True,
+        type=openapi.TYPE_STRING
+    )],
     operation_description="Create a new item in the fridge",
     responses={
         200: openapi.Response("Created item in fridge", FridgeContentSerializer),
@@ -26,6 +33,13 @@ from Fridgify_Backend.models import FridgeContent, FridgeContentSerializer, Item
 @swagger_auto_schema(
     operation_id="fridge_content_item_delete",
     method="delete",
+    manual_parameters=[openapi.Parameter(
+        "Authorization",
+        openapi.IN_HEADER,
+        "API-Token",
+        required=True,
+        type=openapi.TYPE_STRING
+    )],
     operation_description="Remove an item from the fridge",
     responses={
         200: "Deleted.",
@@ -35,11 +49,18 @@ from Fridgify_Backend.models import FridgeContent, FridgeContentSerializer, Item
 @swagger_auto_schema(
     operation_id="fridge_content_item_partial_update",
     method="patch",
+    manual_parameters=[openapi.Parameter(
+        "Authorization",
+        openapi.IN_HEADER,
+        "API-Token",
+        required=True,
+        type=openapi.TYPE_STRING
+    )],
     operation_description="Change an existing item",
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            "expiration_date": openapi.Schema(type=openapi.TYPE_STRING),
+            "expiration_date": openapi.Schema(type=openapi.TYPE_STRING, pattern="YYYY-mm-dd"),
             "amount": openapi.Schema(type=openapi.TYPE_STRING),
             "unit": openapi.Schema(type=openapi.TYPE_STRING)
         }

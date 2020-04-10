@@ -25,6 +25,13 @@ keys = ("name", "description", "buy_date", "expiration_date", "amount", "unit", 
 
 @swagger_auto_schema(
     method="get",
+    manual_parameters=[openapi.Parameter(
+        "Authorization",
+        openapi.IN_HEADER,
+        "API-Token",
+        required=True,
+        type=openapi.TYPE_STRING
+    )],
     operation_description="Retrieve list of contents of a fridge",
     responses={
         200: openapi.Response("Retrieved contents", FridgeContentSerializer(many=True)),
@@ -33,8 +40,26 @@ keys = ("name", "description", "buy_date", "expiration_date", "amount", "unit", 
 )
 @swagger_auto_schema(
     method="post",
+    manual_parameters=[openapi.Parameter(
+        "Authorization",
+        openapi.IN_HEADER,
+        "API-Token",
+        required=True,
+        type=openapi.TYPE_STRING
+    )],
     operation_description="Add item to a fridge",
-    request_body=FridgeContentSerializer,
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            "name": openapi.Schema(type=openapi.TYPE_STRING),
+            "description": openapi.Schema(type=openapi.TYPE_STRING),
+            "buy_date": openapi.Schema(type=openapi.TYPE_STRING, pattern="YYYY-mm-dd"),
+            "expiration_date": openapi.Schema(type=openapi.TYPE_STRING, pattern="YYYY-mm-dd"),
+            "amount": openapi.Schema(type=openapi.TYPE_INTEGER),
+            "unit": openapi.Schema(type=openapi.TYPE_STRING),
+            "store": openapi.Schema(type=openapi.TYPE_STRING),
+        }
+    ),
     responses={
         201: openapi.Response("Created", FridgeContentSerializer),
         500: "Item already exists",

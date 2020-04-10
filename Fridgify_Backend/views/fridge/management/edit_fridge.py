@@ -14,6 +14,13 @@ from Fridgify_Backend.utils.decorators import check_body, check_fridge_access
 
 @swagger_auto_schema(
     method="patch",
+    manual_parameters=[openapi.Parameter(
+        "Authorization",
+        openapi.IN_HEADER,
+        "API-Token",
+        required=True,
+        type=openapi.TYPE_STRING
+    )],
     operation_description="Update fridge attributes",
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -43,6 +50,6 @@ def edit_fridge_view(request):
     Fridges.objects.filter(fridge_id=fridge_id).update(**update_values)
     try:
         fridge = Fridges.objects.get(fridge_id=fridge_id)
-        return Response(data=serialize_object(fridge, True), status=200)
+        return Response(data=FridgeSerializer(fridge).data, status=200)
     except Fridges.DoesNotExist:
         raise NotFound(detail="Fridge not found")

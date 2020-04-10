@@ -4,7 +4,6 @@ from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
 
 from Fridgify_Backend.models.backends import UserAuthentication
-from Fridgify_Backend.models import EssentialUserSerializer
 from Fridgify_Backend.utils import token_utils
 
 

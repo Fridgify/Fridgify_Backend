@@ -13,6 +13,13 @@ from Fridgify_Backend.models import Items, ItemsSerializer
 
 @swagger_auto_schema(
     method="get",
+    manual_parameters=[openapi.Parameter(
+        "Authorization",
+        openapi.IN_HEADER,
+        "API-Token",
+        required=True,
+        type=openapi.TYPE_STRING
+    )],
     operation_description="Retrieve an item based on its barcode or item id",
     responses={
         200: openapi.Response("Retrieved item", ItemsSerializer),

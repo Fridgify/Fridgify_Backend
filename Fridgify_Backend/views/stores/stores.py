@@ -15,6 +15,13 @@ from Fridgify_Backend.models import StoresSerializer, Stores
 
 @swagger_auto_schema(
     method="get",
+    manual_parameters=[openapi.Parameter(
+        "Authorization",
+        openapi.IN_HEADER,
+        "API-Token",
+        required=True,
+        type=openapi.TYPE_STRING
+    )],
     operation_description="Retrieve all stores, which currently exist",
     responses={
         200: openapi.Response("All stores", StoresSerializer(many=True))
@@ -23,6 +30,13 @@ from Fridgify_Backend.models import StoresSerializer, Stores
 )
 @swagger_auto_schema(
     method="post",
+    manual_parameters=[openapi.Parameter(
+        "Authorization",
+        openapi.IN_HEADER,
+        "API-Token",
+        required=True,
+        type=openapi.TYPE_STRING
+    )],
     operation_description="Create a new store",
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
