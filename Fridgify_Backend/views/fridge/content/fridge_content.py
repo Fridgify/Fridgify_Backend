@@ -1,3 +1,4 @@
+import time
 import json
 
 from django.db.models import F
@@ -90,6 +91,10 @@ def get_content(_, fridge_id):
         "unit",
         name=F("item__name"),
     )
+
+    for content in contents:
+        content["expiration_date"] = content["expiration_date"].strftime("%Y-%m-%d")
+
     return Response(data=contents, status=200)
 
 

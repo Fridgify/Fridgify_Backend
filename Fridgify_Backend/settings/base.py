@@ -104,6 +104,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
+DATETIME_FORMAT = '%Y-%m-%d'
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -142,5 +144,3 @@ SWAGGER_SETTINGS = {
         }
     }
 }
-
-
