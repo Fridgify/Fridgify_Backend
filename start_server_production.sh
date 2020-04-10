@@ -5,5 +5,7 @@ python manage.py migrate Fridgify_Backend --settings=Fridgify_Backend.settings.p
 echo "Migrate changes"
 python manage.py collectstatic --no-input
 echo "Collect static files"
+python manage.py loaddata providers.json
+echo "Add fixtures"
 python manage.py runserver 0.0.0.0:9000 --verbosity 3 --settings=Fridgify_Backend.settings.production
 echo "Started server"

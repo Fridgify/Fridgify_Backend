@@ -1,0 +1,16 @@
+[
+  {
+    "model": "Fridgify_Backend.providers",
+    "pk": 1,
+    "fields": {
+      "name": "Fridgify"
+    }
+  },
+  {
+    "model": "Fridgify_Backend.providers",
+    "pk": 2,
+    "fields": {
+      "name": "Fridgify-API"
+    }
+  }
+]
