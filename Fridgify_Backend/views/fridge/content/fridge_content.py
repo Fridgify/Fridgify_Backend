@@ -20,7 +20,7 @@ from Fridgify_Backend.models import (
 )
 
 
-keys = ("name", "description", "buy_date", "expiration_date", "amount", "unit", "store")
+keys = ("name", "buy_date", "expiration_date", "amount", "unit", "store")
 
 
 @swagger_auto_schema(
@@ -33,6 +33,7 @@ keys = ("name", "description", "buy_date", "expiration_date", "amount", "unit", 
         type=openapi.TYPE_STRING
     )],
     operation_description="Retrieve list of contents of a fridge",
+    # TODO: Schema for FridgeContent to show what is actually returned
     responses={
         200: openapi.Response("Retrieved contents", FridgeContentSerializer(many=True)),
     },
@@ -109,7 +110,7 @@ def add_content(request, fridge_id):
                     name=body["store"]
                 )[0],
                 defaults={
-                    "description": body["description"]
+                    "description": body["description"] if "description" in body else ""
                 }
             )[0],
             fridge_id=fridge_id,
