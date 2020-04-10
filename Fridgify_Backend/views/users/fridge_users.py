@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from Fridgify_Backend.models.backends import APIAuthentication
-from Fridgify_Backend.models import UserSerializer, UserFridge
+from Fridgify_Backend.models import UserSerializer, UserFridge, Users
 from Fridgify_Backend.utils.decorators import check_fridge_access
 
 
@@ -30,5 +30,5 @@ from Fridgify_Backend.utils.decorators import check_fridge_access
 @permission_classes([IsAuthenticated])
 @check_fridge_access()
 def fridge_users_view(request, fridge_id):
-    users = UserFridge.objects.values("user").filter(fridge_id=fridge_id)
-    return Response(data=[UserSerializer(user).data for user in users], status=200)
+    users = UserFridge.objects.values("user_id").filter(fridge_id=fridge_id)
+    return Response(data=[UserSerializer(Users.objects.get(user_id=user["user_id"])).data for user in users], status=200)
