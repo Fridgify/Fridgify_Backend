@@ -23,7 +23,7 @@ from Fridgify_Backend.models import UserSerializer, Users
     )],
     operation_description="Retrieve information for current user",
     responses={
-        200: "User returned",
+        200: openapi.Response("Retrieved current user", UserSerializer),
         401: "Not authorized"
     },
     security=[{'FridgifyAPI_Token_Auth': []}]
@@ -50,7 +50,7 @@ from Fridgify_Backend.models import UserSerializer, Users
     ),
     operation_description="Update information for current user",
     responses={
-        201: "Updated",
+        201: openapi.Response("User updated", UserSerializer),
         401: "Not authorized",
         409: "Already exists"
     },
