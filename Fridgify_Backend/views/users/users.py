@@ -86,4 +86,4 @@ def edit_user(request):
             if hasattr(user, key):
                 setattr(user, key, body[key])
     user.save()
-    return Response(data=UserSerializer(user).data, status=201)
+    return Response(data=UserSerializer(user).data, status=200)
