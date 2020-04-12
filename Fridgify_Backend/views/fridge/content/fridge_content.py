@@ -34,9 +34,22 @@ keys = ("name", "buy_date", "expiration_date", "amount", "unit", "store")
         type=openapi.TYPE_STRING
     )],
     operation_description="Retrieve list of contents of a fridge",
-    # TODO: Schema for FridgeContent to show what is actually returned
     responses={
-        200: openapi.Response("Retrieved contents", FridgeContentSerializer(many=True)),
+        200: openapi.Response(
+            "Retrieved contents",
+            openapi.Schema(
+                type=openapi.TYPE_ARRAY,
+                items=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "item_id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                        "expiration_date": openapi.Schema(type=openapi.TYPE_STRING, pattern="YYYY-mm-dd"),
+                        "amount": openapi.Schema(type=openapi.TYPE_INTEGER),
+                        "unit": openapi.Schema(type=openapi.TYPE_STRING),
+                        "item_name": openapi.Schema(type=openapi.TYPE_STRING),
+                    }
+                )
+            )),
     },
     security=[{'FridgifyAPI_Token_Auth': []}]
 )
