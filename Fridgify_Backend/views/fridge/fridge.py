@@ -91,14 +91,14 @@ def fridge_view(request):
                 "overDue": 0
             }
         }
-        if len(content) > 0:
+        if len(content) > 0 and c < len(content):
             item = content[c]
             if fridge["fridge_id"] == item["fridge_id"]:
                 fridge_inst["content"]["total"] = item["total"]
                 fridge_inst["content"]["fresh"] = item["fresh"]
                 fridge_inst["content"]["dueSoon"] = item["dueSoon"]
                 fridge_inst["content"]["overDue"] = item["overDue"]
-                c += 1
+            c += 1
 
         payload.append(fridge_inst)
 

@@ -32,7 +32,7 @@ from Fridgify_Backend.utils.decorators import check_body
     security=[{'FridgifyAPI_Token_Auth': []}]
 )
 @api_view(["POST"])
-@check_body(*("name", "description"))
+@check_body("name")
 @permission_classes([IsAuthenticated])
 @authentication_classes([APIAuthentication])
 def create_fridge_view(request):
@@ -40,7 +40,10 @@ def create_fridge_view(request):
     try:
         if UserFridge.objects.filter(user=request.user, fridge__name=body["name"]).exists():
             raise exceptions.ConflictException(detail="Fridge name already exists for user")
-        fridge = Fridges.objects.create(name=body["name"], description=body["description"])
+        if "description" in body:
+            fridge = Fridges.objects.create(name=body["name"], description=body["description"])
+        else:
+            fridge = Fridges.objects.create(name=body["name"])
         UserFridge.objects.create(user=request.user, fridge=fridge)
         return Response(data=FridgeSerializer(fridge).data, status=201)
     except IntegrityError:
