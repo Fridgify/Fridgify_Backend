@@ -1,4 +1,5 @@
 from collections import defaultdict
+import logging
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -9,6 +10,9 @@ from rest_framework.exceptions import NotFound
 
 from Fridgify_Backend.models.backends import APIAuthentication
 from Fridgify_Backend.models import Items, ItemsSerializer
+
+
+logger = logging.getLogger(__name__)
 
 
 @swagger_auto_schema(
@@ -31,6 +35,7 @@ from Fridgify_Backend.models import Items, ItemsSerializer
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
 def item_view(request, barcode=None, item_id=None):
+    logger.info("Retrieve item...")
     filters = defaultdict(dict)
     if item_id:
         filters["item_id"] = item_id

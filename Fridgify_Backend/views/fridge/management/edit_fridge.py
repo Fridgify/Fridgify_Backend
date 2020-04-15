@@ -1,15 +1,19 @@
 import json
+import logging
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, ParseError
 from rest_framework.response import Response
 
 from Fridgify_Backend.models.backends import APIAuthentication
 from Fridgify_Backend.models import Fridges,FridgeSerializer
 from Fridgify_Backend.utils.decorators import check_body, check_fridge_access
+
+
+logger = logging.getLogger(__name__)
 
 
 @swagger_auto_schema(
@@ -41,15 +45,22 @@ from Fridgify_Backend.utils.decorators import check_body, check_fridge_access
 @permission_classes([IsAuthenticated])
 @check_fridge_access()
 def edit_fridge_view(request):
-    body = json.loads(request.body)
+    try:
+        body = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        logger.error(f"Couldn't parse JSON:\n {request.body.decode('utf-8')}")
+        raise ParseError()
     fridge_id = body["fridge_id"]
+    logger.info(f"User {request.user.username} updates values for fridge {fridge_id}...")
     update_values = {}
     for key in body.keys():
         if key in ("name", "description"):
+            logger.debug(f"Key: {key}, Value: {body[key]}")
             update_values[key] = body[key]
     Fridges.objects.filter(fridge_id=fridge_id).update(**update_values)
     try:
         fridge = Fridges.objects.get(fridge_id=fridge_id)
         return Response(data=FridgeSerializer(fridge).data, status=200)
     except Fridges.DoesNotExist:
+        logger.warning(f"Fridge {fridge_id} does not exist")
         raise NotFound(detail="Fridge not found")

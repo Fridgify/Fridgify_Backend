@@ -1,12 +1,16 @@
 import json
+import logging
 
 import bcrypt
+from django.utils import timezone
 from rest_framework import authentication
 from rest_framework import exceptions
-from django.utils import timezone
 
 from Fridgify_Backend.models import Users, Accesstokens
 from Fridgify_Backend.utils.decorators import check_body
+
+
+logger = logging.getLogger(__name__)
 
 
 class UserAuthentication(authentication.BaseAuthentication):
@@ -30,21 +34,24 @@ class UserAuthentication(authentication.BaseAuthentication):
         :param request
         :return: (user instance, None)
         """
-        body = request.body.decode("utf-8")
         try:
-            credentials = json.loads(body)
+            credentials = json.loads(request.body.decode("utf-8"))
+            logger.info(f"Authenticate user {credentials['username']} via credentials...")
             try:
                 user = Users.objects.get(username=credentials["username"])
             except Users.DoesNotExist:
+                logger.error(f"User {credentials['username']} does not exist...")
                 raise exceptions.AuthenticationFailed()
 
             if bcrypt.checkpw(credentials["password"].encode("utf-8"), user.password.encode("utf-8")):
                 user.is_authenticated = True
                 return user, None
             else:
+                logger.warning(f"User {credentials['username']} not authenticated...")
                 raise exceptions.AuthenticationFailed
         except json.JSONDecodeError:
-            pass
+            logger.error(f"Couldn't parse JSON:\n {request.body.decode('utf-8')}")
+            raise exceptions.ParseError()
 
     @staticmethod
     def authenticate_token(req_token):
@@ -54,6 +61,7 @@ class UserAuthentication(authentication.BaseAuthentication):
         :return: (user instance, None)
         """
         try:
+            logger.info(f"Authenticate via token {req_token}")
             token = Accesstokens.objects.get(
                 accesstoken=req_token,
                 provider__name="Fridgify",
@@ -63,4 +71,5 @@ class UserAuthentication(authentication.BaseAuthentication):
             token.user.token_authentication = token.accesstoken
             return token.user, None
         except Accesstokens.DoesNotExist or Accesstokens.MultipleObjectsReturned:
+            logger.error("Token does not exist...")
             raise exceptions.AuthenticationFailed

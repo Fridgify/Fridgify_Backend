@@ -17,6 +17,7 @@ services:
       - 9000:9000
     volumes:
       - /home/fridgify/static_files/production/:/fridgify/Fridgify_Backend/static/
+      - /home/fridgify/logs/production/:/fridgify/logs/
     depends_on:
       - db
 volumes:

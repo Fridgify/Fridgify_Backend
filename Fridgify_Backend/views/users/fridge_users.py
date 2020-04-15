@@ -1,3 +1,5 @@
+import logging
+
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -7,6 +9,9 @@ from rest_framework.response import Response
 from Fridgify_Backend.models.backends import APIAuthentication
 from Fridgify_Backend.models import UserSerializer, UserFridge, Users
 from Fridgify_Backend.utils.decorators import check_fridge_access
+
+
+logger = logging.getLogger(__name__)
 
 
 @swagger_auto_schema(
@@ -30,5 +35,6 @@ from Fridgify_Backend.utils.decorators import check_fridge_access
 @permission_classes([IsAuthenticated])
 @check_fridge_access()
 def fridge_users_view(request, fridge_id):
+    logger.info(f"User {request.user.username} retrieves all user for fridge {fridge_id}...")
     users = UserFridge.objects.values("user_id").filter(fridge_id=fridge_id)
     return Response(data=[UserSerializer(Users.objects.get(user_id=user["user_id"])).data for user in users], status=200)
