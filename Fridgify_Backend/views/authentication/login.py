@@ -1,3 +1,5 @@
+import logging
+
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, authentication_classes
@@ -5,6 +7,9 @@ from rest_framework.response import Response
 
 from Fridgify_Backend.models.backends import UserAuthentication
 from Fridgify_Backend.utils import token_utils
+
+
+logger = logging.getLogger(__name__)
 
 
 @swagger_auto_schema(
@@ -31,6 +36,7 @@ from Fridgify_Backend.utils import token_utils
 @authentication_classes([UserAuthentication])
 def login_view(request):
     user = request.user
+    logger.info(f"Login attempt for user: {user.username}")
     if user.token_authentication is None:
         response = {"token": token_utils.create_token(user, "Fridgify")}
     else:

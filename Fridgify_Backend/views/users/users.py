@@ -1,4 +1,5 @@
 import json
+import logging
 
 import bcrypt
 from drf_yasg import openapi
@@ -10,6 +11,9 @@ from rest_framework.exceptions import ParseError
 
 from Fridgify_Backend.models.backends import APIAuthentication
 from Fridgify_Backend.models import UserSerializer, Users
+
+
+logger = logging.getLogger(__name__)
 
 
 @swagger_auto_schema(
@@ -61,6 +65,7 @@ from Fridgify_Backend.models import UserSerializer, Users
 @permission_classes([IsAuthenticated])
 def users_view(request):
     if request.method == "GET":
+        logger.info(f"Retrieve user info for {request.user.username}")
         return Response(data=UserSerializer(request.user).data, status=200)
     else:
         return edit_user(request)
@@ -70,14 +75,17 @@ def edit_user(request):
     try:
         body = json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
+        logger.error(f"Couldn't parse JSON:\n {request.body.decode('utf-8')}")
         raise ParseError()
 
     user = request.user
+    logger.debug(f"Update values: {''.join(body.keys())}")
     for key in body.keys():
         if key == "username" or key == "email":
             if not Users.objects.filter(username=body[key]).exists():
                 setattr(user, key, body[key])
             else:
+                logger.info(f"{key} {body[key]} already exists...")
                 return Response(data={"detail": f"{key} {body[key]} already exists"}, status=409)
         elif key == "password":
             password = bcrypt.hashpw(body[key].encode("utf-8"), bcrypt.gensalt())

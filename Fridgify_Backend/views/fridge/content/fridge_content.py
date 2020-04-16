@@ -1,5 +1,5 @@
-import time
 import json
+import logging
 
 from django.db.models import F
 from django.db import IntegrityError
@@ -9,7 +9,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, ParseError
 
 from Fridgify_Backend.utils.decorators import check_body, check_fridge_access
 from Fridgify_Backend.models.backends import APIAuthentication
@@ -21,6 +21,7 @@ from Fridgify_Backend.models import (
 )
 
 
+logger = logging.getLogger(__name__)
 keys = ("name", "buy_date", "expiration_date", "amount", "unit", "store")
 
 
@@ -97,6 +98,7 @@ def get_content(_, fridge_id):
     :param fridge_id
     :return: json of whole content of fridge
     """
+    logger.info(f"Retrieve fridge content for fridge {fridge_id}...")
     contents = FridgeContent.objects.filter(fridge_id=fridge_id).values(
         "item_id",
         "expiration_date",
@@ -105,8 +107,10 @@ def get_content(_, fridge_id):
         name=F("item__name"),
     )
 
+    logger.debug(f"Content for fridge {fridge_id}")
     for content in contents:
         content["expiration_date"] = content["expiration_date"].strftime("%Y-%m-%d")
+        logger.debug(f"{content}")
 
     return Response(data=contents, status=200)
 
@@ -119,8 +123,14 @@ def add_content(request, fridge_id):
     :param fridge_id
     :return: json of created fridge
     """
-    body = json.loads(request.body.decode("utf-8"))
     try:
+        body = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        logger.error(f"Couldn't parse JSON:\n {request.body.decode('utf-8')}")
+        raise ParseError()
+    logger.info(f"Add content to fridge {fridge_id} for user {request.user.username}...")
+    try:
+        logger.info(f"Create fridge item...")
         fridge = FridgeContent.objects.create(
             item=Items.objects.get_or_create(
                 name=body["name"],
@@ -136,6 +146,11 @@ def add_content(request, fridge_id):
             unit=body["unit"],
             expiration_date=timezone.datetime.strptime(body["expiration_date"], "%Y-%m-%d"),
         )
-        return Response(data=FridgeContentSerializer(fridge).data, status=201)
+        payload = FridgeContentSerializer(fridge).data
+        logger.debug(f"Created fridge: \n{payload}")
+        return Response(data=payload, status=201)
     except IntegrityError:
+        logger.warning(
+            f"Integrity Error while adding item (name={body['name']}, store={body['store']}) to fridge {fridge_id}"
+        )
         raise APIException(detail="Item already exists", code=500)

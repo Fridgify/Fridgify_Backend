@@ -1,3 +1,5 @@
+import logging
+
 from django.db.models import Count, Case, When, IntegerField, Q
 from django.utils import timezone
 from drf_yasg import openapi
@@ -8,6 +10,9 @@ from rest_framework.permissions import IsAuthenticated
 
 from Fridgify_Backend.models.backends import APIAuthentication
 from Fridgify_Backend.models import FridgeContent, UserFridge
+
+
+logger = logging.getLogger(__name__)
 
 
 @swagger_auto_schema(
@@ -48,6 +53,7 @@ from Fridgify_Backend.models import FridgeContent, UserFridge
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
 def fridge_view(request):
+    logger.info(f"Retrieve fridges for user {request.user.username}...")
     content = FridgeContent.objects.values(
         "fridge_id",
     ).annotate(
@@ -102,4 +108,5 @@ def fridge_view(request):
 
         payload.append(fridge_inst)
 
+    logger.debug(f"Retrieved fridge content:\n{payload}")
     return Response(data=payload, status=200)

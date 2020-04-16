@@ -1,16 +1,20 @@
 from collections import defaultdict
 import json
+import logging
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, ParseError
 
 from Fridgify_Backend.models.backends import APIAuthentication
 from Fridgify_Backend.utils.decorators import check_fridge_access, permitted_keys
 from Fridgify_Backend.models import FridgeContent, FridgeContentSerializer, Items, Stores, ItemsSerializer
+
+
+logger = logging.getLogger(__name__)
 
 
 @swagger_auto_schema(
@@ -75,11 +79,14 @@ from Fridgify_Backend.models import FridgeContent, FridgeContentSerializer, Item
 @check_fridge_access()
 def fridge_content_item_view(request, fridge_id, item_id):
     if request.method == "GET":
+        logger.info(f"Retrieve item[{item_id}] of a fridge {fridge_id} for user {request.user.username}...")
         return get_item(request, fridge_id, item_id)
     elif request.method == "DELETE":
+        logger.info(f"Delete item[{item_id}] of fridge {fridge_id} for user {request.user.username}...")
         FridgeContent.objects.filter(fridge_id=fridge_id, item_id=item_id).delete()
         return Response(status=200)
     else:
+        logger.info(f"User {request.user.username} updates item {item_id} in fridge {fridge_id}...")
         return update_item(request, fridge_id, item_id)
 
 
@@ -97,8 +104,11 @@ def get_item(_, fridge_id, item_id):
             item_id=item_id,
         ).item
     except FridgeContent.DoesNotExist and Items.DoesNotExist:
+        logger.error("Content or Item does not exist...")
         raise NotFound(detail="Item does not exist")
-    return Response(ItemsSerializer(item).data, status=200)
+    payload = ItemsSerializer(item).data
+    logger.debug(f"Retrieved item: \n{payload}")
+    return Response(payload, status=200)
 
 
 @permitted_keys("item_id", "store_id", "id")
@@ -110,7 +120,11 @@ def update_item(request, fridge_id, item_id):
     :param item_id: id of the item to be updated
     :return: response containing updated item
     """
-    body = json.loads(request.body.decode("utf-8"))
+    try:
+        body = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        logger.error(f"Couldn't parse JSON:\n {request.body.decode('utf-8')}")
+        raise ParseError()
     content_mappings = {
         "buy_date": "created_at",
         "expiration_date": "expiration_date",
@@ -124,6 +138,7 @@ def update_item(request, fridge_id, item_id):
     }
     update_content = defaultdict(dict)
     update_items = defaultdict(dict)
+    logger.debug(f"To be updated values: {','.join(body.keys)}")
     for key in body.keys():
         if key in content_mappings:
             update_content[content_mappings[key]] = body[key]
@@ -135,8 +150,10 @@ def update_item(request, fridge_id, item_id):
                 update_items[item_mappings[key]] = body[key]
             continue
     if update_content:
+        logger.info("Content values are being updated...")
         FridgeContent.objects.filter(fridge_id=fridge_id, item_id=item_id).update(**update_content)
     if update_items:
+        logger.info("Item values are being updated...")
         Items.objects.filter(item_id=item_id).update(**update_items)
 
     return get_item(request, fridge_id, item_id)
