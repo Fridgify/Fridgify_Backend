@@ -79,6 +79,7 @@ def create_fridges(users):
         user_fridge = UserFridge()
         user_fridge.fridge = fridges[i]
         user_fridge.user = users[i]
+        user_fridge.role = UserFridge.OWNER
         user_fridge.save()
     return fridges
 

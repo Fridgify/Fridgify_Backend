@@ -7,7 +7,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', "fridgapi.donkz.dev"]
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'backend_test',
+        'NAME': 'backend_test.sqlite',
         'USER': 'admin',
         'PASSWORD': 'admin',
         'HOST': 'db_test',
