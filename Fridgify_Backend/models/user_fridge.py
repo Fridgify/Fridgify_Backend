@@ -1,4 +1,7 @@
 from django.db import models
+from rest_framework import serializers
+
+from Fridgify_Backend.models import UserSerializer
 
 
 class UserFridge(models.Model):
@@ -10,6 +13,7 @@ class UserFridge(models.Model):
     USER = 2
 
     ROLES = [(OWNER, "Fridge Owner"), (OVERSEER, "Fridge Overseer"), (USER, "Fridge User")]
+    ROLES_DICT = {"Fridge Owner": OWNER, "Fridge Overseer": OVERSEER, "Fridge User": USER}
 
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey('Users', on_delete=models.CASCADE)
@@ -24,3 +28,20 @@ class UserFridge(models.Model):
 
     def __dir__(self):
         return ["id", "user", "fridge", "role"]
+
+
+class FridgeUserSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = UserFridge
+        fields = ["user", "role"]
+
+    def to_representation(self, instance:UserFridge):
+        if instance.role == 0:
+            instance.role = "Fridge Owner"
+        elif instance.role == 1:
+            instance.role = "Fridge Overseer"
+        else:
+            instance.role = "Fridge User"
+        return super().to_representation(instance)

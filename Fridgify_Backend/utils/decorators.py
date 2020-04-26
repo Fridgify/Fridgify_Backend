@@ -16,7 +16,7 @@ def check_body(*keys):
                     if key not in body:
                         raise ParseError(detail="Missing arguments")
             except json.JSONDecodeError:
-                pass
+                raise ParseError(detail="Invalid body")
             return func(request, *args, **kwargs)
         return wrapper
     return decorator
