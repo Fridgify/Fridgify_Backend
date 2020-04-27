@@ -22,9 +22,9 @@ logger = logging.getLogger(__name__)
         required=True,
         type=openapi.TYPE_STRING
     )],
-    operation_description="Retrieve all stores, which currently exist",
+    operation_description="Retrieve all items",
     responses={
-        200: openapi.Response("All stores", ItemsSerializer(many=True))
+        200: openapi.Response("All items", ItemsSerializer(many=True))
     },
     security=[{'FridgifyAPI_Token_Auth': []}]
 )
