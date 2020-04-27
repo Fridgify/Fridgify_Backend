@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
     )],
     operation_description="Retrieve all users, who have access to fridge",
     responses={
-        200: openapi.Response("Retrieved fridge users", UserSerializer(many=True)),
+        200: openapi.Response("Retrieved fridge users", FridgeUserSerializer(many=True)),
         401: "Not authorized"
     },
     security=[{'FridgifyAPI_Token_Auth': []}]

@@ -83,7 +83,6 @@ def user_role_view(request, fridge_id, user_id):
 def edit_role(request, fridge_id, trigger, target):
     logger.info(f"Change role for user {target.user_id} by user {request.user.user_id}...")
     
-
     body = json.loads(request.body.decode("utf-8"))
     if target.role == UserFridge.OWNER:
         logger.error("Trigger tried to change role to Owner...")

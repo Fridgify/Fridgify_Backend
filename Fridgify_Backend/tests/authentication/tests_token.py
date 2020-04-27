@@ -54,5 +54,6 @@ class AuthenticationTestCasesToken(TestCase):
 
     def test_error_response(self):
         request = self.factory.post("/auth/token/")
+        request.META["HTTP_AUTHORIZATION"] = "Token"
         error = token.token_view(request)
         self.assertEqual(error.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)

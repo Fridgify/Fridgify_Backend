@@ -49,10 +49,11 @@ def create_dummyfridge(name="Dummy Fridge"):
     return fridge
 
 
-def connect_fridge_user(username="dummy_name", fridge="Dummy Fridge"):
+def connect_fridge_user(username="dummy_name", fridge="Dummy Fridge", role=UserFridge.USER):
     user_fridges = UserFridge()
     user_fridges.user = Users.objects.filter(username=username).first()
     user_fridges.fridge = Fridges.objects.filter(name=fridge).first()
+    user_fridges.role = role
     user_fridges.save()
 
 
