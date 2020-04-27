@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 @swagger_auto_schema(
-    method="get",
+    method="PATCH",
     manual_parameters=[openapi.Parameter(
         "Authorization",
         openapi.IN_HEADER,
@@ -26,37 +26,63 @@ logger = logging.getLogger(__name__)
         required=True,
         type=openapi.TYPE_STRING
     )],
-    operation_description="Retrieve all users, who have access to fridge",
+    operation_description="Change a role for a member",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            "role": openapi.Schema(
+                type=openapi.TYPE_INTEGER,
+                description="Can be either Integer (0, 1, 2) or String ('Fridge Owner', 'Fridge Overseer', 'Fridge User')"
+            )
+        }
+    ),
     responses={
-        200: openapi.Response("Retrieved fridge users", UserSerializer(many=True)),
-        401: "Not authorized"
+        200: openapi.Response("Updated user", FridgeUserSerializer),
+        401: "Not authorized",
+        403: "Forbidden"
     },
     security=[{'FridgifyAPI_Token_Auth': []}]
 )
-@api_view(["GET"])
+@swagger_auto_schema(
+    method="DELETE",
+    manual_parameters=[openapi.Parameter(
+        "Authorization",
+        openapi.IN_HEADER,
+        "API-Token",
+        required=True,
+        type=openapi.TYPE_STRING
+    )],
+    operation_description="Remove member from fridge as Overseer/Owner",
+    responses={
+        200: "Deleted",
+        401: "Not authorized",
+        403: "Forbidden"
+    },
+    security=[{'FridgifyAPI_Token_Auth': []}]
+)
+@api_view(["PATCH", "DELETE"])
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
-@check_fridge_access()
-def fridge_users_view(request, fridge_id):
-    logger.info(f"User {request.user.username} retrieves all user for fridge {fridge_id}...")
-    fridge_users = UserFridge.objects.filter(fridge_id=fridge_id)
-    return Response(data=[FridgeUserSerializer(fridge_user).data for fridge_user in fridge_users], status=200)
-
-
-@api_view(["PATCH"])
-@authentication_classes([APIAuthentication])
-@permission_classes([IsAuthenticated])
-@check_body("role")
 @permissions(UserFridge.OWNER, UserFridge.OVERSEER)
 @check_fridge_access()
 def user_role_view(request, fridge_id, user_id):
-    logger.info(f"Change role for user {user_id} by user {request.user.user_id}...")
-    if request.user.user_id == user_id:
-        logger.error("User tried to change role for himself")
-        return Response(data={"detail": "User cannot change role for himself"}, status=409)
-    
     trigger = UserFridge.objects.filter(user=request.user, fridge_id=fridge_id).get()
     target = UserFridge.objects.filter(user__user_id=user_id, fridge_id=fridge_id).get()
+    
+    if request.user.user_id == target.user_id:
+        logger.error(f"{request.method} user role called for own user")
+        return Response(data={"detail": "Method not allowed on own user"}, status=409)
+
+    if request.method == "PATCH":
+        return edit_role(request, fridge_id, trigger, target)
+    else:
+        return delete_user(request, fridge_id, trigger, target)
+        
+
+@check_body("role")
+def edit_role(request, fridge_id, trigger, target):
+    logger.info(f"Change role for user {target.user_id} by user {request.user.user_id}...")
+    
 
     body = json.loads(request.body.decode("utf-8"))
     if target.role == UserFridge.OWNER:
@@ -83,3 +109,17 @@ def user_role_view(request, fridge_id, user_id):
         raise PermissionDenied(detail="Cannot declare a Fridge Owner")
 
     return Response(data=FridgeUserSerializer(target).data, status=200)
+
+
+def delete_user(request, fridge_id, trigger, target):
+    """
+    Remove a user from a fridge, based on your role. Overseers can only remove Users, while Owners can remove everybody.
+    :request : -
+    """
+    if trigger.role != UserFridge.OWNER:
+        if target.role == UserFridge.OWNER or target.role == UserFridge.OVERSEER:
+            raise PermissionDenied(detail=f"Cannot remove Owner or Overseer as Overseer")
+    
+    target.delete()
+
+    return Response(status=200, data={"detail": "Deleted"})

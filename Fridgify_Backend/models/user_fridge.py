@@ -38,9 +38,9 @@ class FridgeUserSerializer(serializers.ModelSerializer):
         fields = ["user", "role"]
 
     def to_representation(self, instance:UserFridge):
-        if instance.role == 0:
+        if instance.role == UserFridge.OWNER:
             instance.role = "Fridge Owner"
-        elif instance.role == 1:
+        elif instance.role == UserFridge.OVERSEER:
             instance.role = "Fridge Overseer"
         else:
             instance.role = "Fridge User"
