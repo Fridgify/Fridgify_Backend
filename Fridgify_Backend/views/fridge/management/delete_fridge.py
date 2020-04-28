@@ -40,4 +40,4 @@ def delete_fridge_view(request, fridge_id):
     if UserFridge.objects.filter(fridge_id=fridge_id).count() == 0:
         logger.info(f"No user in fridge => Delete fridge...")
         Fridges.objects.get(fridge_id=fridge_id).delete()
-    return Response(data={"detail": "User was removed from fridge"}, status=201)
+    return Response(data={"detail": "User was removed from fridge"}, status=200)
