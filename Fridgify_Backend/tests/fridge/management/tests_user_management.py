@@ -5,6 +5,7 @@ from rest_framework import status
 from Fridgify_Backend.models import UserFridge
 from Fridgify_Backend.views.fridge.management import users
 from Fridgify_Backend.tests import test_utils
+from Fridgify_Backend.utils import const
 
 import json
 
@@ -19,9 +20,9 @@ class TestUserManagement(TestCase):
         self.user.append(test_utils.create_dummyuser(username="Test User 3", name="Test 3", surname="User 3", email="test@user3.de"))
         self.fridge = test_utils.create_dummyfridge(name="Test Fridge")
 
-        test_utils.connect_fridge_user(username=self.user[0].username, fridge=self.fridge.name, role=UserFridge.OWNER)
-        test_utils.connect_fridge_user(username=self.user[1].username, fridge=self.fridge.name, role=UserFridge.OVERSEER)
-        test_utils.connect_fridge_user(username=self.user[2].username, fridge=self.fridge.name, role=UserFridge.USER)
+        test_utils.connect_fridge_user(username=self.user[0].username, fridge=self.fridge.name, role=const.ROLE_OWNER)
+        test_utils.connect_fridge_user(username=self.user[1].username, fridge=self.fridge.name, role=const.ROLE_OVERSEER)
+        test_utils.connect_fridge_user(username=self.user[2].username, fridge=self.fridge.name, role=const.ROLE_USER)
 
         test_utils.create_login_token(timezone.now() + timezone.timedelta(days=1), username=self.user[0].username)
         test_utils.create_api_token(timezone.now() + timezone.timedelta(days=1), t="API Token User1", username=self.user[0].username)

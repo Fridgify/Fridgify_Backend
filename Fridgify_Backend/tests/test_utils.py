@@ -7,6 +7,7 @@ from Fridgify_Backend.models.stores import Stores
 from Fridgify_Backend.models.providers import Providers
 from Fridgify_Backend.models.items import Items
 from Fridgify_Backend.models.fridge_content import FridgeContent
+from Fridgify_Backend.utils import const
 
 
 def setup():
@@ -49,7 +50,7 @@ def create_dummyfridge(name="Dummy Fridge"):
     return fridge
 
 
-def connect_fridge_user(username="dummy_name", fridge="Dummy Fridge", role=UserFridge.USER):
+def connect_fridge_user(username="dummy_name", fridge="Dummy Fridge", role=const.ROLE_USER):
     user_fridges = UserFridge()
     user_fridges.user = Users.objects.filter(username=username).first()
     user_fridges.fridge = Fridges.objects.filter(name=fridge).first()

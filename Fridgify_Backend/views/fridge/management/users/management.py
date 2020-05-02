@@ -7,10 +7,11 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied, ParseError, NotAcceptable, APIException
+from rest_framework.exceptions import PermissionDenied, ParseError, NotAcceptable, APIException, NotFound
 
 from Fridgify_Backend.models.backends import APIAuthentication
 from Fridgify_Backend.models import UserSerializer, UserFridge, Users, FridgeUserSerializer
+from Fridgify_Backend.utils import const
 from Fridgify_Backend.utils.decorators import check_fridge_access, permissions, check_body
 
 
@@ -63,11 +64,15 @@ logger = logging.getLogger(__name__)
 @api_view(["PATCH", "DELETE"])
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
-@permissions(UserFridge.OWNER, UserFridge.OVERSEER)
+@permissions(const.ROLE_OWNER, const.ROLE_OVERSEER)
 @check_fridge_access()
 def user_role_view(request, fridge_id, user_id):
     trigger = UserFridge.objects.filter(user=request.user, fridge_id=fridge_id).get()
-    target = UserFridge.objects.filter(user__user_id=user_id, fridge_id=fridge_id).get()
+    try:    
+        target = UserFridge.objects.filter(user__user_id=user_id, fridge_id=fridge_id).get()
+    except UserFridge.DoesNotExist:
+        raise NotFound(detail="Target User does not exist")
+    
     
     if request.user.user_id == target.user_id:
         logger.error(f"{request.method} user role called for own user")
@@ -81,20 +86,22 @@ def user_role_view(request, fridge_id, user_id):
 
 @check_body("role")
 def edit_role(request, fridge_id, trigger, target):
-    logger.info(f"Change role for user {target.user_id} by user {request.user.user_id}...")
-    
     body = json.loads(request.body.decode("utf-8"))
-    if target.role == UserFridge.OWNER:
+    goal_role = body["role"]
+    logger.info(f"Change role to {goal_role} for user {target.user_id} by user {request.user.user_id}...")
+
+    print(const.ROLE_CHOICES)
+    if target.role == const.ROLE_OWNER:
         logger.error("Trigger tried to change role to Owner...")
         raise PermissionDenied(detail="Cannot change role of Fridge Owner")
 
-    if (body["role"] not in UserFridge.ROLES_DICT.keys() and body["role"] not in UserFridge.ROLES_DICT.values()):
+    if goal_role not in const.ROLES and goal_role not in const.ROLES_S:
         logger.error("Role does not exist...")
         raise NotAcceptable(detail="Role does not exist")
 
-    if body["role"] != "Fridge Owner" and body["role"] != 0:
+    if goal_role != const.ROLE_OWNER and goal_role != const.ROLE_S_OWNER:
         try:
-            upd_role = UserFridge.ROLES_DICT[body["role"]] if type(body["role"]) is str else body["role"]
+            upd_role = const.ROLES_S.index(goal_role) if type(goal_role) is str else goal_role
         except KeyError:
             raise ParseError(detail="Couldn't determine role")
         
@@ -115,8 +122,8 @@ def delete_user(request, fridge_id, trigger, target):
     Remove a user from a fridge, based on your role. Overseers can only remove Users, while Owners can remove everybody.
     :request : -
     """
-    if trigger.role != UserFridge.OWNER:
-        if target.role == UserFridge.OWNER or target.role == UserFridge.OVERSEER:
+    if trigger.role != const.ROLE_OWNER:
+        if target.role == const.ROLE_OWNER or target.role == const.ROLE_OVERSEER:
             raise PermissionDenied(detail=f"Cannot remove Owner or Overseer as Overseer")
     
     target.delete()
