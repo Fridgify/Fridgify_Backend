@@ -8,7 +8,8 @@ from rest_framework.response import Response
 
 from Fridgify_Backend.models.backends import APIAuthentication
 from Fridgify_Backend.models import Fridges, UserFridge, FridgeSerializer
-from Fridgify_Backend.utils. decorators import check_fridge_access, permissions
+from Fridgify_Backend.utils import const
+from Fridgify_Backend.utils. decorators import check_fridge_access
 
 
 logger = logging.getLogger(__name__)
@@ -40,7 +41,7 @@ def delete_fridge_view(request, fridge_id):
     ufridge.delete()
 
     # Delete the fridge, if you are the Owner
-    if ufridge.role == UserFridge.OWNER:
+    if ufridge.role == const.ROLE_OWNER:
         logger.info(f"Owner deleted fridge {fridge_id}")
         Fridges.objects.get(fridge_id=fridge_id).delete()
 
