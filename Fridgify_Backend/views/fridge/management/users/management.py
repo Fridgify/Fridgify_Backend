@@ -73,7 +73,6 @@ def user_role_view(request, fridge_id, user_id):
     except UserFridge.DoesNotExist:
         raise NotFound(detail="Target User does not exist")
     
-    
     if request.user.user_id == target.user_id:
         logger.error(f"{request.method} user role called for own user")
         return Response(data={"detail": "Method not allowed on own user"}, status=409)
@@ -90,7 +89,6 @@ def edit_role(request, fridge_id, trigger, target):
     goal_role = body["role"]
     logger.info(f"Change role to {goal_role} for user {target.user_id} by user {request.user.user_id}...")
 
-    print(const.ROLE_CHOICES)
     if target.role == const.ROLE_OWNER:
         logger.error("Trigger tried to change role to Owner...")
         raise PermissionDenied(detail="Cannot change role of Fridge Owner")
