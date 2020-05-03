@@ -10,7 +10,8 @@ from rest_framework.response import Response
 
 from Fridgify_Backend.models.backends import APIAuthentication
 from Fridgify_Backend.models import Fridges,FridgeSerializer
-from Fridgify_Backend.utils.decorators import check_body, check_fridge_access
+from Fridgify_Backend.utils import const
+from Fridgify_Backend.utils.decorators import check_body, check_fridge_access, permissions
 
 
 logger = logging.getLogger(__name__)
@@ -43,6 +44,7 @@ logger = logging.getLogger(__name__)
 @check_body("fridge_id")
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
+@permissions(const.ROLE_OWNER)
 @check_fridge_access()
 def edit_fridge_view(request):
     try:

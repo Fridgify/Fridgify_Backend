@@ -9,6 +9,7 @@ from Fridgify_Backend.models.user_fridge import UserFridge
 from Fridgify_Backend.models.fridge_content import FridgeContent
 from Fridgify_Backend.models.stores import Stores
 from Fridgify_Backend.models.items import Items
+from Fridgify_Backend.utils import const
 
 
 def setup_database(request):
@@ -79,6 +80,7 @@ def create_fridges(users):
         user_fridge = UserFridge()
         user_fridge.fridge = fridges[i]
         user_fridge.user = users[i]
+        user_fridge.role = const.ROLE_OWNER
         user_fridge.save()
     return fridges
 

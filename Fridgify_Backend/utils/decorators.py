@@ -16,7 +16,7 @@ def check_body(*keys):
                     if key not in body:
                         raise ParseError(detail="Missing arguments")
             except json.JSONDecodeError:
-                pass
+                raise ParseError(detail="Invalid body")
             return func(request, *args, **kwargs)
         return wrapper
     return decorator
@@ -26,7 +26,6 @@ def check_fridge_access():
     def decorator(func):
         @wraps(func)
         def wrapper(request=None, fridge_id=None, *args, **kwargs):
-            print(request.user)
             user = request.user
             if UserFridge.objects.filter(fridge_id=fridge_id, user=user).exists():
                 return func(request, fridge_id, *args, **kwargs)
@@ -47,5 +46,17 @@ def permitted_keys(*keys):
             if invalid_keys:
                 raise ParseError(detail=f"{', '.join(invalid_keys)} are not permitted")
             return func(request, *args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def permissions(*roles):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(request=None, fridge_id=None, *args, **kwargs):
+            fridge = UserFridge.objects.get(fridge_id=fridge_id, user=request.user)
+            if fridge.role not in roles:
+                raise NotAuthenticated(detail="User lacks permission to perform this action")
+            return func(request, fridge_id, *args, **kwargs)
         return wrapper
     return decorator

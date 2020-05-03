@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from Fridgify_Backend.models.backends import APIAuthentication
 from Fridgify_Backend.models import exceptions
 from Fridgify_Backend.models import UserFridge, Fridges, FridgeSerializer
+from Fridgify_Backend.utils import const
 from Fridgify_Backend.utils.decorators import check_body
 
 
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
         required=True,
         type=openapi.TYPE_STRING
     )],
-    operation_description="Create a new fridge",
+    operation_description="Create a new fridge. User becomes a <b>Fridge Owner</b>.",
     request_body=FridgeSerializer,
     responses={
         201: openapi.Response("Created fridge", FridgeSerializer),
@@ -57,7 +58,7 @@ def create_fridge_view(request):
             logger.debug(f"fridge_name: {body['name']}")
             fridge = Fridges.objects.create(name=body["name"])
         logger.info("Connect user to fridge...")
-        UserFridge.objects.create(user=request.user, fridge=fridge)
+        UserFridge.objects.create(user=request.user, fridge=fridge, role=const.ROLE_OWNER)
         return Response(data=FridgeSerializer(fridge).data, status=201)
     except IntegrityError:
         logger.warning(f"Integrity Error: fridge {body['name']} already exists or user-fridge combo exists")
