@@ -23,7 +23,12 @@ class AuthenticationTestCasesLogin(TestCase):
     def tearDown(self) -> None:
         test_utils.clean()
 
-
+    def test_login_ValidCredentials_Token(self):
+        request = self.factory.post("/auth/login/", {"username": "dummy_name", "password": "password"},
+                                    content_type="application/json")
+        response = login.login_view(request)
+        j_response = json.loads(response.render().content.decode("utf-8"))
+        self.assertEqual(j_response["token"], "Token", "Token was not send")
 
     def test_login_InvalidCredentials_401(self):
         request = self.factory.post("/auth/login/", {"username": "dummy_name", "password": "lol wrong pw"},
