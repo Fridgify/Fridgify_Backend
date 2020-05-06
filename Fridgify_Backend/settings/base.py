@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'Fridgify_Backend',
     'django_extensions',
     'drf_yasg',
+    'django_nose',
 ]
 
 MIDDLEWARE = [
@@ -144,3 +145,15 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+# Use nose to run all tests
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Tell nose to measure coverage
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=Fridgify_Backend',
+    '--nocapture',
+    '--nologcapture',
+    '--verbosity=3',
+]

@@ -60,7 +60,7 @@ pip-delete-this-directory.txt
 htmlcov/
 .tox/
 .nox/
-.coverage
+coverage/.coverage
 .coverage.*
 .cache
 nosetests.xml
@@ -273,3 +273,4 @@ backend_test
 # VSCode
 /.vscode
 *.sqlite
+.coverage
