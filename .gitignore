@@ -273,3 +273,4 @@ backend_test
 # VSCode
 /.vscode
 *.sqlite
+.coverage
