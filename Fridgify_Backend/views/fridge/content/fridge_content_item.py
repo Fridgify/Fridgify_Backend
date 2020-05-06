@@ -138,7 +138,7 @@ def update_item(request, fridge_id, item_id):
     }
     update_content = defaultdict(dict)
     update_items = defaultdict(dict)
-    logger.debug(f"To be updated values: {','.join(body.keys)}")
+    logger.debug(f"To be updated values: {','.join(body.keys())}")
     for key in body.keys():
         if key in content_mappings:
             update_content[content_mappings[key]] = body[key]
