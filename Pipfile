@@ -21,4 +21,4 @@ django-nose="==1.4.6"
 coverage-badge="==1.0.1"
 
 [requires]
-python_version = "3.7.4"
+python_version = "3.7"

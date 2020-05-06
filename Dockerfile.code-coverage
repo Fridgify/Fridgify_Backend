@@ -1,16 +1,22 @@
-FROM python:3.7.4
+FROM ubuntu:18.04
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+RUN apt-get update
+RUN apt-get -y install python3.8
+RUN apt-get -y install python3-pip
+
+#RUN export LC_ALL=en_US.utf-8 && export LANG=en_US.utf-8
+
+#ENV PYTHONDONTWRITEBYTECODE 1
+#ENV PYTHONUNBUFFERED 1
 
 RUN mkdir /fridgify
 
 WORKDIR /fridgify
 
-RUN pip install pipenv
-COPY Pipfile Pipfile.lock /fridgify/
-RUN pipenv install --system
+RUN pip3 install pipenv
+#COPY Pipfile Pipfile.lock /fridgify/
+#RUN pipenv install --system
 
-ADD . /fridgify/
+ADD ./create_coverage_badge.sh /fridgify/
 
-CMD bash create_coverage_badge.sh
+CMD bash ./create_coverage_badge.sh
