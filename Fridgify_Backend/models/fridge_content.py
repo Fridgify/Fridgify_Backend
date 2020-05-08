@@ -15,9 +15,6 @@ class FridgeContent(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        unique_together = ('fridge', 'item',)
-
     def __dir__(self):
         return [
             "id", "fridge", "item", "amount", "expiration_date", "unit", "created_at", "last_updated"

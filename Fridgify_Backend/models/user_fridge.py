@@ -14,8 +14,8 @@ class UserFridge(models.Model):
     fridge = models.ForeignKey('Fridges', on_delete=models.CASCADE)
     role = models.IntegerField(choices=const.ROLE_CHOICES, default=const.ROLE_USER)
 
-    def __dir__(self):
-        return ["id", "user", "fridge", "role"]
+    class Meta:
+        unique_together = ('user', 'fridge',)
 
 
 class FridgeUserSerializer(serializers.ModelSerializer):
