@@ -45,13 +45,14 @@ class Command(BaseCommand):
         self.stdout.write(f"Database was filled successfully...")
 
     def create_users(self, count):
+        pw = bcrypt.hashpw("password".encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
         for i in range(count):
             user = models.Users.objects.create(
                 username=self.fake.user_name(),
                 name=self.fake.last_name(),
                 surname=self.fake.first_name(),
                 email=self.fake.email(),
-                password=bcrypt.hashpw("password".encode("utf-8"), bcrypt.gensalt()),
+                password=pw,
                 birth_date=self.fake.date_of_birth().strftime("%Y-%m-%d")
             )
         models.Users.objects.create(
@@ -59,7 +60,7 @@ class Command(BaseCommand):
             name="Fridgify",
             surname="Test",
             email="fridgify@fridgify.com",
-            password=bcrypt.hashpw("password".encode("utf-8"), bcrypt.gensalt()),
+            password=pw,
             birth_date=self.fake.date_of_birth().strftime("%Y-%m-%d")
         )
         self.users = models.Users.objects.all()
