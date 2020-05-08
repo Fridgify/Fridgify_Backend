@@ -33,6 +33,8 @@ SECRET_KEY = 'fhk725ux#z9m+o(oh%(t2+j5l16$&$bxz!9xso7heo#vhw6%z@'
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.contenttypes',
+    'django.contrib.auth',
     'django.contrib.staticfiles',
     'rest_framework',
     'Fridgify_Backend',
