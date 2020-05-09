@@ -1,5 +1,6 @@
 import json
 import logging
+import uuid
 
 from django.db.models import F
 from django.db import IntegrityError
@@ -43,7 +44,7 @@ keys = ("name", "buy_date", "expiration_date", "count", "amount", "unit", "store
                 items=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "item_id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                        "item_id": openapi.Schema(type=openapi.TYPE_STRING, description="UUID"),
                         "expiration_date": openapi.Schema(type=openapi.TYPE_STRING, pattern="YYYY-mm-dd"),
                         "amount": openapi.Schema(type=openapi.TYPE_INTEGER),
                         "unit": openapi.Schema(type=openapi.TYPE_STRING),
@@ -100,7 +101,10 @@ def get_content(_, fridge_id):
     :return: json of whole content of fridge
     """
     logger.info(f"Retrieve fridge content for fridge {fridge_id}...")
-    contents = FridgeContent.objects.filter(fridge_id=fridge_id).values(
+    contents = FridgeContent.objects.extra(
+        select={
+            "item_id": "content_id"
+        }).filter(fridge_id=fridge_id).values(
         "item_id",
         "expiration_date",
         "max_amount",
@@ -111,6 +115,7 @@ def get_content(_, fridge_id):
 
     logger.debug(f"Content for fridge {fridge_id}")
     for content in contents:
+        content["item_id"] = uuid.UUID(hex=content["item_id"])
         content["expiration_date"] = content["expiration_date"].strftime("%Y-%m-%d")
         logger.debug(f"{content}")
 
