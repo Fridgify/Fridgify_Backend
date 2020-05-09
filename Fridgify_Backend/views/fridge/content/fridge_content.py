@@ -135,16 +135,17 @@ def add_content(request, fridge_id):
         logger.info(f"Create fridge item...")
         content = []
         for i in range(body["count"]):
-            fridge_item = FridgeContent.objects.create(
-                item=Items.objects.get_or_create(
-                    name=body["name"],
-                    store=Stores.objects.get_or_create(
-                        name=body["store"]
-                    )[0],
-                    defaults={
-                        "description": body["description"] if "description" in body else ""
-                    }
+            item = Items.objects.get_or_create(
+                name=body["name"],
+                store=Stores.objects.get_or_create(
+                    name=body["store"]
                 )[0],
+                defaults={
+                    "description": body["description"] if "description" in body else ""
+                }
+            )[0]
+            fridge_item = FridgeContent.objects.create(
+                item=item,
                 fridge_id=fridge_id,
                 max_amount=body["amount"],
                 amount=body["amount"],
