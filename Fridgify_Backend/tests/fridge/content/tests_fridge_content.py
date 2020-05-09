@@ -71,7 +71,7 @@ class ContentApiTestCasesFridgeContent(TestCase):
     def test_addFridgeContent_InternalError_500(self):
         test_utils.create_fridge_content(Items.objects.get(name="Item A").item_id, 1)
         request = self.factory.post("/fridge/1", {"name": "Item A", "description": "Description",
-                                                  "buy_date": "2019-10-17", "expiration_date": "2019-11-23",
+                                                  "buy_date": "2019-10-17", "expiration_date": "2019-12-12",
                                                   "amount": 9, "unit": "kg", "store": "Rewe"},
                                     content_type="application/json")
         request.META["HTTP_AUTHORIZATION"] = "APIToken"
