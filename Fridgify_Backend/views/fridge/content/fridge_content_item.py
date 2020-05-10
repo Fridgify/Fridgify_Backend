@@ -82,7 +82,7 @@ def fridge_content_item_view(request, fridge_id, item_id):
         return get_item(request, fridge_id, item_id)
     elif request.method == "DELETE":
         logger.info(f"Delete item[{item_id}] of fridge {fridge_id} for user {request.user.username}...")
-        FridgeContent.objects.filter(fridge_id=fridge_id, item_id=item_id).delete()
+        FridgeContent.objects.filter(fridge_id=fridge_id, content_id=item_id).delete()
         return Response(status=200)
     else:
         logger.info(f"User {request.user.username} updates item {item_id} in fridge {fridge_id}...")
