@@ -24,6 +24,7 @@ from Fridgify_Backend.api_urls.fridge import fridge_urls
 from Fridgify_Backend.api_urls.stores import stores_urls
 from Fridgify_Backend.api_urls.users import users_urls
 from Fridgify_Backend.api_urls.items import items_url
+from Fridgify_Backend.views import utils
 
 
 schema_view = get_schema_view(
@@ -49,6 +50,9 @@ urlpatterns = [
     path('users/', include(users_urls)),
     #  Items Endpoint
     path('items/', include(items_url)),
+    #  Util Endpoints
+    path('ping/', utils.ping),
+    path('version/', utils.version)
     #  Admin Page - can be removed, keeping it just for the lols right now
     #  path('admin/', admin.site.urls),
 ]
