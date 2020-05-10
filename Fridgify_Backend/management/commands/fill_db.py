@@ -17,17 +17,19 @@ class Command(BaseCommand):
         parser.add_argument('-u', '--users', type=int, help="Number of users")
         parser.add_argument('-i', '--items', type=int, help="Number of items")
         parser.add_argument('-fc', '--fridgecontent', type=int, help="Max amount of items in fridge")
+        parser.add_argument('-fcmin', '--fridgecontentmin', type=int, help="Min amount of items in fridge")
         parser.add_argument('-upf', '--userpfridge', type=int, help="Amount of users per fridge")
 
     def handle(self, *args, **options):
         p_fridges = 3 if options["fridges"] is None else options["fridges"]
         p_users = 5 if options["users"] is None else options["users"]
-        p_items = 5 if options["items"] is None else options["items"]
+        p_items = 10 if options["items"] is None else options["items"]
         p_upf = 2 if options["userpfridge"] is None else options["userpfridge"]
-        p_fc = 3 if options["fridgecontent"] is None else options["fridgecontent"]
+        p_fc = 25 if options["fridgecontent"] is None else options["fridgecontent"]
+        p_fcm = 10 if options["fridgecontentmin"] is None else options["fridgecontentmin"]
         
         self.stdout.write(f"Fill database with: \n" +
-            f"Fridges: {p_fridges}, Users: {p_users+1}, User per Fridge: {p_upf}, Items: {p_items}, Max. Items per fridge: {p_fc}")
+            f"Fridges: {p_fridges}, Users: {p_users+1}, User per Fridge: {p_upf}, Items: {p_items}, Max. Items per fridge: {p_fc}, Min. Items per Fridge: {p_fcm}")
 
         self.fake.add_provider(internet)
         self.fake.add_provider(person)
@@ -40,7 +42,7 @@ class Command(BaseCommand):
         self.connect_uf(p_users, p_upf)
         self.create_store()
         self.create_item(p_items)
-        self.fill_fridges(p_fc)
+        self.fill_fridges(p_fcm, p_fc)
 
         self.stdout.write(f"Database was filled successfully...")
 
@@ -112,16 +114,20 @@ class Command(BaseCommand):
                 barcode=self.fake.ean(),
                 name=self.fake.word(),
                 description=self.fake.sentence(),
-                store=self.stores[random.randint(0, (count-1))]
+                store=self.stores[random.randint(0, (len(self.stores) - 1) )]
             )
         self.items = models.Items.objects.all()
 
-    def fill_fridges(self, max_items):
+    def fill_fridges(self, min_amount, max_items):
         fc = []
         units = ["kg", "g", "l", "ml"]
         count_cid = {}
         for fridge in self.fridges:
-            for i in range(random.randint(1, max_items)):
+            for i in range(random.randint(min_amount, max_items)):
+                dates = [
+                    self.fake.future_date().strftime("%Y-%m-%d"),
+                    self.fake.date_time_between(start_date='-20d')
+                ]
                 amount = random.randint(0, 1000)
                 item = self.items[random.randint(0, (len(self.items)-1))]
                 fc.append(
@@ -131,7 +137,7 @@ class Command(BaseCommand):
                         amount=amount,
                         max_amount=amount,
                         unit=units[random.randint(0, 3)],
-                        expiration_date=self.fake.future_date().strftime("%Y-%m-%d"),
+                        expiration_date=dates[random.randint(0, 1)],
                     )
                 )
         models.FridgeContent.objects.bulk_create(fc)
