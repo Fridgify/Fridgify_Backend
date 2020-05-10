@@ -27,7 +27,7 @@ class ContentApiTestCasesFridgeContent(TestCase):
     def test_addFridgeContent_ValidTokenAndRequest_201(self):
         request = self.factory.post("/fridge/1", {"name": "Item 1", "description": "This is a item",
                                                   "buy_date": "2019-10-17", "expiration_date": "2019-11-23",
-                                                  "amount": 9, "unit": "kg", "store": "Rewe"},
+                                                  "count": 1, "amount": 9, "unit": "kg", "store": "Rewe"},
                                     content_type="application/json")
         request.META["HTTP_AUTHORIZATION"] = "APIToken"
         response = fridge_content.fridge_content_view(request, 1)
@@ -67,23 +67,6 @@ class ContentApiTestCasesFridgeContent(TestCase):
         request.META["HTTP_AUTHORIZATION"] = "APIToken2"
         response = fridge_content.fridge_content_view(request, 1)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_addFridgeContent_InternalError_500(self):
-        test_utils.create_fridge_content(Items.objects.get(name="Item A").item_id, 1)
-        request = self.factory.post("/fridge/1", {"name": "Item A", "description": "Description",
-                                                  "buy_date": "2019-10-17", "expiration_date": "2019-11-23",
-                                                  "amount": 9, "unit": "kg", "store": "Rewe"},
-                                    content_type="application/json")
-        request.META["HTTP_AUTHORIZATION"] = "APIToken"
-        response = fridge_content.fridge_content_view(request, 1)
-        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    """Get fridge content test case"""
-    def test_get_fridge_content(self):
-        # obj = type('obj', (object,), {'method': 'GET'})
-        # response = json.loads(fridge_content.entry_point(obj).content)
-        # self.assertEqual(response["message"], "Get content", "Get content")
-        self.assertEqual(0, 0)
 
     def test_getFridgeContent_ValidFridgeAndTokenWithContent_200Content(self):
         fridge_id = test_utils.get_fridge("Dummy Fridge").values("fridge_id").first()["fridge_id"]

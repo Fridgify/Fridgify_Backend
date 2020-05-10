@@ -119,13 +119,17 @@ class Command(BaseCommand):
     def fill_fridges(self, max_items):
         fc = []
         units = ["kg", "g", "l", "ml"]
+        count_cid = {}
         for fridge in self.fridges:
             for i in range(random.randint(1, max_items)):
+                amount = random.randint(0, 1000)
+                item = self.items[random.randint(0, (len(self.items)-1))]
                 fc.append(
                     models.FridgeContent(
                         fridge=fridge,
-                        item=self.items[random.randint(0, (len(self.items)-1))],
-                        amount=random.randint(0, 1000),
+                        item=item,
+                        amount=amount,
+                        max_amount=amount,
                         unit=units[random.randint(0, 3)],
                         expiration_date=self.fake.future_date().strftime("%Y-%m-%d"),
                     )

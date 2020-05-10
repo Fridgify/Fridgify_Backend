@@ -1,5 +1,6 @@
 import json
 import logging
+import uuid
 
 from django.db.models import F
 from django.db import IntegrityError
@@ -22,7 +23,7 @@ from Fridgify_Backend.models import (
 
 
 logger = logging.getLogger(__name__)
-keys = ("name", "buy_date", "expiration_date", "amount", "unit", "store")
+keys = ("name", "buy_date", "expiration_date", "count", "amount", "unit", "store")
 
 
 @swagger_auto_schema(
@@ -43,7 +44,7 @@ keys = ("name", "buy_date", "expiration_date", "amount", "unit", "store")
                 items=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "item_id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                        "item_id": openapi.Schema(type=openapi.TYPE_STRING, description="UUID"),
                         "expiration_date": openapi.Schema(type=openapi.TYPE_STRING, pattern="YYYY-mm-dd"),
                         "amount": openapi.Schema(type=openapi.TYPE_INTEGER),
                         "unit": openapi.Schema(type=openapi.TYPE_STRING),
@@ -71,8 +72,9 @@ keys = ("name", "buy_date", "expiration_date", "amount", "unit", "store")
             "description": openapi.Schema(type=openapi.TYPE_STRING),
             "buy_date": openapi.Schema(type=openapi.TYPE_STRING, pattern="YYYY-mm-dd"),
             "expiration_date": openapi.Schema(type=openapi.TYPE_STRING, pattern="YYYY-mm-dd"),
-            "amount": openapi.Schema(type=openapi.TYPE_INTEGER),
-            "unit": openapi.Schema(type=openapi.TYPE_STRING),
+            "count": openapi.Schema(type=openapi.TYPE_INTEGER, description="Number of times the item should be added"),
+            "amount": openapi.Schema(type=openapi.TYPE_INTEGER, description="Single amount, e.g. 1 (litre)"),
+            "unit": openapi.Schema(type=openapi.TYPE_STRING, description="Unit for amount, e.g. litre, kilogram, etc."),
             "store": openapi.Schema(type=openapi.TYPE_STRING),
         }
     ),
@@ -99,9 +101,13 @@ def get_content(_, fridge_id):
     :return: json of whole content of fridge
     """
     logger.info(f"Retrieve fridge content for fridge {fridge_id}...")
-    contents = FridgeContent.objects.filter(fridge_id=fridge_id).values(
+    contents = FridgeContent.objects.extra(
+        select={
+            "item_id": "content_id"
+        }).filter(fridge_id=fridge_id).values(
         "item_id",
         "expiration_date",
+        "max_amount",
         "amount",
         "unit",
         name=F("item__name"),
@@ -109,6 +115,7 @@ def get_content(_, fridge_id):
 
     logger.debug(f"Content for fridge {fridge_id}")
     for content in contents:
+        content["item_id"] = uuid.UUID(hex=content["item_id"])
         content["expiration_date"] = content["expiration_date"].strftime("%Y-%m-%d")
         logger.debug(f"{content}")
 
@@ -131,8 +138,9 @@ def add_content(request, fridge_id):
     logger.info(f"Add content to fridge {fridge_id} for user {request.user.username}...")
     try:
         logger.info(f"Create fridge item...")
-        fridge = FridgeContent.objects.create(
-            item=Items.objects.get_or_create(
+        content = []
+        for i in range(body["count"]):
+            item = Items.objects.get_or_create(
                 name=body["name"],
                 store=Stores.objects.get_or_create(
                     name=body["store"]
@@ -140,14 +148,18 @@ def add_content(request, fridge_id):
                 defaults={
                     "description": body["description"] if "description" in body else ""
                 }
-            )[0],
-            fridge_id=fridge_id,
-            amount=body["amount"],
-            unit=body["unit"],
-            expiration_date=timezone.datetime.strptime(body["expiration_date"], "%Y-%m-%d"),
-        )
-        payload = FridgeContentSerializer(fridge).data
-        logger.debug(f"Created fridge: \n{payload}")
+            )[0]
+            fridge_item = FridgeContent.objects.create(
+                item=item,
+                fridge_id=fridge_id,
+                max_amount=body["amount"],
+                amount=body["amount"],
+                unit=body["unit"],
+                expiration_date=timezone.datetime.strptime(body["expiration_date"], "%Y-%m-%d"),
+            )
+            content.append(fridge_item)
+        payload = [FridgeContentSerializer(fridge_item).data for fridge_item in content]
+        logger.debug(f"Created fridge items: \n{payload}")
         return Response(data=payload, status=201)
     except IntegrityError:
         logger.warning(

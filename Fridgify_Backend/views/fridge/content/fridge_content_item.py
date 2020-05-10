@@ -2,16 +2,17 @@ from collections import defaultdict
 import json
 import logging
 
+from django.core.exceptions import ValidationError
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound, ParseError
+from rest_framework.exceptions import NotFound, ParseError, ParseError
 
 from Fridgify_Backend.models.backends import APIAuthentication
-from Fridgify_Backend.utils.decorators import check_fridge_access, permitted_keys
-from Fridgify_Backend.models import FridgeContent, FridgeContentSerializer, Items, Stores, ItemsSerializer
+from Fridgify_Backend.utils.decorators import check_fridge_access, check_body
+from Fridgify_Backend.models import FridgeContent, FridgeContentSerializer, Items, Stores, FridgeContentItemSerializer
 
 
 logger = logging.getLogger(__name__)
@@ -29,7 +30,7 @@ logger = logging.getLogger(__name__)
     )],
     operation_description="Create a new item in the fridge",
     responses={
-        200: openapi.Response("Created item in fridge", FridgeContentSerializer),
+        200: openapi.Response("Created item in fridge", FridgeContentItemSerializer),
         404: "Item not found"
     },
     security=[{'FridgifyAPI_Token_Auth': []}]
@@ -64,9 +65,7 @@ logger = logging.getLogger(__name__)
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            "expiration_date": openapi.Schema(type=openapi.TYPE_STRING, pattern="YYYY-mm-dd"),
-            "amount": openapi.Schema(type=openapi.TYPE_STRING),
-            "unit": openapi.Schema(type=openapi.TYPE_STRING)
+            "withdraw": openapi.Schema(type=openapi.TYPE_INTEGER, description="Only positive values")
         }
     ),
     responses={
@@ -101,17 +100,18 @@ def get_item(_, fridge_id, item_id):
     try:
         item = FridgeContent.objects.get(
             fridge_id=fridge_id,
-            item_id=item_id,
-        ).item
+            content_id=item_id,
+        )
+        print(item.content_id)
     except FridgeContent.DoesNotExist and Items.DoesNotExist:
         logger.error("Content or Item does not exist...")
         raise NotFound(detail="Item does not exist")
-    payload = ItemsSerializer(item).data
+    payload = FridgeContentItemSerializer(item).data
     logger.debug(f"Retrieved item: \n{payload}")
     return Response(payload, status=200)
 
 
-@permitted_keys("item_id", "store_id", "id")
+@check_body("withdraw")
 def update_item(request, fridge_id, item_id):
     """
     Update an item in a fridge with the given parameters in the request
@@ -125,35 +125,15 @@ def update_item(request, fridge_id, item_id):
     except json.JSONDecodeError:
         logger.error(f"Couldn't parse JSON:\n {request.body.decode('utf-8')}")
         raise ParseError()
-    content_mappings = {
-        "buy_date": "created_at",
-        "expiration_date": "expiration_date",
-        "amount": "amount",
-        "unit": "unit",
-    }
-    item_mappings = {
-        "name": "name",
-        "description": "description",
-        "store": "store__name"
-    }
-    update_content = defaultdict(dict)
-    update_items = defaultdict(dict)
-    logger.debug(f"To be updated values: {','.join(body.keys())}")
-    for key in body.keys():
-        if key in content_mappings:
-            update_content[content_mappings[key]] = body[key]
-            continue
-        if key in item_mappings:
-            if key == "store":
-                update_items["store_id"] = Stores.objects.values("store_id").get(name=body[key])
-            else:
-                update_items[item_mappings[key]] = body[key]
-            continue
-    if update_content:
-        logger.info("Content values are being updated...")
-        FridgeContent.objects.filter(fridge_id=fridge_id, item_id=item_id).update(**update_content)
-    if update_items:
-        logger.info("Item values are being updated...")
-        Items.objects.filter(item_id=item_id).update(**update_items)
+
+    try:    
+        fridge_item = FridgeContent.objects.filter(content_id=item_id).get()
+        fridge_item.amount -= body["withdraw"]
+        if fridge_item.amount <= 0:
+            fridge_item.delete()
+            return Response(data={"detail": "Item was removed."}, status=200)
+        fridge_item.save()
+    except ValidationError:
+        raise ParseError(detail="Item ID is not a valid UUID")
 
     return get_item(request, fridge_id, item_id)
