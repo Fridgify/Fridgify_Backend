@@ -115,7 +115,7 @@ def get_content(_, fridge_id):
 
     logger.debug(f"Content for fridge {fridge_id}")
     for content in contents:
-        content["item_id"] = uuid.UUID(hex=content["item_id"])
+        content["item_id"] = uuid.UUID(hex=str(content["item_id"]))
         content["expiration_date"] = content["expiration_date"].strftime("%Y-%m-%d")
         logger.debug(f"{content}")
 
