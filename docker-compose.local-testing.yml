@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  db_test:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data_test:/var/lib/postgresql/test/data/
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=backend_test
+  backend_test:
+    build:
+      context: .
+      dockerfile: Dockerfile.local-testing
+    ports:
+      - 5432:5432
+    volumes:
+      - /home/fridgify/static_files/production/:/fridgify/Fridgify_Backend/static/
+      - /home/fridgify/logs/production/:/fridgify/logs/
+    depends_on:
+      - db_test
+volumes:
+  postgres_data_test:
