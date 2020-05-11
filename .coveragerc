@@ -1,0 +1,9 @@
+[run]
+omit =
+    Fridgify_Backend/*
+
+
+[report]
+omit =
+    Fridgify_Backend/models/*
+    Fridgify_Backend/settings/*
