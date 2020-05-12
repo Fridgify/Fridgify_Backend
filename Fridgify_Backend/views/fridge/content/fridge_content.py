@@ -70,6 +70,7 @@ keys = ("name", "buy_date", "expiration_date", "count", "amount", "unit", "store
         properties={
             "name": openapi.Schema(type=openapi.TYPE_STRING),
             "description": openapi.Schema(type=openapi.TYPE_STRING),
+            "barcode": openapi.Schema(type=openapi.TYPE_STRING),
             "buy_date": openapi.Schema(type=openapi.TYPE_STRING, pattern="YYYY-mm-dd"),
             "expiration_date": openapi.Schema(type=openapi.TYPE_STRING, pattern="YYYY-mm-dd"),
             "count": openapi.Schema(type=openapi.TYPE_INTEGER, description="Number of times the item should be added"),
@@ -140,6 +141,7 @@ def add_content(request, fridge_id):
         for i in range(body["count"]):
             item = Items.objects.get_or_create(
                 name=body["name"],
+                barcode=body["barcode"] if "barcode" in body else "",
                 store=Stores.objects.get_or_create(
                     name=body["store"]
                 )[0],

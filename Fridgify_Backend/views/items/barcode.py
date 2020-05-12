@@ -31,8 +31,8 @@ logger = logging.getLogger(__name__)
     security=[{'FridgifyAPI_Token_Auth': []}]
 )
 @api_view(["GET"])
-# @authentication_classes([APIAuthentication])
-# @permission_classes([IsAuthenticated])
+@authentication_classes([APIAuthentication])
+@permission_classes([IsAuthenticated])
 def barcode_view(request, barcode=None):
     logger.info("Retrieve item...")
     filters = defaultdict(dict)
