@@ -1,5 +1,4 @@
 import logging
-from collections import defaultdict
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -26,7 +25,8 @@ logger = logging.getLogger(__name__)
     operation_description="Retrieve an item based on its barcode",
     responses={
         200: openapi.Response("Retrieved item", ItemsSerializer),
-        404: "Item not found"
+        404: "Item not found",
+        422: "Missing parameter barcode"
     },
     security=[{'FridgifyAPI_Token_Auth': []}]
 )
@@ -35,11 +35,11 @@ logger = logging.getLogger(__name__)
 @permission_classes([IsAuthenticated])
 def barcode_view(request, barcode=None):
     logger.info("Retrieve item...")
-    filters = defaultdict(dict)
-    if barcode:
-        filters["barcode"] = barcode
+    if barcode is None:
+        return Response(status=422, data="Missing parameter barcode")
+
     try:
-        item = Items.objects.filter(**filters).first()
+        item = Items.objects.filter(barcode=barcode).first()
         if item is None:
             return Response(status=404)
         return Response(status=200, data=ItemsSerializer(item).data)

@@ -77,7 +77,7 @@ def create_api_token(valid_till, t="APIToken", username="dummy_name"):
 
 
 def create_items(name="Item A"):
-    Items.objects.create(name=name, description="Description", store=Stores.objects.filter(name="Rewe").first())
+    Items.objects.create(name=name, description="Description", barcode="Barcode123", store=Stores.objects.filter(name="Rewe").first())
     return Items.objects.filter(name="Item A").first()
 
 

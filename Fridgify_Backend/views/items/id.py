@@ -1,5 +1,4 @@
 import logging
-from collections import defaultdict
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -26,7 +25,8 @@ logger = logging.getLogger(__name__)
     operation_description="Retrieve an item based on its id",
     responses={
         200: openapi.Response("Retrieved item", ItemsSerializer),
-        404: "Item not found"
+        404: "Item not found",
+        422: "Missing parameter item_id"
     },
     security=[{'FridgifyAPI_Token_Auth': []}]
 )
@@ -39,9 +39,6 @@ def id_view(request, item_id=None):
     if item_id is None:
         return Response(status=422, data="Missing parameter item_id")
 
-    filters = defaultdict(dict)
-    if item_id:
-        filters["item_id"] = item_id
     try:
         item = Items.objects.get(item_id=item_id)
         if item is None:
