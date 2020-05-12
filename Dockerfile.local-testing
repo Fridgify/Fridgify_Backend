@@ -1,0 +1,18 @@
+FROM python:3.7.4-buster
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+RUN mkdir /fridgify
+
+WORKDIR /fridgify
+
+RUN pip install pipenv
+COPY Pipfile Pipfile.lock /fridgify/
+RUN pipenv install --system
+
+ADD . /fridgify/
+
+EXPOSE 1234
+
+CMD bash ./run_tests.sh

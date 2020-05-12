@@ -155,4 +155,5 @@ NOSE_ARGS = [
     '--nocapture',
     '--nologcapture',
     '--verbosity=3',
+    '--exe',
 ]

@@ -12,5 +12,8 @@ DATABASES = {
         'PASSWORD': 'admin',
         'HOST': 'db_test',
         'PORT': '5432',
+        'TEST': {
+            'NAME': 'backend_test',
+        }
     }
 }

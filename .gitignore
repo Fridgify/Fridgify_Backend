@@ -274,3 +274,5 @@ backend_test
 /.vscode
 *.sqlite
 .coverage
+
+/.idea

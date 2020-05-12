@@ -1,0 +1,18 @@
+[run]
+omit =
+    Fridgify_Backend/*
+
+
+[report]
+omit =
+    Fridgify_Backend/models/exceptions/*
+    Fridgify_Backend/models/accesstokens.py
+    Fridgify_Backend/models/fridge_content.py
+    Fridgify_Backend/models/fridges.py
+    Fridgify_Backend/models/items.py
+    Fridgify_Backend/models/providers.py
+    Fridgify_Backend/models/stores.py
+    Fridgify_Backend/models/user_fridge.py
+    Fridgify_Backend/models/users.py
+    Fridgify_Backend/migrations/*
+    Fridgify_Backend/settings/*
