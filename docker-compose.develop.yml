@@ -21,6 +21,6 @@ services:
     depends_on:
       - db_develop
     env_file:
-      - .env
+      - ${ENV_FILE:-.empty}
 volumes:
   postgres_data_develop:
