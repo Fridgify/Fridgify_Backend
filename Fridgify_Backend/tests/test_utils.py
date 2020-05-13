@@ -16,6 +16,7 @@ def setup():
     # Create Providers
     Providers.objects.create(name="Fridgify")
     Providers.objects.create(name="Fridgify-API")
+    Providers.objects.create(name="Fridgify-QR")
 
 
 def clean():

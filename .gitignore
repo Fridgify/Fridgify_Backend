@@ -276,3 +276,4 @@ backend_test
 .coverage
 
 /.idea
+.env

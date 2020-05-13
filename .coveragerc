@@ -4,6 +4,7 @@ omit =
 
 
 [report]
+show_missing = True
 omit =
     Fridgify_Backend/models/exceptions/*
     Fridgify_Backend/models/accesstokens.py
