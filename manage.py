@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Fridgify_Backend.settings.local')
+    os.environ.setdefault('FB_API_KEY', "None")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

@@ -20,5 +20,7 @@ services:
       - /home/fridgify/logs/develop:/fridgify/logs/
     depends_on:
       - db_develop
+    env_file:
+      - .env
 volumes:
   postgres_data_develop:
