@@ -6,6 +6,7 @@ omit =
 [report]
 omit =
     Fridgify_Backend/models/exceptions/*
+    Fridgify_Backend/models/__init__.py
     Fridgify_Backend/models/accesstokens.py
     Fridgify_Backend/models/fridge_content.py
     Fridgify_Backend/models/fridges.py
