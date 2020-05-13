@@ -32,7 +32,6 @@ class QRCodeTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
 
         body = json.loads(response.render().content.decode("utf-8"))
-        print(f"TEST: {body}")
         self.assertTrue("dynamic_link", "validation_time" in body)
         self.assertEqual(body["dynamic_link"], exp_link)
         self.assertEqual(body["validation_time"], 43200)
@@ -43,6 +42,7 @@ class QRCodeTestCase(TestCase):
         self.assertIsNotNone(token_obj)
         self.assertTrue(isinstance(token_obj.accesstoken, str))
         self.assertGreaterEqual(token_obj.valid_till, timezone.now())
+        self.assertEqual(token_obj.redirect_url, exp_link)
 
     def test_gencode_incorrectFridge_404NotFound(self):
         request = self.factory.get(f"/fridge/management/999/qr-code")

@@ -3,7 +3,7 @@ sut:
   dockerfile: Dockerfile.testing
   command: bash -c "chmod +x ./run_tests.sh && ./run_tests.sh"
   env_file:
-    - ${ENV_FILE:-.empty}
+    - .empty
   links:
     - db_test
 db_test:

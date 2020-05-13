@@ -43,5 +43,8 @@ def gen_code_view(request, fridge_id):
     except json.JSONDecodeError:
         raise APIException(detail="Couldn't parse response")
 
+    token.redirect_url = dynamic_link
+    token.save()
+
     logger.debug(f"Generated link: {dynamic_link}")
     return Response(status=201, data={"dynamic_link": dynamic_link, "validation_time": 43200})
