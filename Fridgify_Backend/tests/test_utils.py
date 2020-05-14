@@ -1,4 +1,7 @@
 import datetime
+
+from django.utils import timezone
+
 from Fridgify_Backend.models.users import Users
 from Fridgify_Backend.models.fridges import Fridges
 from Fridgify_Backend.models.user_fridge import UserFridge
@@ -16,6 +19,7 @@ def setup():
     # Create Providers
     Providers.objects.create(name="Fridgify")
     Providers.objects.create(name="Fridgify-API")
+    Providers.objects.create(name="Fridgify-Join")
 
 
 def clean():
@@ -73,6 +77,16 @@ def create_api_token(valid_till, t="APIToken", username="dummy_name"):
     token.valid_till = valid_till
     token.provider = Providers.objects.filter(name="Fridgify-API").first()
     token.user = Users.objects.get(username=username)
+    token.save()
+
+
+def create_join_token(t="APIToken", username="dummy_name", fridge=None, valid_till=None):
+    token = Accesstokens()
+    token.accesstoken = t
+    token.valid_till = timezone.now() + timezone.timedelta(hours=12) if valid_till is None else valid_till
+    token.provider = Providers.objects.filter(name="Fridgify-Join").first()
+    token.user = Users.objects.get(username=username)
+    token.fridge = fridge
     token.save()
 
 

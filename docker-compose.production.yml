@@ -20,5 +20,7 @@ services:
       - /home/fridgify/logs/production/:/fridgify/logs/
     depends_on:
       - db
+    env_file:
+      - ${ENV_FILE:-.empty}
 volumes:
   postgres_data:

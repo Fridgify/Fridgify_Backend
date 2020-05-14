@@ -2,6 +2,8 @@ sut:
   build: .
   dockerfile: Dockerfile.testing
   command: bash -c "chmod +x ./run_tests.sh && ./run_tests.sh"
+  env_file:
+    - .empty
   links:
     - db_test
 db_test:
