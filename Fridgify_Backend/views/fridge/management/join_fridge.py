@@ -46,7 +46,7 @@ def join_view(request):
     try:
         token_obj = Accesstokens.objects.filter(provider__name="Fridgify-Join", accesstoken=token).get()
     except Accesstokens.DoesNotExist:
-        raise NotFound(detail="Join Link not found")
+        raise NotFound(detail="Join link not found")
 
     if token_obj.valid_till < timezone.now():
         token_obj.delete()
