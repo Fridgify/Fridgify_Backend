@@ -45,17 +45,17 @@ class TestUserManagement(TestCase):
         exp_resp = [
             {
                 "user": {
-                    "username": "Test User", "name": "Test", "surname": "User", "email": "test@user.de", "birth_date": "2000-10-17"
+                    "user_id": self.user[0].user_id, "username": "Test User", "name": "Test", "surname": "User", "email": "test@user.de", "birth_date": "2000-10-17"
                 },
                 "role": "Fridge Owner"
             }, {
                 "user": {
-                    "username": "Test User 2", "name": "Test 2", "surname": "User 2", "email": "test@user2.de", "birth_date": "2000-10-17"
+                    "user_id": self.user[1].user_id, "username": "Test User 2", "name": "Test 2", "surname": "User 2", "email": "test@user2.de", "birth_date": "2000-10-17"
                 },
                 "role": "Fridge Overseer"
             }, {
                 "user": {
-                    "username": "Test User 3", "name": "Test 3", "surname": "User 3", "email": "test@user3.de", "birth_date": "2000-10-17"
+                    "user_id": self.user[2].user_id, "username": "Test User 3", "name": "Test 3", "surname": "User 3", "email": "test@user3.de", "birth_date": "2000-10-17"
                 },
                 "role": "Fridge User"
             }
@@ -79,7 +79,7 @@ class TestUserManagement(TestCase):
 
         exp_resp =  {
             "user": {
-                "username": "Test User 2", "name": "Test 2", "surname": "User 2", "email": "test@user2.de", "birth_date": "2000-10-17"
+                "user_id": self.user[1].user_id, "username": "Test User 2", "name": "Test 2", "surname": "User 2", "email": "test@user2.de", "birth_date": "2000-10-17"
             },
             "role": "Fridge User"
         }
@@ -106,13 +106,12 @@ class TestUserManagement(TestCase):
 
         exp_resp =  {
             "user": {
-                "username": "Test User 3", "name": "Test 3", "surname": "User 3", "email": "test@user3.de", "birth_date": "2000-10-17"
+                "user_id": self.user[2].user_id, "username": "Test User 3", "name": "Test 3", "surname": "User 3", "email": "test@user3.de", "birth_date": "2000-10-17"
             },
             "role": "Fridge Overseer"
         }
         self.assertEqual(content, exp_resp)    
         self.assertEqual(1, UserFridge.objects.filter(user_id=self.user[2].user_id).get().role)
-
 
         uf = UserFridge.objects.filter(user_id=self.user[2].user_id).get()
         uf.role = 2
