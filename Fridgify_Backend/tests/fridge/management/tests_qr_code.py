@@ -37,7 +37,7 @@ class QRCodeTestCase(TestCase):
         self.assertEqual(body["validation_time"], 43200)
 
         token_obj = Accesstokens.objects.filter(
-            user_id=self.user.user_id, fridge_id=self.fridge.fridge_id, provider__name="Fridgify-QR"
+            user_id=self.user.user_id, fridge_id=self.fridge.fridge_id, provider__name="Fridgify-Join"
         ).get()
         self.assertIsNotNone(token_obj)
         self.assertTrue(isinstance(token_obj.accesstoken, str))
@@ -52,12 +52,12 @@ class QRCodeTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_gencode_missingProvider_500InternalError(self):
-        Providers.objects.filter(name="Fridgify-QR").delete()
+        Providers.objects.filter(name="Fridgify-Join").delete()
 
         response = qr_code.gen_code_view(self.s_request, self.fridge.fridge_id)
         self.assertEqual(response.status_code, 500)
 
-        Providers.objects.create(name="Fridgify-QR")
+        Providers.objects.create(name="Fridgify-Join")
 
     @patch(
         "Fridgify_Backend.utils.firebase.dynamic_link.create_dynamic_link",

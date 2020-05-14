@@ -17,7 +17,7 @@
     "model": "Fridgify_Backend.providers",
     "pk": 3,
     "fields": {
-      "name": "Fridgify-QR"
+      "name": "Fridgify-Join"
     }
   }
 ]

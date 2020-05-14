@@ -7,7 +7,7 @@ urlpatterns = [
     #  PATCH
     path('', edit_fridge.edit_fridge_view),
     #  POST
-    path('join/', join_fridge.entry_point),
+    path('join/', join_fridge.join_view),
     #  POST
     path('create/', create_fridge.create_fridge_view),
     #  DELETE
