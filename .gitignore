@@ -278,3 +278,4 @@ backend_test
 /.idea
 orig.env
 .env
+fridgify-firebase-key.json
