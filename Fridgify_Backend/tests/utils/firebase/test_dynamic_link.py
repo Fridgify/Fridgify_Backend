@@ -10,6 +10,7 @@ from Fridgify_Backend.utils.firebase import dynamic_link
 class DynamicLinkTestCase(TestCase):
     def setUp(self) -> None:
         os.environ.setdefault("BASE_URL", "http://example.com")
+        os.environ.setdefault("FRIDGIFY_DL_URL", "http://example2.com")
 
     @patch("Fridgify_Backend.utils.firebase.dynamic_link.requests.post")
     def test_successfulRequest_ShortLink(self, mock_post):
