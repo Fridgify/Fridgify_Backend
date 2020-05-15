@@ -1,3 +1,4 @@
+import os
 import json
 from unittest.mock import patch
 
@@ -7,6 +8,9 @@ from Fridgify_Backend.utils.firebase import dynamic_link
 
 
 class DynamicLinkTestCase(TestCase):
+    def setUp(self) -> None:
+        os.environ.setdefault("BASE_URL", "http://example.com")
+
     @patch("Fridgify_Backend.utils.firebase.dynamic_link.requests.post")
     def test_successfulRequest_ShortLink(self, mock_post):
         exp_link = "https://fridgify.page.link/shortStuff"
