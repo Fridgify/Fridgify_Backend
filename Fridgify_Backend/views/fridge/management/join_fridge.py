@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 from Fridgify_Backend.models import Accesstokens, UserFridge, FridgeSerializer
 from Fridgify_Backend.models.backends import APIAuthentication
-from Fridgify_Backend.utils import const
+from Fridgify_Backend.utils import const, api_utils
 
 
 @swagger_auto_schema(
@@ -61,4 +61,21 @@ def join_view(request):
         role=const.ROLE_USER
     )
 
-    return Response(status=201, data=FridgeSerializer(uf.fridge).data)
+    content = api_utils.get_content(request.user, token_obj.fridge_id)
+    payload = {
+        "id": uf.fridge_id,
+        "name": uf.fridge.name,
+        "description": uf.fridge.description,
+        "content": {
+            "total": 0,
+            "fresh": 0,
+            "dueSoon": 0,
+            "overDue": 0
+        }
+    }
+    if len(content) > 0:
+        payload["content"]["total"] = content[0]["total"]
+        payload["content"]["fresh"] = content[0]["fresh"]
+        payload["content"]["dueSoon"] = content[0]["dueSoon"]
+        payload["content"]["overDue"] = content[0]["overDue"]
+    return Response(status=201, data=payload)
