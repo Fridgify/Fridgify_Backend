@@ -20,6 +20,8 @@ services:
       - /home/fridgify/logs/production/:/fridgify/logs/
     depends_on:
       - db
+    environment:
+      - DJANGO_SETTINGS_MODULE=Fridgify_Backend.settings.production
     env_file:
       - ${ENV_FILE:-.empty}
 volumes:
