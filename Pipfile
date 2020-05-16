@@ -21,8 +21,7 @@ drf-yasg="==1.17.1"
 django-nose="==1.4.6"
 coverage-badge="==1.0.1"
 coverage="==4.4.1"
-google-auth="==1.14.3"
-google-auth-oauthlib="==0.4.1"
+firebase-admin="==4.3.0"
 
 [requires]
 python_version = "3.7"
