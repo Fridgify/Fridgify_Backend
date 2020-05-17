@@ -4,6 +4,7 @@ from django.db.models import Count, F
 from django.utils import timezone
 
 from Fridgify_Backend import models
+from Fridgify_Backend.utils import const
 
 
 def get_grouped_content(due_in):
@@ -24,11 +25,16 @@ def get_recipients(fridge_id):
     users = models.UserFridge.objects.values_list("user_id").filter(fridge_id=fridge_id)
     user_ids = [user[0] for user in users]
 
-    tokens = models.Accesstokens.objects.values_list("accesstoken").filter(
+    tokens = models.Accesstokens.objects.values_list("accesstoken", "provider_id").filter(
         user_id__in=user_ids,
-        provider__name="Fridgify-Notifications"
-    )
-    return [token[0] for token in tokens]
+        provider_id__in=const.Constants.NOTIFICATION_SERVICES
+    ).order_by("provider_id")
+
+    recipients_dict = {}
+    for key, value in itertools.groupby(tokens, key=lambda entry: entry[1]):
+        recipients_dict[key] = [x[0] for x in value]
+
+    return recipients_dict
 
 
 def create_expired_message(fridge_id, content, due_in, limit=3):

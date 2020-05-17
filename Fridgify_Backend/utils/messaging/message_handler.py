@@ -1,19 +1,21 @@
-from firebase_admin import messaging
+import logging
 
-from Fridgify_Backend.utils.messaging import auth
+from Fridgify_Backend.utils import const
+from Fridgify_Backend.utils.messaging import firebase
 
 
-def send_message(tokens, title, content, fridge_id=0):
-    auth.FirebaseMessaging.get_instance()
+class MessageHandler:
+    logger = logging.getLogger(__name__)
+    _shared_state = {}
 
-    message = messaging.MulticastMessage(
-        tokens=tokens,
-        data={"fridge_id": str(fridge_id)},
-        notification=messaging.Notification(
-            title=title,
-            body=content
-        )
-    )
+    def __init__(self):
+        self.__dict__ = self._shared_state
+        self.firebase = firebase.FirebaseMessaging()
 
-    response = messaging.send_multicast(message)
-    print('Successfully sent message:', response)
+    def send(self, recipients, title, body, **kwargs):
+        self.logger.info("Sending Message...")
+        for provider in recipients:
+            if provider == const.Constants.FRY_NOTIFICATION_SERVICE:
+                self.logger.debug("Using Firebase (Base Service)...")
+                print("Using Firebase (Base Service)...")
+                self.firebase.send_message(recipients[provider], title, body, **kwargs)
