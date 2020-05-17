@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from Fridgify_Backend.models.backends import APIAuthentication
 from Fridgify_Backend.models import FridgeContent, UserFridge
+from Fridgify_Backend.utils import api_utils
 
 
 logger = logging.getLogger(__name__)
@@ -54,26 +55,7 @@ logger = logging.getLogger(__name__)
 @permission_classes([IsAuthenticated])
 def fridge_view(request):
     logger.info(f"Retrieve fridges for user {request.user.username}...")
-    content = FridgeContent.objects.values(
-        "fridge_id",
-    ).annotate(
-        total=Count("item_id"),
-        fresh=Count(Case(
-            When(expiration_date__gt=timezone.now() + timezone.timedelta(5), then=1),
-            output_field=IntegerField()
-        )),
-        dueSoon=Count(Case(
-            When(
-                Q(expiration_date__gte=timezone.now()) & Q(expiration_date__lte=timezone.now() + timezone.timedelta(5)),
-                then=1
-            ),
-            output_field=IntegerField()
-        )),
-        overDue=Count(Case(
-            When(expiration_date__lt=timezone.now(), then=1),
-            output_field=IntegerField()
-        )),
-    ).filter(fridge__userfridge__user=request.user).order_by("fridge_id")
+    content = api_utils.get_content(request.user)
 
     # TODO: If we can change the structure slightly to be flat, we do not need the for loop
     payload = []

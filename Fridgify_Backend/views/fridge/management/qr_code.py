@@ -32,6 +32,16 @@ logger = logging.getLogger(__name__)
         openapi.IN_QUERY,
         required=True,
         type=openapi.TYPE_STRING
+    ), openapi.Parameter(
+        "fridge_id",
+        openapi.IN_QUERY,
+        required=False,
+        type=openapi.TYPE_INTEGER
+    ), openapi.Parameter(
+        "user_id",
+        openapi.IN_QUERY,
+        required=False,
+        type=openapi.TYPE_INTEGER
     )],
     operation_description="Generate a link (with embedded deep link), which allows users to join fridges",
     responses={
@@ -69,7 +79,9 @@ def gen_code_view(request, fridge_id):
     logger.debug(f"Generated token {token.accesstoken} for fridge id {token.fridge.fridge_id}")
 
     try:
-        link = dynamic_link.create_dynamic_link(token.accesstoken, "/fridge/management/join")
+        link = dynamic_link.create_dynamic_link(
+            token.accesstoken, "/fridge/management/join", fridge_id=fridge_id, user_id=request.user.user_id
+        )
     except json.JSONDecodeError:
         raise APIException(detail="Couldn't parse response")
 

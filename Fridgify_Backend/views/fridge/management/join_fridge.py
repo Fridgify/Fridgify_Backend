@@ -6,9 +6,9 @@ from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from Fridgify_Backend.models import Accesstokens, UserFridge
+from Fridgify_Backend.models import Accesstokens, UserFridge, FridgeSerializer
 from Fridgify_Backend.models.backends import APIAuthentication
-from Fridgify_Backend.utils import const
+from Fridgify_Backend.utils import const, api_utils
 
 
 @swagger_auto_schema(
@@ -27,7 +27,7 @@ from Fridgify_Backend.utils import const
     )],
     operation_description="Join fridge with a dedicated token",
     responses={
-        201: "Joined Fridge",
+        201: FridgeSerializer,
         403: "Forbidden",
         404: "Join Link not found",
         409: "Already member of fridge",
@@ -55,10 +55,27 @@ def join_view(request):
     if UserFridge.objects.filter(user_id=request.user.user_id, fridge_id=token_obj.fridge_id).exists():
         return Response(status=409, data={"detail": "Already member of fridge"})
 
-    UserFridge.objects.create(
+    uf = UserFridge.objects.create(
         user_id=request.user.user_id,
         fridge_id=token_obj.fridge_id,
         role=const.Constants.ROLE_USER
     )
 
-    return Response(status=201, data={"detail": "Joined Fridge successfully"})
+    content = api_utils.get_content(request.user, token_obj.fridge_id)
+    payload = {
+        "id": uf.fridge_id,
+        "name": uf.fridge.name,
+        "description": uf.fridge.description,
+        "content": {
+            "total": 0,
+            "fresh": 0,
+            "dueSoon": 0,
+            "overDue": 0
+        }
+    }
+    if len(content) > 0:
+        payload["content"]["total"] = content[0]["total"]
+        payload["content"]["fresh"] = content[0]["fresh"]
+        payload["content"]["dueSoon"] = content[0]["dueSoon"]
+        payload["content"]["overDue"] = content[0]["overDue"]
+    return Response(status=201, data=payload)
