@@ -80,7 +80,7 @@ def create_fridges(users):
         user_fridge = UserFridge()
         user_fridge.fridge = fridges[i]
         user_fridge.user = users[i]
-        user_fridge.role = const.ROLE_OWNER
+        user_fridge.role = const.Constants.ROLE_OWNER
         user_fridge.save()
     return fridges
 

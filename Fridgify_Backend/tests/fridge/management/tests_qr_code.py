@@ -23,7 +23,7 @@ class QRCodeTestCase(TestCase):
         self.s_request = self.factory.get(f"/fridge/management/{self.fridge.fridge_id}/qr-code")
         self.s_request.META["HTTP_AUTHORIZATION"] = "API Token"
 
-    @patch("Fridgify_Backend.utils.firebase.dynamic_link.create_dynamic_link")
+    @patch("Fridgify_Backend.utils.dynamic_link.create_dynamic_link")
     def test_gencode_createdTokenAndLink_201Created(self, dynamic_link):
         exp_link = "https://fridgify.page.link/shortLink"
         dynamic_link.return_value = exp_link
@@ -60,7 +60,7 @@ class QRCodeTestCase(TestCase):
         Providers.objects.create(name="Fridgify-Join")
 
     @patch(
-        "Fridgify_Backend.utils.firebase.dynamic_link.create_dynamic_link",
+        "Fridgify_Backend.utils.dynamic_link.create_dynamic_link",
         side_effect=json.JSONDecodeError(msg="Invalid Payload", doc="", pos=0)
     )
     def test_gencode_badRequestFirebase_500InternalError(self, mock_dynamic_link):

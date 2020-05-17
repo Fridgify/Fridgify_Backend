@@ -3,8 +3,6 @@ import logging
 import os
 import requests
 
-from rest_framework.exceptions import APIException
-
 
 logger = logging.getLogger(__name__)
 

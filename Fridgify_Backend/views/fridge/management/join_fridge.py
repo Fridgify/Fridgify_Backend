@@ -58,7 +58,7 @@ def join_view(request):
     UserFridge.objects.create(
         user_id=request.user.user_id,
         fridge_id=token_obj.fridge_id,
-        role=const.ROLE_USER
+        role=const.Constants.ROLE_USER
     )
 
     return Response(status=201, data={"detail": "Joined Fridge successfully"})
