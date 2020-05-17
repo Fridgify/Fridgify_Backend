@@ -54,7 +54,7 @@ def create_dummyfridge(name="Dummy Fridge"):
     return fridge
 
 
-def connect_fridge_user(username="dummy_name", fridge="Dummy Fridge", role=const.ROLE_USER):
+def connect_fridge_user(username="dummy_name", fridge="Dummy Fridge", role=const.Constants.ROLE_USER):
     user_fridges = UserFridge()
     user_fridges.user = Users.objects.filter(username=username).first()
     user_fridges.fridge = Fridges.objects.filter(name=fridge).first()

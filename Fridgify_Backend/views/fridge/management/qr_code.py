@@ -12,7 +12,7 @@ from rest_framework.response import Response
 
 from Fridgify_Backend.models import Accesstokens, Providers, Fridges
 from Fridgify_Backend.models.backends import APIAuthentication
-from Fridgify_Backend.utils import firebase
+from Fridgify_Backend.utils import dynamic_link
 from Fridgify_Backend.utils.decorators import check_fridge_access
 
 
@@ -79,14 +79,14 @@ def gen_code_view(request, fridge_id):
     logger.debug(f"Generated token {token.accesstoken} for fridge id {token.fridge.fridge_id}")
 
     try:
-        dynamic_link = firebase.dynamic_link.create_dynamic_link(
+        link = dynamic_link.create_dynamic_link(
             token.accesstoken, "/fridge/management/join", fridge_id=fridge_id, user_id=request.user.user_id
         )
     except json.JSONDecodeError:
         raise APIException(detail="Couldn't parse response")
 
-    token.redirect_url = dynamic_link
+    token.redirect_url = link
     token.save()
 
-    logger.debug(f"Generated link: {dynamic_link}")
-    return Response(status=201, data={"dynamic_link": dynamic_link, "validation_time": 43200})
+    logger.debug(f"Generated link: {link}")
+    return Response(status=201, data={"dynamic_link": link, "validation_time": 43200})

@@ -24,6 +24,7 @@ from Fridgify_Backend.api_urls.fridge import fridge_urls
 from Fridgify_Backend.api_urls.stores import stores_urls
 from Fridgify_Backend.api_urls.users import users_urls
 from Fridgify_Backend.api_urls.items import items_url
+from Fridgify_Backend.api_urls.messaging import messaging_url
 from Fridgify_Backend.views import utils
 
 
@@ -52,7 +53,9 @@ urlpatterns = [
     path('items/', include(items_url)),
     #  Util Endpoints
     path('ping/', utils.ping),
-    path('version/', utils.version)
+    path('version/', utils.version),
+    #  Messaging Endpoints
+    path('messaging/', include(messaging_url))
     #  Admin Page - can be removed, keeping it just for the lols right now
     #  path('admin/', admin.site.urls),
 ]

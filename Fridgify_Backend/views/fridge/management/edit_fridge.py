@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 @check_body("fridge_id")
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
-@permissions(const.ROLE_OWNER)
+@permissions(const.Constants.ROLE_OWNER)
 @check_fridge_access()
 def edit_fridge_view(request):
     try:

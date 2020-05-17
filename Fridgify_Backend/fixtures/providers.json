@@ -19,5 +19,12 @@
     "fields": {
       "name": "Fridgify-Join"
     }
+  },
+  {
+    "model": "Fridgify_Backend.providers",
+    "pk": 4,
+    "fields": {
+      "name": "Fridgify-Notifications"
+    }
   }
 ]

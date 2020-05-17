@@ -41,7 +41,7 @@ def delete_fridge_view(request, fridge_id):
     ufridge.delete()
 
     # Delete the fridge, if you are the Owner
-    if ufridge.role == const.ROLE_OWNER:
+    if ufridge.role == const.Constants.ROLE_OWNER:
         logger.info(f"Owner deleted fridge {fridge_id}")
         Fridges.objects.get(fridge_id=fridge_id).delete()
     return Response(data={"detail": "User was removed from fridge"}, status=200)

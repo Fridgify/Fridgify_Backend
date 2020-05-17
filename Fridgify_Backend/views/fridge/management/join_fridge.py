@@ -58,7 +58,7 @@ def join_view(request):
     uf = UserFridge.objects.create(
         user_id=request.user.user_id,
         fridge_id=token_obj.fridge_id,
-        role=const.ROLE_USER
+        role=const.Constants.ROLE_USER
     )
 
     content = api_utils.get_content(request.user, token_obj.fridge_id)

@@ -64,7 +64,7 @@ logger = logging.getLogger(__name__)
 @api_view(["PATCH", "DELETE"])
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
-@permissions(const.ROLE_OWNER, const.ROLE_OVERSEER)
+@permissions(const.Constants.ROLE_OWNER, const.Constants.ROLE_OVERSEER)
 @check_fridge_access()
 def user_role_view(request, fridge_id, user_id):
     trigger = UserFridge.objects.filter(user=request.user, fridge_id=fridge_id).get()
@@ -89,17 +89,17 @@ def edit_role(request, fridge_id, trigger, target):
     goal_role = body["role"]
     logger.info(f"Change role to {goal_role} for user {target.user_id} by user {request.user.user_id}...")
 
-    if target.role == const.ROLE_OWNER:
+    if target.role == const.Constants.ROLE_OWNER:
         logger.error("Trigger tried to change role to Owner...")
         raise PermissionDenied(detail="Cannot change role of Fridge Owner")
 
-    if goal_role not in const.ROLES and goal_role not in const.ROLES_S:
+    if goal_role not in const.Constants.ROLES and goal_role not in const.Constants.ROLES_S:
         logger.error("Role does not exist...")
         raise NotAcceptable(detail="Role does not exist")
 
-    if goal_role != const.ROLE_OWNER and goal_role != const.ROLE_S_OWNER:
+    if goal_role != const.Constants.ROLE_OWNER and goal_role != const.Constants.ROLE_S_OWNER:
         try:
-            upd_role = const.ROLES_S.index(goal_role) if type(goal_role) is str else goal_role
+            upd_role = const.Constants.ROLES_S.index(goal_role) if type(goal_role) is str else goal_role
         except KeyError:
             raise ParseError(detail="Couldn't determine role")
         

@@ -4,7 +4,8 @@
 FB_API_KEY=MyKey
 # Firebase Dynamic Link REST Endpoint
 FB_DL_URL=https://firebasedynamiclinks.googleapis.com/v1
-
+# Firebase Service Account File
+GOOGLE_APPLICATION_CREDENTIALS=./service.json
 
 # Fridgify Information
 
