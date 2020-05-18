@@ -12,6 +12,7 @@ from rest_framework.exceptions import ParseError
 from Fridgify_Backend.models import Accesstokens, Providers
 from Fridgify_Backend.models.backends import APIAuthentication
 from Fridgify_Backend.utils.decorators import check_body
+from Fridgify_Backend.utils import const
 
 
 logger = logging.getLogger(__name__)
@@ -23,8 +24,13 @@ logger = logging.getLogger(__name__)
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            "client_token": openapi.Schema(type=openapi.TYPE_STRING, description="Client token for Messaging Service")
-        }
+            "client_token": openapi.Schema(type=openapi.TYPE_STRING, description="Client token for Messaging Service"),
+            "service": openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="1 - Fridgify (Default), 2 - Hopper",
+            )
+        },
+        required=["client_token"],
     ),
     responses={
         201: "Created"
@@ -41,10 +47,14 @@ def register_view(request):
     except json.JSONDecodeError:
         raise ParseError
 
+    service = const.Constants.FRY_NOTIFICATION_SERVICE
+    if "service" in body.keys():
+        service = const.Constants.NOTIFICATION_SERVICES_DICT[body["service"]]
+
     logger.debug(f'Client-Token for Firebase Messaging: {body["client_token"]}')
     obj, _ = Accesstokens.objects.get_or_create(
         user_id=request.user.user_id,
-        provider=Providers.objects.get(name="Fridgify-Notifications"),
+        provider=Providers.objects.get(provider_id=service),
         accesstoken=body["client_token"],
         defaults={
             "valid_till": timezone.datetime.max

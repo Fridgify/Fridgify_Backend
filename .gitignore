@@ -279,3 +279,4 @@ backend_test
 orig.env
 .env
 fridgify-firebase-key.json
+hopper-fridgify.json

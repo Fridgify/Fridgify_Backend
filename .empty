@@ -7,6 +7,11 @@ FB_DL_URL=https://firebasedynamiclinks.googleapis.com/v1
 # Firebase Service Account File
 GOOGLE_APPLICATION_CREDENTIALS=./service.json
 
+
+# Hopper Configuration
+HP_APP=./path/to/app.json
+
+
 # Fridgify Information
 
 # API Base URL
@@ -17,3 +22,5 @@ ANDROID_PN=com.example.app
 IOS_BID=com.example.app
 # Fridgify's Dynamic Link URL
 FRIDGIFY_DL_URL=https://fridgify.page.link
+# Fridgify Logo
+LOGO=https://random.logo.com
