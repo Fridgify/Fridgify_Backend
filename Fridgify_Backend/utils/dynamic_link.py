@@ -7,9 +7,8 @@ import requests
 logger = logging.getLogger(__name__)
 
 
-def create_dynamic_link(token, prefix, fridge_id=-1, user_id=-1):
+def create_dynamic_link(deep_link):
     logger.info("Creating dynamic link via Firebase...")
-    deep_link = f"{os.environ['BASE_URL']}{prefix}?token={token}&fridge_id={fridge_id}&user_id={user_id}"
     logger.debug(f"Deep Link: {deep_link}")
     
     payload = {
@@ -29,3 +28,11 @@ def create_dynamic_link(token, prefix, fridge_id=-1, user_id=-1):
         raise json.JSONDecodeError(msg="Invalid Payload", doc="", pos=0)
     content = json.loads(response.content)
     return content["shortLink"]
+
+
+def create_deep_link(prefix, **kwargs):
+    path = []
+    for key, value in kwargs.items():
+        path.append(f"{key}={value}")
+    deep_link = f"{os.environ['BASE_URL']}{prefix}?{'&'.join(path)}"
+    return deep_link
