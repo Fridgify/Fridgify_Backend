@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def send_message(recipients, title, body, **kwargs):
     global api
-    logger.info("Send notifications to Firebase...")
+    logger.info("Send notifications to Hopper...")
     for recipient in recipients:
         try:
             notification = api.post_notification(recipient, Notification.default(heading=title, content=body))
