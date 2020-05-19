@@ -1,4 +1,5 @@
 import logging
+import urllib.parse as urlparse
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -7,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, ParseError
 
+from Fridgify_Backend.models import Accesstokens
 from Fridgify_Backend.models.backends import APIAuthentication
 from Fridgify_Backend.utils import const, dynamic_link
 from Fridgify_Backend.utils.messaging import hopper
@@ -52,9 +54,9 @@ def subscribe_view(request):
     if service == 1:
         return Response(data={"detail": "No subscription needed for Fridgify Notifications."}, status=200)
     if const.Constants.HP_NOTIFICATION_SERVICE == const.Constants.NOTIFICATION_SERVICES_DICT[service]:
-        deep_link = dynamic_link.create_deep_link("/fridge", user_id=request.user.user_id)
-        callback_url = dynamic_link.create_dynamic_link(deep_link)
+        callback_url = dynamic_link.create_deep_link("/fridge", user_id=request.user.user_id)
 
-    hp = hopper.HopperMessaging()
-    subscribe_url = hp.subscribe(callback_url=callback_url)
-    return Response(data={"subscribe_url": subscribe_url}, status=200)
+    subscribe_url = hopper.subscribe(callback_url=callback_url)
+    return Response(data={
+        "subscribe_url": subscribe_url
+    }, status=200)

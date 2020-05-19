@@ -38,8 +38,7 @@ class Command(BaseCommand):
             if not recipients:
                 continue
             msg = message_content.create_expired_message(fridge_id, content, p_due, p_limit)
-            handler = message_handler.MessageHandler()
-            handler.send(recipients, msg["title"], msg["body"], fridge_id=fridge_id)
+            message_handler.send(recipients, msg["title"], msg["body"], fridge_id=fridge_id)
             self.stdout.write(f"Send notification to service providers...")
 
         self.stdout.write(f"Send messages successfully.")
