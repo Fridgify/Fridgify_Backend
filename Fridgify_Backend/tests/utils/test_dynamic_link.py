@@ -14,7 +14,7 @@ class DynamicLinkTestCase(TestCase):
         mock_post.return_value.content = json.dumps({"shortLink": exp_link})
         mock_post.return_value.status_code = 200
 
-        link = dynamic_link.create_dynamic_link("Token123", "Prefix")
+        link = dynamic_link.create_dynamic_link("https://deep.link")
         self.assertEqual(link, exp_link)
 
     @patch("Fridgify_Backend.utils.dynamic_link.requests.post")
@@ -22,4 +22,4 @@ class DynamicLinkTestCase(TestCase):
         mock_post.return_value.content = ""
         mock_post.return_value.status_code = 400
 
-        self.assertRaises(json.decoder.JSONDecodeError, dynamic_link.create_dynamic_link, "TokenBla", "Prefix")
+        self.assertRaises(json.decoder.JSONDecodeError, dynamic_link.create_dynamic_link, "https://deep.link")
