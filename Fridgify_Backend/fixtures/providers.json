@@ -26,5 +26,12 @@
     "fields": {
       "name": "Fridgify-Notifications"
     }
+  },
+  {
+    "model": "Fridgify_Backend.providers",
+    "pk": 5,
+    "fields": {
+      "name": "Hopper"
+    }
   }
 ]
