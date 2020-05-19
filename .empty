@@ -11,7 +11,7 @@ GOOGLE_APPLICATION_CREDENTIALS=./service.json
 
 
 # Hopper Configuration
-HP_APP=./path/to/app.json
+HP_APP=./hopper-example.json
 
 
 # Fridgify Information
