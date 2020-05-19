@@ -1,3 +1,5 @@
+ENVIRONMENT=develop
+
 # Firebase Utilities
 
 # Firebase Web API Key
