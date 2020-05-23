@@ -33,13 +33,15 @@ class FridgeContentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FridgeContent
-        fields = '__all__'
+        fields = (
+            "id", "item_id", "content_id", "fridge", "max_amount", "amount", "unit", "expiration_date", "created_at", "last_updated"
+        )
 
 
 class FridgeContentItemSerializer(serializers.ModelSerializer):
     expiration_date = serializers.DateTimeField(format="%Y-%m-%d")
-    item = serializers.CharField(source="content_id")
+    content_id = serializers.CharField(source="content_id")
 
     class Meta:
         model = FridgeContent
-        fields = ("item", "fridge", "max_amount", "amount", "unit", "expiration_date", "created_at")
+        fields = ("content_id", "fridge", "max_amount", "amount", "unit", "expiration_date", "created_at")
