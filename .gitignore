@@ -280,3 +280,5 @@ orig.env
 .env
 fridgify-firebase-key.json
 hopper-fridgify.json
+codacy-coverage.json
+/.codacy-coverage
