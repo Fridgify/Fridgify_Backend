@@ -3,6 +3,9 @@ Fridgify's Backend repository
 
 ![Code coverage](coverage/coverage.svg?) 
 
+![Docker hub builds](https://img.shields.io/docker/cloud/build/fridgify/fridgify)
+![Docker hub automated builds](https://img.shields.io/docker/cloud/automated/fridgify/fridgify)
+
 | Production   |      Development |
 |:----------:|:-------------:|
 | ![Docker image size production server](https://img.shields.io/docker/image-size/fridgify/fridgify/latest) |  ![Docker image size develop server](https://img.shields.io/docker/image-size/fridgify/fridgify/develop-latest)  |
