@@ -1,44 +1,39 @@
-from django.http import JsonResponse
-from django.http import HttpResponse
-import secrets
-import json
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.decorators import api_view, authentication_classes
+from rest_framework.response import Response
 
-import Fridgify_Backend.utils.login_handler as login_handler
-import Fridgify_Backend.utils.token_handler as token_handler
+from Fridgify_Backend.models.backends import UserAuthentication
+from Fridgify_Backend.models import EssentialUserSerializer
+from Fridgify_Backend.utils import token_utils
 
 
-def login(request):
-    if "Authorization" in request.headers:
-        token = token_handler.existing_tokens(request.headers["Authorization"], "Fridgify")
-        if token is None:
-            return HttpResponse(status=401, content="Invalid Token")
-        else:
-            return JsonResponse(status=200, data={"token": token})
-
-    # Check Credentials
-    cred_check = login_handler.check_credentials(request)
-    if cred_check == 1:
-        token = token_handler.generate_token(json.load(request)["username"], "Fridgify")
-        return JsonResponse(status=200, data={"token": token})
-    elif cred_check == 0:
-        return HttpResponse(status=401, content="Wrong Credentials")
+@swagger_auto_schema(
+    method="post",
+    operation_description="Login via a Login-Token or via credentials. Successful login returns a Login-Token.",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            "username": openapi.Schema(type=openapi.TYPE_STRING),
+            "password": openapi.Schema(type=openapi.TYPE_STRING)
+        },
+        required=["username", "password"]
+    ),
+    manual_parameters=[
+        openapi.Parameter("Authorization", openapi.IN_HEADER, "Login-Token", required=False, type=openapi.TYPE_STRING),
+    ],
+    responses={
+        200: 'Authenticated. Returns token.',
+        401: 'Unauthorized. Invalid credentials or token'
+    },
+    security=[{'Fridgify_Basic_Auth': []}, {'Fridgify_Token_Auth': []}]
+)
+@api_view(['POST'])
+@authentication_classes([UserAuthentication])
+def login_view(request):
+    user = request.user
+    if user.token_authentication is None:
+        response = {"token": token_utils.create_token(user, "Fridgify")}
     else:
-        return HttpResponse(status=400, content="Bad Request")
-
-
-def error_response(request):
-    res = HttpResponse(status=405)
-    res["Allow"] = "POST"
-    return res
-
-
-HTTP_ENDPOINT_FUNCTION = {
-    "POST": login,
-    "GET": error_response,
-    "DELETE": error_response,
-    "PUT": error_response
-}
-
-
-def entry_point(request):
-    return HTTP_ENDPOINT_FUNCTION[request.method](request)
+        response = {"token": user.token_authentication}
+    return Response(data=response, status=200)

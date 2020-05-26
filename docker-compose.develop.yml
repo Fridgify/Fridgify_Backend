@@ -15,6 +15,8 @@ services:
       dockerfile: Dockerfile.develop
     ports:
       - 9999:9999
+    volumes:
+      - /home/fridgify/static_files/develop/:/fridgify/Fridgify_Backend/static/
     depends_on:
       - db_develop
 volumes:
