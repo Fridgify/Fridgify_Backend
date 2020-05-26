@@ -40,7 +40,6 @@ class FridgeContentSerializer(serializers.ModelSerializer):
 
 class FridgeContentItemSerializer(serializers.ModelSerializer):
     expiration_date = serializers.DateTimeField(format="%Y-%m-%d")
-    content_id = serializers.CharField(source="content_id")
 
     class Meta:
         model = FridgeContent
