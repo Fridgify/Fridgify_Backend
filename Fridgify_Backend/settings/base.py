@@ -156,4 +156,5 @@ NOSE_ARGS = [
     '--nologcapture',
     '--verbosity=3',
     '--exe',
+    '--cover-xml',
 ]
