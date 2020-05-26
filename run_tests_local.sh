@@ -1,6 +1,8 @@
 #!/../bin/sh
 echo "testing"
 
+set -a && [ -f ./.env ] && . ./.env && set +a
+
 python manage.py makemigrations Fridgify_Backend --settings=Fridgify_Backend.settings.local
 python manage.py migrate Fridgify_Backend --settings=Fridgify_Backend.settings.local
 if python manage.py test --settings=Fridgify_Backend.settings.local; then

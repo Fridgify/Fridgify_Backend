@@ -1,6 +1,8 @@
 #!/../bin/sh
 echo "Run locally..."
 
+set -a && [ -f ./.env ] && . ./.env && set +a
+
 python manage.py makemigrations Fridgify_Backend --settings=Fridgify_Backend.settings.local
 python manage.py migrate Fridgify_Backend --settings=Fridgify_Backend.settings.local
 python manage.py loaddata providers.json
