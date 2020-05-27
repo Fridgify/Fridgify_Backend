@@ -1,12 +1,12 @@
 # Fridgify_Backend
 Fridgify's Backend repository
 
-![Code coverage](coverage/coverage.svg?) 
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/a12a694e4db141db8ad32441a7a89dce)](https://www.codacy.com/gh/Fridgify/Fridgify_Backend?utm_source=github.com&utm_medium=referral&utm_content=Fridgify/Fridgify_Backend&utm_campaign=Badge_Coverage) 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a12a694e4db141db8ad32441a7a89dce)](https://www.codacy.com/gh/Fridgify/Fridgify_Backend?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Fridgify/Fridgify_Backend&amp;utm_campaign=Badge_Grade)
 
 ![Docker hub builds](https://img.shields.io/docker/cloud/build/fridgify/fridgify)
 ![Docker hub automated builds](https://img.shields.io/docker/cloud/automated/fridgify/fridgify)
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a12a694e4db141db8ad32441a7a89dce)](https://www.codacy.com/gh/Fridgify/Fridgify_Backend?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Fridgify/Fridgify_Backend&amp;utm_campaign=Badge_Grade)
 
 | Production   |      Development |
 |:----------:|:-------------:|
