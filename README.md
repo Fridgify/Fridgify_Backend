@@ -6,6 +6,8 @@ Fridgify's Backend repository
 ![Docker hub builds](https://img.shields.io/docker/cloud/build/fridgify/fridgify)
 ![Docker hub automated builds](https://img.shields.io/docker/cloud/automated/fridgify/fridgify)
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a12a694e4db141db8ad32441a7a89dce)](https://www.codacy.com/gh/Fridgify/Fridgify_Backend?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Fridgify/Fridgify_Backend&amp;utm_campaign=Badge_Grade)
+
 | Production   |      Development |
 |:----------:|:-------------:|
 | ![Docker image size production server](https://img.shields.io/docker/image-size/fridgify/fridgify/latest) |  ![Docker image size develop server](https://img.shields.io/docker/image-size/fridgify/fridgify/develop-latest)  |
