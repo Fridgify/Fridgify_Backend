@@ -1,4 +1,8 @@
-from django.urls import path, include
+"""
+Routes for fridge content views
+"""
+
+from django.urls import path
 
 from fridgify_backend.views.fridge.content import fridge_content
 from fridgify_backend.views.fridge.content import fridge_content_item

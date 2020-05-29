@@ -1,3 +1,7 @@
+"""
+Routes for fridge views
+"""
+
 from django.urls import path, include
 
 from fridgify_backend.views.fridge import fridge

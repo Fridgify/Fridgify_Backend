@@ -4,7 +4,7 @@ from rest_framework import status
 from unittest import mock
 from django.test import TestCase, RequestFactory
 
-from fridgify_backend.views.items import id
+from fridgify_backend.views.items import items_id
 from fridgify_backend.tests import test_utils
 from fridgify_backend.models import Items, ItemsSerializer
 
@@ -24,19 +24,19 @@ class ItemsApiTestCasesGetWithId(TestCase):
         request = self.factory.get(f"/items/id/{item_id}/")
         request.META["HTTP_AUTHORIZATION"] = "APIToken"
 
-        response = id.id_view(request, item_id)
+        response = items_id.id_view(request, item_id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_id_view_ItemDoesntExist_404(self):
         request = self.factory.get(f"/items/id/999/")
         request.META["HTTP_AUTHORIZATION"] = "APIToken"
 
-        response = id.id_view(request, 999)
+        response = items_id.id_view(request, 999)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_id_view_ItemIdIsMissing(self):
         request = self.factory.get(f"/items/id/")
         request.META["HTTP_AUTHORIZATION"] = "APIToken"
 
-        response = id.id_view(request, None)
+        response = items_id.id_view(request, None)
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)

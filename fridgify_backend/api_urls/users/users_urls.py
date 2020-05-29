@@ -1,3 +1,7 @@
+"""
+Routes for user views
+"""
+
 from django.urls import path
 
 from fridgify_backend.views.users import users, fridge_users, users_duplicate

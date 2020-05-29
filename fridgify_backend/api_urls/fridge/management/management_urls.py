@@ -1,6 +1,18 @@
-from django.urls import path, include
+"""
+Routes for fridge management views
+"""
 
-from fridgify_backend.views.fridge.management import edit_fridge, join_fridge, create_fridge, delete_fridge, users, qr_code
+from django.urls import path
+
+from fridgify_backend.views.fridge.management import (
+    edit_fridge,
+    join_fridge,
+    create_fridge,
+    delete_fridge,
+    users,
+    qr_code
+)
+
 
 #  /fridge/management/
 urlpatterns = [

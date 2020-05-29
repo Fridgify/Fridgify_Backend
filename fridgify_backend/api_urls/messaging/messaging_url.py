@@ -1,3 +1,7 @@
+"""
+Routes for messaging views
+"""
+
 from django.urls import path
 
 from fridgify_backend.views.messaging import register, subscribe
