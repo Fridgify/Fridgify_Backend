@@ -28,7 +28,7 @@ from fridgify_backend.api_urls.messaging import messaging_url
 from fridgify_backend.views import utils
 
 
-schema_view = get_schema_view(
+SchemaView = get_schema_view(
     openapi.Info(
         title="Fridgify API",
         default_version="v1",
@@ -40,7 +40,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     #  Documentation
-    path('', schema_view.with_ui('swagger', cache_timeout=0)),
+    path('', SchemaView.with_ui('swagger', cache_timeout=0)),
     #  Authentication Endpoint
     path('auth/', include(auth_urls)),
     #  Fridge Endpoint
