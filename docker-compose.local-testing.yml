@@ -16,7 +16,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - /home/fridgify/static_files/production/:/fridgify/Fridgify_Backend/static/
+      - /home/fridgify/static_files/production/:/fridgify/fridgify_backend/static/
       - /home/fridgify/logs/production/:/fridgify/logs/
     depends_on:
       - db_test

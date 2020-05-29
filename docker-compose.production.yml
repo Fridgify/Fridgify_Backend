@@ -18,12 +18,12 @@ services:
     ports:
       - 9000:9000
     volumes:
-      - /home/fridgify/static_files/production/:/fridgify/Fridgify_Backend/static/
+      - /home/fridgify/static_files/production/:/fridgify/fridgify_backend/static/
       - /home/fridgify/logs/production/:/fridgify/logs/
     depends_on:
       - db
     environment:
-      - DJANGO_SETTINGS_MODULE=Fridgify_Backend.settings.production
+      - DJANGO_SETTINGS_MODULE=fridgify_backend.settings.production
     env_file:
       - ${ENV_FILE:-.empty}
 volumes:

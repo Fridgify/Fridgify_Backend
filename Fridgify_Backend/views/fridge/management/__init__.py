@@ -1,1 +1,0 @@
-from Fridgify_Backend.views.fridge.management import create_fridge, delete_fridge, edit_fridge, join_fridge, users, qr_code

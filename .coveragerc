@@ -1,20 +1,20 @@
 [run]
 omit =
-    Fridgify_Backend/*
+    fridgify_backend/*
 
 
 [report]
 show_missing = True
 omit =
-    Fridgify_Backend/models/exceptions/*
-    Fridgify_Backend/models/__init__.py
-    Fridgify_Backend/models/accesstokens.py
-    Fridgify_Backend/models/fridge_content.py
-    Fridgify_Backend/models/fridges.py
-    Fridgify_Backend/models/items.py
-    Fridgify_Backend/models/providers.py
-    Fridgify_Backend/models/stores.py
-    Fridgify_Backend/models/user_fridge.py
-    Fridgify_Backend/models/users.py
-    Fridgify_Backend/migrations/*
-    Fridgify_Backend/settings/*
+    fridgify_backend/models/exceptions/*
+    fridgify_backend/models/__init__.py
+    fridgify_backend/models/accesstokens.py
+    fridgify_backend/models/fridge_content.py
+    fridgify_backend/models/fridges.py
+    fridgify_backend/models/items.py
+    fridgify_backend/models/providers.py
+    fridgify_backend/models/stores.py
+    fridgify_backend/models/user_fridge.py
+    fridgify_backend/models/users.py
+    fridgify_backend/migrations/*
+    fridgify_backend/settings/*
