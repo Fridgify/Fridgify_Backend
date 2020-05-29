@@ -1,3 +1,7 @@
+"""
+Model representation for UserFridge
+"""
+
 from django.db import models
 from rest_framework import serializers
 
@@ -12,16 +16,24 @@ class UserFridge(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey('Users', on_delete=models.CASCADE)
     fridge = models.ForeignKey('Fridges', on_delete=models.CASCADE)
-    role = models.IntegerField(choices=const.Constants.ROLE_CHOICES, default=const.Constants.ROLE_USER)
+    role = models.IntegerField(
+        choices=const.Constants.ROLE_CHOICES,
+        default=const.Constants.ROLE_USER
+    )
 
     class Meta:
+        # pylint: disable=too-few-public-methods, missing-class-docstring
         unique_together = ('user', 'fridge',)
 
 
 class FridgeUserSerializer(serializers.ModelSerializer):
+    """
+    Serialize FridgeUser
+    """
     user = UserSerializer()
 
     class Meta:
+        # pylint: disable=too-few-public-methods, missing-class-docstring
         model = UserFridge
         fields = ["user", "role"]
 

@@ -1,3 +1,7 @@
+"""
+Model representation for Fridge Content
+"""
+
 import uuid
 
 from django.db import models
@@ -20,27 +24,56 @@ class FridgeContent(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = (('fridge', 'content_id'))
+        # pylint: disable=too-few-public-methods, missing-class-docstring
+        unique_together = ('fridge', 'content_id')
 
     def __dir__(self):
         return [
-            "id", "fridge", "item", "amount", "expiration_date", "unit", "created_at", "last_updated"
+            "id",
+            "fridge",
+            "item",
+            "amount",
+            "expiration_date",
+            "unit",
+            "created_at",
+            "last_updated"
         ]
 
 
 class FridgeContentSerializer(serializers.ModelSerializer):
+    """Serialize FridgeContent"""
     expiration_date = serializers.DateTimeField(format="%Y-%m-%d")
 
     class Meta:
+        # pylint: disable=too-few-public-methods, missing-class-docstring
         model = FridgeContent
         fields = (
-            "id", "item_id", "content_id", "fridge", "max_amount", "amount", "unit", "expiration_date", "created_at", "last_updated"
+            "id",
+            "item_id",
+            "content_id",
+            "fridge",
+            "max_amount",
+            "amount",
+            "unit",
+            "expiration_date",
+            "created_at",
+            "last_updated"
         )
 
 
 class FridgeContentItemSerializer(serializers.ModelSerializer):
+    """Serialize FridgeContentItem"""
     expiration_date = serializers.DateTimeField(format="%Y-%m-%d")
 
     class Meta:
+        # pylint: disable=too-few-public-methods, missing-class-docstring
         model = FridgeContent
-        fields = ("content_id", "fridge", "max_amount", "amount", "unit", "expiration_date", "created_at")
+        fields = (
+            "content_id",
+            "fridge",
+            "max_amount",
+            "amount",
+            "unit",
+            "expiration_date",
+            "created_at"
+        )

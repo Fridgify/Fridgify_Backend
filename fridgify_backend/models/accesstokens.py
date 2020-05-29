@@ -1,3 +1,7 @@
+"""
+Model representation for Accesstokens
+"""
+
 from django.db import models
 
 
@@ -16,6 +20,7 @@ class Accesstokens(models.Model):
     fridge = models.ForeignKey('Fridges', on_delete=models.CASCADE, null=True)
 
     class Meta:
+        # pylint: disable=too-few-public-methods, missing-class-docstring
         unique_together = ('provider', 'user', 'fridge')
 
     def __dir__(self):

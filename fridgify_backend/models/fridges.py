@@ -1,3 +1,7 @@
+"""
+Model representation for Fridges
+"""
+
 from django.db import models
 from rest_framework import serializers
 
@@ -15,6 +19,10 @@ class Fridges(models.Model):
 
 
 class FridgeSerializer(serializers.ModelSerializer):
+    """
+    Serialize Fridge
+    """
     class Meta:
+        # pylint: disable=too-few-public-methods, missing-class-docstring
         model = Fridges
         fields = '__all__'

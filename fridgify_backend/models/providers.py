@@ -1,3 +1,7 @@
+"""
+Model representation for Providers
+"""
+
 from django.db import models
 
 

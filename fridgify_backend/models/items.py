@@ -1,3 +1,7 @@
+"""
+Model representation for Items
+"""
+
 from django.db import models
 from rest_framework import serializers
 
@@ -17,6 +21,10 @@ class Items(models.Model):
 
 
 class ItemsSerializer(serializers.ModelSerializer):
+    """
+    Serialize Items
+    """
     class Meta:
+        # pylint: disable=too-few-public-methods, missing-class-docstring
         model = Items
         fields = "__all__"

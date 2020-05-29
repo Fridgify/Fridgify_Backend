@@ -1,3 +1,7 @@
+"""
+Contains all model representations
+"""
+
 from .users import Users, UserSerializer
 from .fridges import Fridges, FridgeSerializer
 from .items import Items, ItemsSerializer

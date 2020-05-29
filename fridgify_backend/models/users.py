@@ -1,3 +1,7 @@
+"""
+Model representation for Users
+"""
+
 from django.db import models
 from rest_framework import serializers
 
@@ -35,6 +39,10 @@ class Users(models.Model):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Serialize Users
+    """
     class Meta:
+        # pylint: disable=too-few-public-methods, missing-class-docstring
         model = Users
         fields = ["user_id", "username", "name", "surname", "email", "birth_date"]
