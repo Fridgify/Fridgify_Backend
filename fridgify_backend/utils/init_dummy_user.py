@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 import datetime
 from django.utils import timezone
 from django.http import HttpResponse

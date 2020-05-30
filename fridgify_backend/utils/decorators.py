@@ -1,3 +1,6 @@
+"""Module contains decorators"""
+# pylint: disable=no-member, keyword-arg-before-vararg
+
 import json
 from functools import wraps
 
@@ -7,6 +10,7 @@ from fridgify_backend.models import UserFridge, Fridges
 
 
 def check_body(*keys):
+    """Check if body contains all passed keys"""
     def decorator(func):
         @wraps(func)
         def wrapper(request=None, *args, **kwargs):
@@ -23,6 +27,7 @@ def check_body(*keys):
 
 
 def check_fridge_access():
+    """Check if user has access to the fridge"""
     def decorator(func):
         @wraps(func)
         def wrapper(request=None, fridge_id=None, *args, **kwargs):
@@ -38,6 +43,7 @@ def check_fridge_access():
 
 
 def permitted_keys(*keys):
+    """Check if permitted keys are in body"""
     def decorator(func):
         @wraps(func)
         def wrapper(request=None, *args, **kwargs):
@@ -54,6 +60,7 @@ def permitted_keys(*keys):
 
 
 def permissions(*roles):
+    """Check if user has appropriate roles"""
     def decorator(func):
         @wraps(func)
         def wrapper(request=None, fridge_id=None, *args, **kwargs):

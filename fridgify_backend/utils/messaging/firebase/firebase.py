@@ -1,3 +1,5 @@
+"""Firebase Messaging Module"""
+
 import logging
 
 import firebase_admin
@@ -9,8 +11,9 @@ logger = logging.getLogger(__name__)
 
 
 def send_message(recipients, title, body, **kwargs):
+    """Send message to Firebase service"""
     logger.info("Send notifications to Firebase...")
-    logger.debug(f"Title: {title}\n Body: {body}")
+    logger.debug("Title: %s\n Body: %s", title, body)
     message = messaging.MulticastMessage(
         tokens=recipients,
         data={str(key): str(kwargs[key]) for key in kwargs},

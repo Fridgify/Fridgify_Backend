@@ -1,13 +1,16 @@
+"""Create message content for messaging services"""
+# pylint: disable=no-member
+
 import itertools
 
 from django.db.models import Count, F
 from django.utils import timezone
 
 from fridgify_backend import models
-from fridgify_backend.utils import const
 
 
 def get_grouped_content(due_in):
+    """Group to be expired fridge content by fridge_id"""
     content = models.FridgeContent.objects.values(
         "item_id",
         "item__name",
@@ -15,29 +18,22 @@ def get_grouped_content(due_in):
     ).annotate(
         item_count=Count("item_id")
     ).filter(
-        expiration_date__range=[F("expiration_date") - timezone.timedelta(days=due_in), F("expiration_date")],
+        expiration_date__range=[
+            F("expiration_date") - timezone.timedelta(days=due_in),
+            F("expiration_date")
+        ],
     ).order_by("fridge_id", "item_id")
 
-    return [(key, list(value)) for key, value in itertools.groupby(content, key=lambda entry: entry["fridge_id"])]
-
-
-def get_recipients(fridge_id):
-    users = models.UserFridge.objects.values_list("user_id").filter(fridge_id=fridge_id)
-    user_ids = [user[0] for user in users]
-
-    tokens = models.Accesstokens.objects.values_list("accesstoken", "provider_id").filter(
-        user_id__in=user_ids,
-        provider_id__in=const.Constants.NOTIFICATION_SERVICES
-    ).order_by("provider_id")
-
-    recipients_dict = {}
-    for key, value in itertools.groupby(tokens, key=lambda entry: entry[1]):
-        recipients_dict[key] = [x[0] for x in value]
-
-    return recipients_dict
+    return [
+        (key, list(value))
+        for key, value in itertools.groupby(
+            content, key=lambda entry: entry["fridge_id"]
+        )
+    ]
 
 
 def create_expired_message(fridge_id, content, due_in, limit=3):
+    """Create expired message"""
     limit = len(content) if len(content) < limit else limit
 
     fridge_name = models.Fridges.objects.values("name").get(fridge_id=fridge_id)["name"]
@@ -57,6 +53,7 @@ def create_expired_message(fridge_id, content, due_in, limit=3):
 
 
 def rest_amount(content):
+    """Count entries and return rest amount"""
     amount = 0
     for entry in content:
         amount += entry["item_count"]

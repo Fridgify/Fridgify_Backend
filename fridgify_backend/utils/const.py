@@ -1,7 +1,9 @@
-from fridgify_backend import models
+"""Fridgify Constants"""
 
 
 class Constants:
+    #  pylint: disable=too-few-public-methods
+    """Contains all constants"""
     ROLE_OWNER = 0
     ROLE_OVERSEER = 1
     ROLE_USER = 2

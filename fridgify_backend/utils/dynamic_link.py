@@ -1,3 +1,5 @@
+"""Handle dynamic links"""
+
 import json
 import logging
 import os
@@ -8,9 +10,10 @@ logger = logging.getLogger(__name__)
 
 
 def create_dynamic_link(deep_link):
+    """Create a Firebase dynamic link for the passed deep link"""
     logger.info("Creating dynamic link via Firebase...")
-    logger.debug(f"Deep Link: {deep_link}")
-    
+    logger.debug("Deep Link: %s", deep_link)
+
     payload = {
         "dynamicLinkInfo": {
             "domainUriPrefix": os.environ['FRIDGIFY_DL_URL'],
@@ -19,11 +22,11 @@ def create_dynamic_link(deep_link):
             "iosInfo": {"iosBundleId": os.environ['IOS_BID']}
         }
     }
-    logger.debug(f"Payload: {payload}")
+    logger.debug("Payload: %s", repr(payload))
 
     req_url = f"{os.environ['FB_DL_URL']}/shortLinks?key={os.environ['FB_API_KEY']}"
     response = requests.post(req_url, data=json.dumps(payload))
-    logger.debug(f"Firebase Response: {response.content}")
+    logger.debug("Firebase Response: %s", response.content)
     if response.status_code != 200:
         raise json.JSONDecodeError(msg="Invalid Payload", doc="", pos=0)
     content = json.loads(response.content)
@@ -31,6 +34,7 @@ def create_dynamic_link(deep_link):
 
 
 def create_deep_link(prefix, **kwargs):
+    """Create a deep link"""
     path = []
     for key, value in kwargs.items():
         path.append(f"{key}={value}")

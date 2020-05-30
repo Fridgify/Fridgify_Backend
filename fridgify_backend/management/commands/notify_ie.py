@@ -34,7 +34,7 @@ class Command(BaseCommand):
 
         for fridge_id, content in content_group:
             self.stdout.write(f"Send notification to members of {fridge_id}")
-            recipients = message_content.get_recipients(fridge_id)
+            recipients = message_handler.get_recipients(fridge_id)
             if not recipients:
                 continue
             msg = message_content.create_expired_message(fridge_id, content, p_due, p_limit)
