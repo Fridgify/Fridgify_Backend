@@ -1,10 +1,10 @@
+"""Test file for Fridge Management"""
+
 from django.test import TestCase
-from fridgify_backend.views.fridge.management import edit_fridge
-import json
 
 
 class ManagementTestCasesGeneral(TestCase):
-
-    """Management test case"""
+    """TestCase for general fridge management view"""
     def test_hello_world(self):
-        pass
+        """Placeholder"""
+        pass  # pylint: disable=unnecessary-pass

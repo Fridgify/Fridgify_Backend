@@ -1,10 +1,10 @@
+"""Test file for Stores"""
+
 from django.test import TestCase
-from fridgify_backend.views.stores import stores
-import json
 
 
 class StoresTestCases(TestCase):
-
-    """Add store test case"""
+    """TestCase for stores view"""
     def test_add_store(self):
+        """Placeholder"""
         self.assertEqual(True, True)

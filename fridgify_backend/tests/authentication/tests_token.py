@@ -1,27 +1,22 @@
+"""Test file for Token"""
+# pylint: disable=no-member
+
 import json
-import datetime
-import collections
+from unittest import mock
 
 from django.test import TestCase, RequestFactory
 from django.utils import timezone
-from unittest import mock
 from rest_framework import status
 
-from fridgify_backend.models import Providers, Users, Accesstokens
+from fridgify_backend.models import Providers, Accesstokens
 from fridgify_backend.views.authentication import token
 from fridgify_backend.tests import test_utils
 
 
-def request_get(request):
-    return "method allowed"
-
-
-def request_any(request):
-    return "method not allowed"
-
-
 class AuthenticationTestCasesToken(TestCase):
+    """TestCase for token view"""
     def setUp(self):
+        """Setup for test case"""
         self.factory = RequestFactory()
         test_utils.clean()
         test_utils.setup()
@@ -34,10 +29,12 @@ class AuthenticationTestCasesToken(TestCase):
         )
 
     def tearDown(self):
+        """Clean after test execution"""
         test_utils.clean()
 
     @mock.patch("fridgify_backend.utils.token_utils.create_token")
-    def test_getToken_AuthorizationValid_token(self, mock_create_token):
+    def test_get_token_authorization_valid_exp_token(self, mock_create_token):
+        """Retrieve token with valid token. Expecting token"""
         mock_create_token.return_value = "API Token"
         request = self.factory.get("/auth/token/")
         request.META["HTTP_AUTHORIZATION"] = "Token"
@@ -45,7 +42,8 @@ class AuthenticationTestCasesToken(TestCase):
         content = token_response.render().content
         self.assertEqual(json.loads(content)["token"], "API Token", "Not the correct token.")
 
-    def test_getToken_InvalidJWTToken_none(self):
+    def test_get_token_invalid_jwt_token_exp_403(self):
+        """Retrieve token with invalid token. Expecting 403 response"""
         request = self.factory.post("/auth/token/", )
         request.META["HTTP_AUTHORIZATION"] = \
             "This should be wrong"
@@ -53,6 +51,7 @@ class AuthenticationTestCasesToken(TestCase):
         self.assertEqual(token_response.status_code, 403)
 
     def test_error_response(self):
+        """Retrieve token with invalid method. Expecting 405 response"""
         request = self.factory.post("/auth/token/")
         request.META["HTTP_AUTHORIZATION"] = "Token"
         error = token.token_view(request)

@@ -29,7 +29,7 @@ class UserAuthentication(authentication.BaseAuthentication):
             return self.authenticate_token(request.headers["Authorization"])
         if request.method != "GET":
             return self.authenticate_credentials(request)
-        raise exceptions.MethodNotAllowed
+        raise exceptions.MethodNotAllowed(method=request.method)
 
     @staticmethod
     @check_body("username", "password")
