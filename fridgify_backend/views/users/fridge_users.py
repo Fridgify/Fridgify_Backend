@@ -1,3 +1,6 @@
+"""Fridge Users related views"""
+# pylint: disable=no-member
+
 import logging
 
 from drf_yasg import openapi
@@ -35,6 +38,16 @@ logger = logging.getLogger(__name__)
 @permission_classes([IsAuthenticated])
 @check_fridge_access()
 def fridge_users_view(request, fridge_id):
-    logger.info(f"User {request.user.username} retrieves all user for fridge {fridge_id}...")
+    """Entry point for fridge users view"""
+    logger.info(
+        "User %s retrieves all user for fridge %d...",
+        request.user.username, fridge_id
+    )
     users = UserFridge.objects.values("user_id").filter(fridge_id=fridge_id)
-    return Response(data=[UserSerializer(Users.objects.get(user_id=user["user_id"])).data for user in users], status=200)
+    return Response(
+        data=[
+            UserSerializer(Users.objects.get(user_id=user["user_id"])).data
+            for user in users
+        ],
+        status=200
+    )

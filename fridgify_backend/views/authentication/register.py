@@ -1,3 +1,6 @@
+"""Register related views"""
+# pylint: disable=no-member
+
 import json
 import logging
 
@@ -41,12 +44,13 @@ unique_keys = ("username", "password", "email", "name", "surname", "birth_date")
 @api_view(["POST"])
 @check_body(*unique_keys)
 def register_view(request):
+    """Entry point for register view"""
     try:
         body = json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
-        logger.error(f"Couldn't parse JSON:\n {request.body.decode('utf-8')}")
+        logger.error("Couldn't parse JSON:\n %s", request.body.decode('utf-8'))
         raise ParseError()
-    logger.info(f"Register a new user ({body['username']})")
+    logger.info("Register a new user (%s)", body['username'])
     try:
         logger.info("Create encrypted password...")
         password = bcrypt.hashpw(body["password"].encode("utf-8"), bcrypt.gensalt())
@@ -62,11 +66,16 @@ def register_view(request):
         if created:
             logger.info("Created...")
             return Response(data=UserSerializer(obj).data, status=201)
-        else:
-            duplicate_keys = api_utils.non_unique_keys(body, Users, *unique_keys)
-            logger.error(f"Object was not created for {','.join(duplicate_keys)}. No Integrity Error thrown.")
-            raise exceptions.ConflictException(detail=f"{' and '.join(duplicate_keys)} already exist(s)")
+
+        duplicate_keys = api_utils.non_unique_keys(body, Users, *unique_keys)
+        logger.error("Object was not created for %s."
+                     "No Integrity Error thrown.", ','.join(duplicate_keys))
+        raise exceptions.ConflictException(
+            detail=f"{' and '.join(duplicate_keys)} already exist(s)"
+        )
     except IntegrityError:
         duplicate_keys = api_utils.non_unique_keys(body, Users, *unique_keys)
-        logger.error(f"Integrity Error for {','.join(duplicate_keys)}")
-        raise exceptions.ConflictException(detail=f"{' and '.join(duplicate_keys)} already exist(s)")
+        logger.error("Integrity Error for %s", ','.join(duplicate_keys))
+        raise exceptions.ConflictException(
+            detail=f"{' and '.join(duplicate_keys)} already exist(s)"
+        )

@@ -1,3 +1,5 @@
+"""Ping related view"""
+
 import logging
 
 from drf_yasg import openapi
@@ -18,6 +20,7 @@ logger = logging.getLogger(__name__)
     security=[{'FridgifyAPI_Token_Auth': []}]
 )
 @api_view(["GET"])
-def ping(request):
+def ping(_):
+    """Check the status of the API"""
     logger.info("Check API status...")
     return Response(data={"detail": "Pong"}, status=200)

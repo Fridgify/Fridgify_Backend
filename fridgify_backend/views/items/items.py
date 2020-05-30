@@ -1,3 +1,6 @@
+"""Items related views"""
+# pylint: disable=no-member
+
 import logging
 
 from drf_yasg import openapi
@@ -32,6 +35,7 @@ logger = logging.getLogger(__name__)
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
 def items_view(request):
-    logger.info(f"User {request.user.username} retrieves all items...")
+    """Entry point for items view"""
+    logger.info("User %s retrieves all items...", request.user.username)
     items = Items.objects.all()
     return Response(data=[ItemsSerializer(item).data for item in items], status=200)

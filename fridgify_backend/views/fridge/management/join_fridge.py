@@ -1,3 +1,6 @@
+"""Join fridge related views"""
+# pylint: disable=no-member
+
 from django.utils import timezone
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -39,23 +42,35 @@ from fridgify_backend.utils import const, api_utils
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
 def join_view(request):
+    """Entry point for join view"""
     token = request.GET.get("token")
     if token is None:
         raise ValidationError(detail="Missing token argument")
 
     try:
-        token_obj = Accesstokens.objects.filter(provider__name="Fridgify-Join", accesstoken=token).get()
+        token_obj = Accesstokens.objects.filter(
+            provider__name="Fridgify-Join",
+            accesstoken=token
+        ).get()
     except Accesstokens.DoesNotExist:
         raise NotFound(detail="Join link not found")
 
     if token_obj.valid_till < timezone.now():
         token_obj.delete()
-        return Response(status=410, data={"detail": "Link not valid anymore. Ask a member to invite you again."})
+        return Response(
+            status=410,
+            data={
+                "detail": "Link not valid anymore. Ask a member to invite you again."
+            }
+        )
 
-    if UserFridge.objects.filter(user_id=request.user.user_id, fridge_id=token_obj.fridge_id).exists():
+    if UserFridge.objects.filter(
+            user_id=request.user.user_id,
+            fridge_id=token_obj.fridge_id
+    ).exists():
         return Response(status=409, data={"detail": "Already member of fridge"})
 
-    uf = UserFridge.objects.create(
+    fridge = UserFridge.objects.create(
         user_id=request.user.user_id,
         fridge_id=token_obj.fridge_id,
         role=const.Constants.ROLE_USER
@@ -63,9 +78,9 @@ def join_view(request):
 
     content = api_utils.get_content(request.user, token_obj.fridge_id)
     payload = {
-        "id": uf.fridge_id,
-        "name": uf.fridge.name,
-        "description": uf.fridge.description,
+        "id": fridge.fridge_id,
+        "name": fridge.fridge.name,
+        "description": fridge.fridge.description,
         "content": {
             "total": 0,
             "fresh": 0,

@@ -1,7 +1,8 @@
+"""Fridge related views"""
+# pylint: disable=no-member
+
 import logging
 
-from django.db.models import Count, Case, When, IntegerField, Q
-from django.utils import timezone
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.response import Response
@@ -9,7 +10,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.permissions import IsAuthenticated
 
 from fridgify_backend.models.backends import APIAuthentication
-from fridgify_backend.models import FridgeContent, UserFridge
+from fridgify_backend.models import UserFridge
 from fridgify_backend.utils import api_utils
 
 
@@ -54,10 +55,10 @@ logger = logging.getLogger(__name__)
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
 def fridge_view(request):
-    logger.info(f"Retrieve fridges for user {request.user.username}...")
+    """Entry point for fridge views"""
+    logger.info("Retrieve fridges for user %s...", request.user.username)
     content = api_utils.get_content(request.user)
 
-    # TODO: If we can change the structure slightly to be flat, we do not need the for loop
     payload = []
 
     fridges = UserFridge.objects.values(
@@ -66,7 +67,7 @@ def fridge_view(request):
         "fridge__description"
     ).filter(user=request.user).order_by("fridge_id")
 
-    c = 0
+    counter = 0
     for fridge in fridges:
         fridge_inst = {
             "id": fridge["fridge_id"],
@@ -79,16 +80,16 @@ def fridge_view(request):
                 "overDue": 0
             }
         }
-        if len(content) > 0 and c < len(content):
-            item = content[c]
+        if len(content) > 0 and counter < len(content):
+            item = content[counter]
             if fridge["fridge_id"] == item["fridge_id"]:
                 fridge_inst["content"]["total"] = item["total"]
                 fridge_inst["content"]["fresh"] = item["fresh"]
                 fridge_inst["content"]["dueSoon"] = item["dueSoon"]
                 fridge_inst["content"]["overDue"] = item["overDue"]
-            c += 1
+            counter += 1
 
         payload.append(fridge_inst)
 
-    logger.debug(f"Retrieved fridge content:\n{payload}")
+    logger.debug("Retrieved fridge content:\n%s", repr(payload))
     return Response(data=payload, status=200)

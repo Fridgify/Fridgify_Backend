@@ -1,3 +1,6 @@
+"""Delete Fridge related views"""
+# pylint: disable=no-member
+
 import logging
 
 from drf_yasg import openapi
@@ -36,12 +39,13 @@ logger = logging.getLogger(__name__)
 @permission_classes([IsAuthenticated])
 @check_fridge_access()
 def delete_fridge_view(request, fridge_id):
-    logger.info(f"Delete user {request.user.username} for fridge {fridge_id}...")
-    ufridge = UserFridge.objects.get(user=request.user, fridge_id=fridge_id)
-    ufridge.delete()
+    """Entry point for delete fridge view"""
+    logger.info("Delete user %s for fridge %d...", request.user.username, fridge_id)
+    u_fridge = UserFridge.objects.get(user=request.user, fridge_id=fridge_id)
+    u_fridge.delete()
 
     # Delete the fridge, if you are the Owner
-    if ufridge.role == const.Constants.ROLE_OWNER:
-        logger.info(f"Owner deleted fridge {fridge_id}")
+    if u_fridge.role == const.Constants.ROLE_OWNER:
+        logger.info("Owner deleted fridge %d", fridge_id)
         Fridges.objects.get(fridge_id=fridge_id).delete()
     return Response(data={"detail": "User was removed from fridge"}, status=200)

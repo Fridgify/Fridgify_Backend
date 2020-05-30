@@ -1,3 +1,6 @@
+"""Item ID related views"""
+# pylint: disable=no-member
+
 import logging
 
 from drf_yasg import openapi
@@ -33,7 +36,8 @@ logger = logging.getLogger(__name__)
 @api_view(["GET"])
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
-def id_view(request, item_id=None):
+def id_view(_, item_id=None):
+    """Entry point for item id view"""
     logger.info("Retrieve item...")
 
     if item_id is None:

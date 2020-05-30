@@ -1,17 +1,17 @@
-import json
+"""Get Users related views"""
+# pylint: disable=no-member
+
 import logging
 
-from django.db import IntegrityError
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied, ParseError, NotAcceptable, APIException
 
 from fridgify_backend.models.backends import APIAuthentication
-from fridgify_backend.models import UserSerializer, UserFridge, Users, FridgeUserSerializer
-from fridgify_backend.utils.decorators import check_fridge_access, permissions, check_body
+from fridgify_backend.models import UserFridge, FridgeUserSerializer
+from fridgify_backend.utils.decorators import check_fridge_access
 
 
 logger = logging.getLogger(__name__)
@@ -38,6 +38,16 @@ logger = logging.getLogger(__name__)
 @permission_classes([IsAuthenticated])
 @check_fridge_access()
 def fridge_users_view(request, fridge_id):
-    logger.info(f"User {request.user.username} retrieves all user for fridge {fridge_id}...")
+    """Entry point for fridge view"""
+    logger.info(
+        "User %s retrieves all user for fridge %d...",
+        request.user.username, fridge_id
+    )
     fridge_users = UserFridge.objects.filter(fridge_id=fridge_id)
-    return Response(data=[FridgeUserSerializer(fridge_user).data for fridge_user in fridge_users], status=200)
+    return Response(
+        data=[
+            FridgeUserSerializer(fridge_user).data
+            for fridge_user in fridge_users
+        ],
+        status=200
+    )

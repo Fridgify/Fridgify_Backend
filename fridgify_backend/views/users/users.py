@@ -1,3 +1,6 @@
+"""Users related views"""
+# pylint: disable=no-member
+
 import json
 import logging
 
@@ -64,28 +67,29 @@ logger = logging.getLogger(__name__)
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
 def users_view(request):
+    """Entry point for users view"""
     if request.method == "GET":
-        logger.info(f"Retrieve user info for {request.user.username}")
+        logger.info("Retrieve user info for %s", request.user.username)
         return Response(data=UserSerializer(request.user).data, status=200)
-    else:
-        return edit_user(request)
+    return edit_user(request)
 
 
 def edit_user(request):
+    """Edit a user"""
     try:
         body = json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
-        logger.error(f"Couldn't parse JSON:\n {request.body.decode('utf-8')}")
+        logger.error("Couldn't parse JSON:\n %s", request.body.decode('utf-8'))
         raise ParseError()
 
     user = request.user
-    logger.debug(f"Update values: {''.join(body.keys())}")
+    logger.debug("Update values: %s", ''.join(body.keys()))
     for key in body.keys():
-        if key == "username" or key == "email":
+        if key in ("username", "email"):
             if not Users.objects.filter(username=body[key]).exists():
                 setattr(user, key, body[key])
             else:
-                logger.info(f"{key} {body[key]} already exists...")
+                logger.info("%s %s already exists...", key, body[key])
                 return Response(data={"detail": f"{key} {body[key]} already exists"}, status=409)
         elif key == "password":
             password = bcrypt.hashpw(body[key].encode("utf-8"), bcrypt.gensalt())

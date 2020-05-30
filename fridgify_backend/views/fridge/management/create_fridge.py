@@ -1,3 +1,6 @@
+"""CreateFridge related views"""
+# pylint: disable=no-member
+
 import json
 import logging
 
@@ -41,25 +44,30 @@ logger = logging.getLogger(__name__)
 @permission_classes([IsAuthenticated])
 @authentication_classes([APIAuthentication])
 def create_fridge_view(request):
+    """Entry point for create fridge view"""
     try:
         body = json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
-        logger.error(f"Couldn't parse JSON:\n {request.body.decode('utf-8')}")
+        logger.error("Couldn't parse JSON:\n %s", request.body.decode('utf-8'))
         raise ParseError()
-    logger.info(f"Create fridge {body['name']} for user {request.user.username}...")
+    logger.info("Create fridge %s for user %s...", body['name'], request.user.username)
     try:
         if UserFridge.objects.filter(user=request.user, fridge__name=body["name"]).exists():
-            logger.warning(f"Fridge {body['name']} already exists...")
+            logger.warning("Fridge %s already exists...", body['name'])
             raise exceptions.ConflictException(detail="Fridge name already exists for user")
         if "description" in body:
-            logger.debug(f"fridge_name: {body['name']}, fridge_description: {body['description']}")
+            logger.debug(
+                "fridge_name: %s, fridge_description: %s",
+                body['name'], body['description']
+            )
             fridge = Fridges.objects.create(name=body["name"], description=body["description"])
         else:
-            logger.debug(f"fridge_name: {body['name']}")
+            logger.debug("fridge_name: %s", body['name'])
             fridge = Fridges.objects.create(name=body["name"])
         logger.info("Connect user to fridge...")
         UserFridge.objects.create(user=request.user, fridge=fridge, role=const.Constants.ROLE_OWNER)
         return Response(data=FridgeSerializer(fridge).data, status=201)
     except IntegrityError:
-        logger.warning(f"Integrity Error: fridge {body['name']} already exists or user-fridge combo exists")
+        logger.warning("Integrity Error: fridge %s already "
+                       "exists or user-fridge combo exists", body['name'])
         raise APIException(detail="Something went wrong", code=500)

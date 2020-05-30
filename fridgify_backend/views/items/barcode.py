@@ -1,3 +1,6 @@
+"""Barcode related views"""
+# pylint: disable=no-member
+
 import logging
 
 from drf_yasg import openapi
@@ -33,7 +36,8 @@ logger = logging.getLogger(__name__)
 @api_view(["GET"])
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
-def barcode_view(request, barcode=None):
+def barcode_view(_, barcode=None):
+    """Entry point for barcode view"""
     logger.info("Retrieve item...")
     if barcode is None:
         return Response(status=422, data="Missing parameter barcode")

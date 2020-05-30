@@ -1,3 +1,5 @@
+"""Login related views"""
+
 import logging
 
 from drf_yasg import openapi
@@ -14,7 +16,8 @@ logger = logging.getLogger(__name__)
 
 @swagger_auto_schema(
     method="post",
-    operation_description="Login via a Login-Token or via credentials. Successful login returns a Login-Token.",
+    operation_description="Login via a Login-Token or via credentials."
+                          "Successful login returns a Login-Token.",
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
@@ -24,7 +27,13 @@ logger = logging.getLogger(__name__)
         required=["username", "password"]
     ),
     manual_parameters=[
-        openapi.Parameter("Authorization", openapi.IN_HEADER, "Login-Token", required=False, type=openapi.TYPE_STRING),
+        openapi.Parameter(
+            "Authorization",
+            openapi.IN_HEADER,
+            "Login-Token",
+            required=False,
+            type=openapi.TYPE_STRING
+        ),
     ],
     responses={
         200: 'Authenticated. Returns token.',
@@ -35,8 +44,9 @@ logger = logging.getLogger(__name__)
 @api_view(['POST'])
 @authentication_classes([UserAuthentication])
 def login_view(request):
+    """Main entry point for login"""
     user = request.user
-    logger.info(f"Login attempt for user: {user.username}")
+    logger.info("Login attempt for user: %s", user.username)
     if user.token_authentication is None:
         response = {"token": token_utils.create_token(user, "Fridgify")}
     else:

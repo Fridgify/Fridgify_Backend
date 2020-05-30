@@ -1,3 +1,6 @@
+"""Messaging register related views"""
+# pylint: disable=no-member
+
 import json
 import logging
 
@@ -24,7 +27,10 @@ logger = logging.getLogger(__name__)
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            "client_token": openapi.Schema(type=openapi.TYPE_STRING, description="Client token for Messaging Service"),
+            "client_token": openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="Client token for Messaging Service"
+            ),
             "service": openapi.Schema(
                 type=openapi.TYPE_STRING,
                 description="1 - Fridgify (Default), 2 - Hopper",
@@ -42,6 +48,7 @@ logger = logging.getLogger(__name__)
 @permission_classes([IsAuthenticated])
 @check_body("client_token")
 def register_view(request):
+    """Entry point for register messaging view"""
     try:
         body = json.loads(request.body)
     except json.JSONDecodeError:
@@ -51,7 +58,7 @@ def register_view(request):
     if "service" in body.keys():
         service = const.Constants.NOTIFICATION_SERVICES_DICT[body["service"]]
 
-    logger.debug(f'Client-Token for Firebase Messaging: {body["client_token"]}')
+    logger.debug('Client-Token for Firebase Messaging: %s', body["client_token"])
     obj, _ = Accesstokens.objects.get_or_create(
         user_id=request.user.user_id,
         provider=Providers.objects.get(provider_id=service),
@@ -60,4 +67,7 @@ def register_view(request):
             "valid_till": timezone.datetime.max
         }
     )
-    return Response(data={"detail": "Created"}, status=201)
+    return Response(
+        data={"detail": "Created", "token": obj.accesstoken},
+        status=201
+    )

@@ -1,3 +1,6 @@
+"""Stores related views"""
+# pylint: disable=no-member
+
 import json
 import logging
 
@@ -57,25 +60,26 @@ logger = logging.getLogger(__name__)
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
 def stores_view(request):
+    """Entry point for stores view"""
     if request.method == "GET":
-        logger.info(f"User {request.user.username} retrieves all stores...")
+        logger.info("User %s retrieves all stores...", request.user.username)
         stores = Stores.objects.all()
         return Response(data=[StoresSerializer(store).data for store in stores], status=200)
-    else:
-        return create_store(request)
+    return create_store(request)
 
 
 @check_body("name")
 def create_store(request):
+    """Create a store"""
     try:
         body = json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
-        logger.error(f"Couldn't parse JSON:\n {request.body.decode('utf-8')}")
+        logger.error("Couldn't parse JSON:\n %s", request.body.decode('utf-8'))
         raise ParseError()
-    logger.info(f"User {request.user.username} store {body['name']}")
+    logger.info("User %s store %s", request.user.username, body['name'])
     try:
         store = Stores.objects.create(name=body["name"])
         return Response(data=StoresSerializer(store).data, status=201)
     except IntegrityError:
-        logger.warning(f"Store {body['name']} already exists")
+        logger.warning("Store %s already exists", body['name'])
         raise APIException(detail="Store already exists", code=409)

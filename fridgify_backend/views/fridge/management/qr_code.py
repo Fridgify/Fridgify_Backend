@@ -1,3 +1,6 @@
+"""QR Code related views"""
+# pylint: disable=no-member
+
 import json
 import logging
 import secrets
@@ -28,13 +31,20 @@ logger = logging.getLogger(__name__)
         required=True,
         type=openapi.TYPE_STRING
     )],
-    operation_description="Generate a link (with embedded deep link), which allows users to join fridges",
+    operation_description="Generate a link (with embedded deep link), "
+                          "which allows users to join fridges",
     responses={
         201: openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "dynamic_link": openapi.Schema(type=openapi.TYPE_STRING, description="Link for users"),
-                "valid_till": openapi.Schema(type=openapi.TYPE_INTEGER, description="Duration of validity")
+                "dynamic_link": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Link for users"
+                ),
+                "valid_till": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="Duration of validity"
+                )
             }
         ),
         403: "Forbidden",
@@ -47,6 +57,7 @@ logger = logging.getLogger(__name__)
 @permission_classes([IsAuthenticated])
 @check_fridge_access()
 def gen_code_view(request, fridge_id):
+    """Entry point for qr code view"""
     logger.info("Generate Dynamic Link for QR-Code...")
     # Generate Token and add to Accesstoken database
     try:
@@ -61,7 +72,10 @@ def gen_code_view(request, fridge_id):
         )
     except Providers.DoesNotExist:
         raise APIException(detail="Provider does not exist. Contact your administrator.")
-    logger.debug(f"Generated token {token.accesstoken} for fridge id {token.fridge.fridge_id}")
+    logger.debug(
+        "Generated token %s for fridge id %d",
+        token.accesstoken, token.fridge.fridge_id
+    )
 
     try:
         deep_link = dynamic_link.create_deep_link(
@@ -77,5 +91,5 @@ def gen_code_view(request, fridge_id):
     token.redirect_url = link
     token.save()
 
-    logger.debug(f"Generated link: {link}")
+    logger.debug("Generated link: %s", link)
     return Response(status=201, data={"dynamic_link": link, "validation_time": 43200})

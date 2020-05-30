@@ -1,4 +1,6 @@
-from collections import defaultdict
+"""FridgeContentItem related views"""
+# pylint: disable=no-member
+
 import json
 import logging
 
@@ -8,11 +10,16 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound, ParseError, ParseError
+from rest_framework.exceptions import NotFound, ParseError
 
 from fridgify_backend.models.backends import APIAuthentication
 from fridgify_backend.utils.decorators import check_fridge_access, check_body
-from fridgify_backend.models import FridgeContent, FridgeContentSerializer, Items, Stores, FridgeContentItemSerializer
+from fridgify_backend.models import (
+    FridgeContent,
+    FridgeContentSerializer,
+    Items,
+    FridgeContentItemSerializer
+)
 
 
 logger = logging.getLogger(__name__)
@@ -65,7 +72,10 @@ logger = logging.getLogger(__name__)
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            "withdraw": openapi.Schema(type=openapi.TYPE_INTEGER, description="Only positive values")
+            "withdraw": openapi.Schema(
+                type=openapi.TYPE_INTEGER,
+                description="Only positive values"
+            )
         }
     ),
     responses={
@@ -77,16 +87,25 @@ logger = logging.getLogger(__name__)
 @permission_classes([IsAuthenticated])
 @check_fridge_access()
 def fridge_content_item_view(request, fridge_id, item_id):
+    """Entry point for fridge content item view"""
     if request.method == "GET":
-        logger.info(f"Retrieve item[{item_id}] of a fridge {fridge_id} for user {request.user.username}...")
+        logger.info(
+            "Retrieve item[%d] of a fridge %d for user %s...",
+            item_id, fridge_id, request.user.username
+        )
         return get_item(request, fridge_id, item_id)
-    elif request.method == "DELETE":
-        logger.info(f"Delete item[{item_id}] of fridge {fridge_id} for user {request.user.username}...")
+    if request.method == "DELETE":
+        logger.info(
+            "Delete item[%d of fridge %d for user %s...",
+            item_id, fridge_id, request.user.username
+        )
         FridgeContent.objects.filter(fridge_id=fridge_id, content_id=item_id).delete()
         return Response(status=200)
-    else:
-        logger.info(f"User {request.user.username} updates item {item_id} in fridge {fridge_id}...")
-        return update_item(request, fridge_id, item_id)
+    logger.info(
+        "User %s updates item %d in fridge %d...",
+        request.user.username, item_id, fridge_id
+    )
+    return update_item(request, fridge_id, item_id)
 
 
 def get_item(_, fridge_id, item_id):
@@ -103,11 +122,14 @@ def get_item(_, fridge_id, item_id):
             content_id=item_id,
         )
         print(item.content_id)
-    except FridgeContent.DoesNotExist and Items.DoesNotExist:
-        logger.error("Content or Item does not exist...")
+    except FridgeContent.DoesNotExist:
+        logger.error("Content does not exist...")
+        raise NotFound(detail="Content does not exist")
+    except Items.DoesNotExist:
+        logger.error("Item does not exist...")
         raise NotFound(detail="Item does not exist")
     payload = FridgeContentItemSerializer(item).data
-    logger.debug(f"Retrieved item: \n{payload}")
+    logger.debug("Retrieved item: \n%s", repr(payload))
     return Response(payload, status=200)
 
 
@@ -123,10 +145,10 @@ def update_item(request, fridge_id, item_id):
     try:
         body = json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
-        logger.error(f"Couldn't parse JSON:\n {request.body.decode('utf-8')}")
+        logger.error("Couldn't parse JSON:\n %s", request.body.decode('utf-8'))
         raise ParseError()
 
-    try:    
+    try:
         fridge_item = FridgeContent.objects.filter(content_id=item_id).get()
         fridge_item.amount -= body["withdraw"]
         if fridge_item.amount <= 0:

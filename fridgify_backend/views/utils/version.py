@@ -1,3 +1,5 @@
+"""Version related view"""
+
 import logging
 
 from django.conf import settings
@@ -18,5 +20,6 @@ logger = logging.getLogger(__name__)
     }
 )
 @api_view(["GET"])
-def version(request):
+def version(_):
+    """Check the API version"""
     return Response(data={"version": settings.API_VERSION, "path": settings.API_PATH})
