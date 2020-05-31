@@ -6,7 +6,7 @@ import datetime
 from django.test import TestCase, RequestFactory
 
 from fridgify_backend.models import Users, Fridges, UserFridge
-from fridgify_backend.utils.init_dummy_user import fill_fridges
+from fridgify_backend.tests.test_utils import fill_fridges
 from fridgify_backend.tests import test_utils
 
 

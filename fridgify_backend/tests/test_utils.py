@@ -165,3 +165,30 @@ def create_fridge_content(item_id, fridge_id, year=2019, month=12, day=12):
         unit="g"
     )
     return content
+
+
+def fill_fridges(fridges):
+    """Fill fridges"""
+    items = []
+    store = Stores()
+    store.name = "REWE"
+    store.save()
+    for i in range(0, 5):
+        item = Items()
+        item.name = "item No. {}".format(i)
+        item.description = "sdnjanddkjandakjd"
+        item.store = store
+        item.save()
+        items.append(item)
+
+    for fridge in fridges:
+        for j in range(0, 5):
+            fridge_content = FridgeContent()
+            fridge_content.item = items[j]
+            fridge_content.fridge = fridge
+            fridge_content.amount = 42
+            fridge_content.created_at = timezone.now()
+            fridge_content.expiration_date = timezone.now() + timezone.timedelta(days=69)
+            fridge_content.unit = "t"
+            fridge_content.last_updated = timezone.now()
+            fridge_content.save()
