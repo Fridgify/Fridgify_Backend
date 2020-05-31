@@ -49,10 +49,7 @@ logger = logging.getLogger(__name__)
 @check_body("client_token")
 def register_view(request):
     """Entry point for register messaging view"""
-    try:
-        body = json.loads(request.body)
-    except json.JSONDecodeError:
-        raise ParseError
+    body = json.loads(request.body)
 
     service = const.Constants.FRY_NOTIFICATION_SERVICE
     if "service" in body.keys():
