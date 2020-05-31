@@ -107,6 +107,23 @@ def create_join_token(tok="APIToken", username="dummy_name", fridge=None, valid_
     token.save()
 
 
+def create_message_token(
+        tok="MessageToken",
+        username="dummy_name",
+        provider="Fridgify-Notifications",
+        valid_till=None
+):
+    """Create a Join token for a user"""
+    token = Accesstokens()
+    token.accesstoken = tok
+    token.valid_till = (
+        timezone.now() + timezone.timedelta(hours=12) if valid_till is None else valid_till
+    )
+    token.provider = Providers.objects.filter(name=provider).first()
+    token.user = Users.objects.get(username=username)
+    token.save()
+
+
 def create_items(name="Item A"):
     """Create items"""
     obj = Items.objects.create(
@@ -138,12 +155,13 @@ def get_fridge_items(fridge):
     return FridgeContent.objects.filter(fridge_id=fridge)
 
 
-def create_fridge_content(item_id, fridge_id):
+def create_fridge_content(item_id, fridge_id, year=2019, month=12, day=12):
     """Create fridge content"""
-    FridgeContent.objects.create(
+    content = FridgeContent.objects.create(
         fridge_id=fridge_id,
         item_id=item_id,
-        expiration_date=datetime.date(2019, 12, 12),
+        expiration_date=datetime.date(year, month, day),
         amount=50,
         unit="g"
     )
+    return content
