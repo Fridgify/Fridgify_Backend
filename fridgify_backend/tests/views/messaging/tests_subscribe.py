@@ -1,5 +1,4 @@
 """Test file for Subscribing to Messaging Services"""
-# pylint: disable=no-member
 
 import json
 from unittest.mock import patch
@@ -8,7 +7,6 @@ from django.utils import timezone
 from django.test import TestCase, RequestFactory
 from rest_framework import status
 
-from fridgify_backend.models import Accesstokens
 from fridgify_backend.tests import test_utils
 from fridgify_backend.views.messaging import subscribe
 
@@ -24,6 +22,7 @@ class TestCaseSubscribeMessaging(TestCase):
         test_utils.create_api_token(timezone.now() + timezone.timedelta(hours=1))
 
     def test_subscribe_fridgify_exp_200(self):
+        """Subscribe to Fridgify. Expecting 200 response"""
         request = self.factory.get("/messaging/subscribe?service=1")
         request.META["HTTP_AUTHORIZATION"] = "APIToken"
 
@@ -33,6 +32,7 @@ class TestCaseSubscribeMessaging(TestCase):
     @patch("fridgify_backend.utils.dynamic_link.create_deep_link")
     @patch("fridgify_backend.utils.messaging.hopper.hopper.subscribe")
     def test_subscribe_hopper_exp_200(self, mock_subscribe, mock_dynamic_link):
+        """Subscribe to Hopper. Expecting 200 response"""
         request = self.factory.get("/messaging/subscribe?service=2")
         request.META["HTTP_AUTHORIZATION"] = "APIToken"
 
@@ -46,6 +46,7 @@ class TestCaseSubscribeMessaging(TestCase):
         self.assertEqual(body["subscribe_url"], "https://subscribe.here")
 
     def test_subscribe_no_service_exp_400(self):
+        """Subscribe with no service given. Expecting 400 response"""
         request = self.factory.get("/messaging/subscribe")
         request.META["HTTP_AUTHORIZATION"] = "APIToken"
 
@@ -53,6 +54,7 @@ class TestCaseSubscribeMessaging(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_subscribe_non_numeric_service_exp_400(self):
+        """Subscribe with non-numeric service argument. Expecting 400 response"""
         request = self.factory.get("/messaging/subscribe?service=test")
         request.META["HTTP_AUTHORIZATION"] = "APIToken"
 

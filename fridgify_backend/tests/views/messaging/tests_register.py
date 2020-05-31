@@ -21,6 +21,7 @@ class TestCaseMessagingRegister(TestCase):
         test_utils.create_api_token(timezone.now() + timezone.timedelta(hours=1))
 
     def test_register_fridgify_exp_201_created(self):
+        """Register for Fridgify service. Expecting 201 response"""
         request = self.factory.post(
             "/messaging/register/",
             {"client_token": "firebase_token", "service": 1},
@@ -33,6 +34,7 @@ class TestCaseMessagingRegister(TestCase):
         self.assertTrue(Accesstokens.objects.filter(accesstoken="firebase_token").exists())
 
     def test_register_hopper_exp_201_create(self):
+        """Register for Hopper service. Expecting 201 response"""
         request = self.factory.post(
             "/messaging/register/",
             {"client_token": "hopper_token", "service": 2},
