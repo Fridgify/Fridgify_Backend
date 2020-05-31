@@ -1,10 +1,10 @@
 #!/bin/bash
-export DJANGO_SETTINGS_MODULE=Fridgify_Backend.settings.production
+export DJANGO_SETTINGS_MODULE=fridgify_backend.settings.production
 python manage.py collectstatic --no-input
 echo "Collect static files"
-python manage.py makemigrations Fridgify_Backend
+python manage.py makemigrations fridgify_backend
 echo "Made Migrations"
-python manage.py migrate Fridgify_Backend
+python manage.py migrate fridgify_backend
 echo "Migrate changes"
 python manage.py loaddata providers.json
 echo "Add fixtures"

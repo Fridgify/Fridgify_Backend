@@ -1,8 +1,8 @@
 #!/../bin/sh
 echo "testing"
-python manage.py makemigrations Fridgify_Backend --settings=Fridgify_Backend.settings.testing
-python manage.py migrate Fridgify_Backend --settings=Fridgify_Backend.settings.testing
-if python manage.py test --settings=Fridgify_Backend.settings.testing; then
+python manage.py makemigrations fridgify_backend --settings=fridgify_backend.settings.testing
+python manage.py migrate fridgify_backend --settings=fridgify_backend.settings.testing
+if python manage.py test --settings=fridgify_backend.settings.testing; then
   echo "Command succeeded"
   exit 0
 else

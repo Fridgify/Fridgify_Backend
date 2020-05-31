@@ -1,0 +1,1 @@
+"""Fridge Management view module"""

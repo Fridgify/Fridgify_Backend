@@ -18,12 +18,12 @@ services:
     ports:
       - 9999:9999
     volumes:
-      - /home/fridgify/static_files/develop/:/fridgify/Fridgify_Backend/static/
+      - /home/fridgify/static_files/develop/:/fridgify/fridgify_backend/static/
       - /home/fridgify/logs/develop:/fridgify/logs/
     depends_on:
       - db_develop
     environment:
-      - DJANGO_SETTINGS_MODULE=Fridgify_Backend.settings.develop
+      - DJANGO_SETTINGS_MODULE=fridgify_backend.settings.develop
     env_file:
       - ${ENV_FILE:-.empty}
 volumes:
