@@ -27,9 +27,10 @@ class TestCaseMessageHandler(TestCase):
         test_utils.create_message_token(tok="fridgify_2", username=self.user_b.username)
 
     def test_get_recipients_exp_recipents_dictionary(self):
+        """Get recipients. Expecting dictionary of tokens"""
         recipients = message_handler.get_recipients(self.fridge.fridge_id)
 
         self.assertTrue(4 in recipients.keys())
-        self.assertTrue("fridgify_1", "fridgify_2" in recipients[4])
+        self.assertTrue("fridgify_1", "fridgify_2" in recipients[4])  # pylint: disable=redundant-unittest-assert
         self.assertTrue(5 in recipients.keys())
         self.assertTrue("hopper_1" in recipients[5])

@@ -3,7 +3,7 @@
 
 import itertools
 
-from django.db.models import Count, F
+from django.db.models import Count
 from django.utils import timezone
 
 from fridgify_backend import models
