@@ -11,7 +11,7 @@ from rest_framework.exceptions import ValidationError, ParseError
 
 from fridgify_backend.models.backends import APIAuthentication
 from fridgify_backend.utils import const, dynamic_link
-from fridgify_backend.utils.messaging import hopper
+from fridgify_backend.utils.messaging.hopper import hopper
 
 
 logger = logging.getLogger(__name__)

@@ -21,7 +21,7 @@ def send(recipients, title, body, **kwargs):
             firebase.send_message(recipients[provider], title, body, **kwargs)
         elif provider == const.Constants.HP_NOTIFICATION_SERVICE:
             logger.debug("Using Hopper Service...")
-            hopper.send_message(recipients[provider], title, body, **kwargs)
+            hopper.send_message(recipients[provider], title, body)
 
 
 def get_recipients(fridge_id):

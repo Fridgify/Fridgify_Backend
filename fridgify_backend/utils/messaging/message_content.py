@@ -3,7 +3,7 @@
 
 import itertools
 
-from django.db.models import Count, F
+from django.db.models import Count
 from django.utils import timezone
 
 from fridgify_backend import models
@@ -19,8 +19,8 @@ def get_grouped_content(due_in):
         item_count=Count("item_id")
     ).filter(
         expiration_date__range=[
-            F("expiration_date") - timezone.timedelta(days=due_in),
-            F("expiration_date")
+            timezone.datetime.now(),
+            timezone.datetime.now() + timezone.timedelta(days=due_in)
         ],
     ).order_by("fridge_id", "item_id")
 
@@ -45,8 +45,10 @@ def create_expired_message(fridge_id, content, due_in, limit=3):
         entry = content[i]
         c_msg.append(f'{entry["item_count"]}x {entry["item__name"]}')
     msg.append(", ".join(c_msg))
-    rest = rest_amount(content[len(content)-limit:])
-    msg.append(f'and {rest} other items, which are about to expire as well. Check them out!')
+    if len(content) > limit:
+        rest = rest_amount(content[limit:])
+        msg.append(f'and {rest} other items, which are about to expire as well.')
+    msg.append("Check them out!")
 
     title = f"{fridge_name}: Items about to expire"
     return {"title": title, "body": "\n".join(msg)}

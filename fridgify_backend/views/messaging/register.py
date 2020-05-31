@@ -10,7 +10,6 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.exceptions import ParseError
 
 from fridgify_backend.models import Accesstokens, Providers
 from fridgify_backend.models.backends import APIAuthentication
@@ -49,10 +48,7 @@ logger = logging.getLogger(__name__)
 @check_body("client_token")
 def register_view(request):
     """Entry point for register messaging view"""
-    try:
-        body = json.loads(request.body)
-    except json.JSONDecodeError:
-        raise ParseError
+    body = json.loads(request.body)
 
     service = const.Constants.FRY_NOTIFICATION_SERVICE
     if "service" in body.keys():
