@@ -2,7 +2,13 @@ from .base import *
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', "fridgapi-dev.donkz.dev"]
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+    "fridgapi-dev.donkz.dev",
+    "api-dev.fridgify.com"
+]
 
 DATABASES = {
     'default': {
