@@ -4,6 +4,7 @@
 import json
 import logging
 
+from django.db.models import Q
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view
@@ -11,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ParseError
 
 from fridgify_backend.models import Users
+from fridgify_backend.utils.decorators import required_either_keys
 
 
 logger = logging.getLogger(__name__)
@@ -47,6 +49,7 @@ logger = logging.getLogger(__name__)
     }
 )
 @api_view(["POST"])
+@required_either_keys("email", "username")
 def users_duplicate_view(request):
     """Entry point for duplicate user views"""
     logger.info("Check for duplicate user...")
@@ -55,17 +58,18 @@ def users_duplicate_view(request):
     except json.JSONDecodeError:
         logger.error("Couldn't parse JSON:\n %s", request.body.decode('utf-8'))
         raise ParseError()
-    exists = {}
-    for key in body.keys():
-        if key == "username":
-            logger.debug("Check for duplicate username %s...", body[key])
-            if Users.objects.filter(username=body[key]).exists():
-                exists["username"] = body[key]
-        if key == "email":
-            logger.debug("Check for duplicate email %s...", body[key])
-            if Users.objects.filter(email=body[key]).exists():
-                exists["email"] = body[key]
+
+    username = body.get("username")
+    email = body.get("email")
+
+    exists = {"detail": "No duplicates"}
+    status = 200
+
+    if Users.objects.filter(Q(email=email) | Q(username=username)).exists():
+        exists["email"] = email
+        exists["username"] = username
+        exists.pop("detail")
+        status = 409
     logger.debug("Existing values: %s", repr(exists))
-    if exists:
-        return Response(data=exists, status=409)
-    return Response(data={"detail": "No duplicates"}, status=200)
+
+    return Response(data=exists, status=status)

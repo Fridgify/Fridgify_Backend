@@ -13,7 +13,6 @@ from rest_framework.response import Response
 from rest_framework.exceptions import (
     PermissionDenied,
     ParseError,
-    NotAcceptable,
     APIException,
     NotFound
 )
@@ -21,7 +20,13 @@ from rest_framework.exceptions import (
 from fridgify_backend.models.backends import APIAuthentication
 from fridgify_backend.models import UserFridge, FridgeUserSerializer
 from fridgify_backend.utils import const
-from fridgify_backend.utils.decorators import check_fridge_access, permissions, check_body
+from fridgify_backend.utils.decorators import (
+    check_fridge_access,
+    permissions,
+    check_body,
+    valid_role,
+    disallowed_role
+)
 
 
 logger = logging.getLogger(__name__)
@@ -94,6 +99,8 @@ def user_role_view(request, fridge_id, user_id):
 
 
 @check_body("role")
+@valid_role()
+@disallowed_role(const.Constants.ROLE_OWNER, const.Constants.ROLE_S_OWNER)
 def edit_role(request, fridge_id, trigger, target):  # pylint: disable=unused-argument
     """Edit role"""
     body = json.loads(request.body.decode("utf-8"))
@@ -107,31 +114,18 @@ def edit_role(request, fridge_id, trigger, target):  # pylint: disable=unused-ar
         logger.error("Trigger tried to change role to Owner...")
         raise PermissionDenied(detail="Cannot change role of Fridge Owner")
 
-    if (
-            goal_role not in const.Constants.ROLES and
-            goal_role not in const.Constants.ROLES_S
-    ):
-        logger.error("Role does not exist...")
-        raise NotAcceptable(detail="Role does not exist")
+    upd_role = (
+        const.Constants.ROLES_S.index(goal_role)
+        if isinstance(goal_role, str)
+        else goal_role
+    )
 
-    if goal_role not in (const.Constants.ROLE_OWNER, const.Constants.ROLE_S_OWNER):
-        try:
-            upd_role = (
-                const.Constants.ROLES_S.index(goal_role)
-                if isinstance(goal_role, str)
-                else goal_role
-            )
-        except KeyError:
-            raise ParseError(detail="Couldn't determine role")
-
-        try:
-            logger.info("Change role to %s for %d...", upd_role, target.user.user_id)
-            target.role = upd_role
-            target.save()
-        except IntegrityError:
-            raise APIException(detail="Something went wrong while updating")
-    else:
-        raise PermissionDenied(detail="Cannot declare a Fridge Owner")
+    try:
+        logger.info("Change role to %s for %d...", upd_role, target.user.user_id)
+        target.role = upd_role
+        target.save()
+    except IntegrityError:
+        raise APIException(detail="Something went wrong while updating")
 
     return Response(data=FridgeUserSerializer(target).data, status=200)
 
