@@ -4,9 +4,16 @@
 import json
 from functools import wraps
 
-from rest_framework.exceptions import ParseError, NotAuthenticated, NotFound
+from rest_framework.exceptions import (
+    ParseError,
+    NotAuthenticated,
+    NotFound,
+    NotAcceptable,
+    PermissionDenied
+)
 
 from fridgify_backend.models import UserFridge, Fridges
+from fridgify_backend.utils import const
 
 
 def check_body(*keys):
@@ -68,5 +75,48 @@ def permissions(*roles):
             if fridge.role not in roles:
                 raise NotAuthenticated(detail="User lacks permission to perform this action")
             return func(request, fridge_id, *args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def required_either_keys(*values):
+    """Request body should contain one of the given values"""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(request=None, *args, **kwargs):
+            body = json.loads(request.body.decode("utf-8"))
+            for value in values:
+                if value in body:
+                    return func(request, *args, **kwargs)
+            raise ParseError(detail="Key is missing")
+        return wrapper
+    return decorator
+
+
+def valid_role():
+    """Check if given role is valid"""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(request=None, *args, **kwargs):
+            body = json.loads(request.body.decode("utf-8"))
+            role = body["role"]
+            if role not in const.Constants.ROLES + const.Constants.ROLES_S:
+                raise NotAcceptable(detail="Role does not exist")
+            return func(request, *args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def disallowed_role(*roles):
+    """Check if given role is allowed"""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(request=None, *args, **kwargs):
+            body = json.loads(request.body.decode("utf-8"))
+            role = body["role"]
+            for d_role in roles:
+                if role == d_role:
+                    raise PermissionDenied("Role not allowed")
+            return func(request, *args, **kwargs)
         return wrapper
     return decorator
