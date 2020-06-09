@@ -19,6 +19,6 @@ logger = logging.getLogger(__name__)
     }
 )
 @api_view(["GET"])
-def ping(_):
+def error(_):
     """Show an Error Page"""
     return Response(data={"detail": "Placeholder"}, status=200)

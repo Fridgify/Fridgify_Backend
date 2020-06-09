@@ -54,6 +54,7 @@ urlpatterns = [
     #  Util Endpoints
     path('ping/', utils.ping),
     path('version/', utils.version),
+    path('error/', utils.error),
     #  Messaging Endpoints
     path('messaging/', include(messaging_url)),
     #  Redirect Endpoint
