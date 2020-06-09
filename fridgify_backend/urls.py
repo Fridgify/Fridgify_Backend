@@ -25,7 +25,7 @@ from fridgify_backend.api_urls.stores import stores_urls
 from fridgify_backend.api_urls.users import users_urls
 from fridgify_backend.api_urls.items import items_url
 from fridgify_backend.api_urls.messaging import messaging_url
-from fridgify_backend.views import utils
+from fridgify_backend.views import utils, redirect
 
 
 SchemaView = get_schema_view(
@@ -54,8 +54,9 @@ urlpatterns = [
     #  Util Endpoints
     path('ping/', utils.ping),
     path('version/', utils.version),
+    path('error/', utils.error),
     #  Messaging Endpoints
-    path('messaging/', include(messaging_url))
-    #  Admin Page - can be removed, keeping it just for the lols right now
-    #  path('admin/', admin.site.urls),
+    path('messaging/', include(messaging_url)),
+    #  Redirect Endpoint
+    path('redirect', redirect.redirect_view)
 ]

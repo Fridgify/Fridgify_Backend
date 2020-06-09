@@ -1,4 +1,5 @@
 """Fridgify Constants"""
+import os
 
 
 class Constants:
@@ -26,3 +27,5 @@ class Constants:
         1: FRY_NOTIFICATION_SERVICE,
         2: HP_NOTIFICATION_SERVICE
     }
+
+    ERROR_URL = f"{os.environ['BASE_URL']}/error"
