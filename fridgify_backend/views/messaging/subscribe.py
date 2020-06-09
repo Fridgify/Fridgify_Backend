@@ -60,7 +60,11 @@ def subscribe_view(request):
             const.Constants.HP_NOTIFICATION_SERVICE ==
             const.Constants.NOTIFICATION_SERVICES_DICT[service]
     ):
-        callback_url = dynamic_link.create_deep_link("/fridge", user_id=request.user.user_id)
+        callback_url = dynamic_link.create_deep_link(
+            "/redirect",
+            user_id=request.user.user_id,
+            messaging=1
+        )
 
     subscribe_url = hopper.subscribe(callback_url=callback_url)
     return Response(data={
