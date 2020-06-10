@@ -3,6 +3,7 @@
 
 ### Django ###
 *.log
+*.log.*
 *.pot
 *.pyc
 __pycache__/
@@ -10,7 +11,7 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media
-Fridgify_Backend/static
+fridgify_backend/static
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
 # in your Git repository. Update and uncomment the following line accordingly.
@@ -59,7 +60,7 @@ pip-delete-this-directory.txt
 htmlcov/
 .tox/
 .nox/
-.coverage
+coverage/.coverage
 .coverage.*
 .cache
 nosetests.xml
@@ -266,8 +267,17 @@ backend_test
 .idea/Fridgify_Backend.iml
 .idea/misc.xml
 .idea/dataSources.xml
-.idea/dataSources.xml
-.idea/dataSources.xml
 
 # VSCode
 /.vscode
+*.sqlite
+.coverage
+
+/.idea
+orig.env
+.env
+fridgify-firebase-key.json
+hopper-fridgify.json
+codacy-coverage.json
+/.codacy-coverage
+/coverage

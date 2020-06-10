@@ -9,7 +9,7 @@ WORKDIR /fridgify
 
 RUN pip install pipenv
 COPY Pipfile Pipfile.lock /fridgify/
-RUN pipenv install --system
+RUN pipenv install --system --dev
 
 ADD . /fridgify/
 
