@@ -1,3 +1,5 @@
+"""Notification Command"""
+
 import logging
 from logging import handlers
 
@@ -7,13 +9,16 @@ from fridgify_backend.utils.messaging import message_content, message_handler
 
 
 class Command(BaseCommand):
+    """Command for sending notifications"""
     help = "Check the database and send notifications based on expiries"
 
     def add_arguments(self, parser):
+        """Arguments for command"""
         parser.add_argument('-d', '--duein', type=int, help="All items which are due in 0 to x days")
         parser.add_argument('-l', '--limit', type=int, help="Item limit for a notification")
 
-    def handle(self, *args, **options):
+    def handle(self, *_, **options):
+        """Handle execution"""
         p_due = 3 if options["duein"] is None else options["duein"]
         p_limit = 3 if options["limit"] is None else options["limit"]
 
