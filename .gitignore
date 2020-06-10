@@ -267,8 +267,6 @@ backend_test
 .idea/Fridgify_Backend.iml
 .idea/misc.xml
 .idea/dataSources.xml
-.idea/dataSources.xml
-.idea/dataSources.xml
 
 # VSCode
 /.vscode
