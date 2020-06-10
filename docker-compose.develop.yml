@@ -10,6 +10,8 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=backend_develop
+    networks:
+      - fridgify_development
   backend_develop:
     container_name: fridgify_backend_develop
     build:
@@ -26,5 +28,9 @@ services:
       - DJANGO_SETTINGS_MODULE=fridgify_backend.settings.develop
     env_file:
       - ${ENV_FILE:-.empty}
+    networks:
+      - fridgify_development
 volumes:
   postgres_data_develop:
+networks:
+  fridgify_development:
