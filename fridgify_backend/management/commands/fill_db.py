@@ -98,7 +98,7 @@ class Command(BaseCommand):
                 rand = random.randint(0, user_count-1)
                 while rand in exclude:
                     rand = random.randint(0, user_count-1)
-                
+
                 ufs.append(models.UserFridge(
                     user=self.users[rand],
                     fridge=fridge,
