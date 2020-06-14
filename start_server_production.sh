@@ -7,5 +7,5 @@ python manage.py migrate fridgify_backend
 echo "Migrate changes"
 python manage.py loaddata providers.json
 echo "Add fixtures"
-python manage.py runserver 0.0.0.0:9999 --verbosity 3
+python manage.py runserver 0.0.0.0:9000 --verbosity 3
 echo "Started server"
