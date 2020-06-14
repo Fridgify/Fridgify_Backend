@@ -10,6 +10,8 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=backend_develop
+    ports:
+      - 5433:5432
     networks:
       - fridgify_development
   backend_develop:

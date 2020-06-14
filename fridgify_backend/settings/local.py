@@ -20,3 +20,10 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost',
+    'http://127.0.0.1'
+]
