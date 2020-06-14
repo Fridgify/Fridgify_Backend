@@ -1,5 +1,4 @@
 #!/bin/bash
-export DJANGO_SETTINGS_MODULE=fridgify_backend.settings.develop
 python manage.py collectstatic --noinput
 echo "Collect static files"
 python manage.py makemigrations fridgify_backend
