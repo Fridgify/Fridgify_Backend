@@ -20,3 +20,8 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = [
+    "https://dev.fridgify.com",
+]
