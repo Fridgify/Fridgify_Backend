@@ -137,6 +137,7 @@ If you want to deploy to a server, make sure to create a proxy to that port as w
 **LOGO** - URL to your logo
 
 **Fridgify Environment**
+
 **ANDROID_PN** - package name of your Android application<br/>
 **IOS_BID** - name of your iOS bundle ID<br/>
 **FRIDGIFY_DL_URL** - specify the dynamic link base url, your dynamic links should have<br/>
