@@ -63,7 +63,23 @@ logger = logging.getLogger(__name__)
     },
     security=[{'FridgifyAPI_Token_Auth': []}]
 )
-@api_view(["GET", "PATCH"])
+@swagger_auto_schema(
+    method="delete",
+    manual_parameters=[openapi.Parameter(
+        "Authorization",
+        openapi.IN_HEADER,
+        "API-Token",
+        required=True,
+        type=openapi.TYPE_STRING
+    )],
+    operation_description="Delete user",
+    responses={
+        201: "User deleted",
+        403: "Not authorized"
+    },
+    security=[{'FridgifyAPI_Token_Auth': []}]
+)
+@api_view(["GET", "PATCH", "DELETE"])
 @authentication_classes([APIAuthentication])
 @permission_classes([IsAuthenticated])
 def users_view(request):
@@ -71,6 +87,10 @@ def users_view(request):
     if request.method == "GET":
         logger.info("Retrieve user info for %s", request.user.username)
         return Response(data=UserSerializer(request.user).data, status=200)
+    elif request.method == "DELETE":
+        logger.info("Delete user %s", request.user.username)
+        request.user.delete()
+        return Response(data={"detail": "User deleted"}, status=200)
     return edit_user(request)
 
 
