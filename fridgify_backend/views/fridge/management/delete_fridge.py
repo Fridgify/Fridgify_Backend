@@ -18,25 +18,6 @@ from fridgify_backend.utils. decorators import check_fridge_access
 logger = logging.getLogger(__name__)
 
 
-@swagger_auto_schema(
-    method="delete",
-    manual_parameters=[openapi.Parameter(
-        "Authorization",
-        openapi.IN_HEADER,
-        "API-Token",
-        required=True,
-        type=openapi.TYPE_STRING
-    )],
-    operation_description="Delete a fridge",
-    request_body=FridgeSerializer,
-    responses={
-        201: "Fridge deleted"
-    },
-    security=[{'FridgifyAPI_Token_Auth': []}]
-)
-@api_view(["DELETE"])
-@authentication_classes([APIAuthentication])
-@permission_classes([IsAuthenticated])
 @check_fridge_access()
 def delete_fridge_view(request, fridge_id):
     """Entry point for delete fridge view"""
