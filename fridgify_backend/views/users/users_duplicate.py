@@ -65,11 +65,14 @@ def users_duplicate_view(request):
     exists = {"detail": "No duplicates"}
     status = 200
 
-    if Users.objects.filter(Q(email=email) | Q(username=username)).exists():
+    if Users.objects.filter(email=email):
         exists["email"] = email
-        exists["username"] = username
-        exists.pop("detail")
         status = 409
+        exists.pop("detail", None)
+    if Users.objects.filter(username=username):
+        exists["username"] = username
+        status = 409
+        exists.pop("detail", None)
     logger.debug("Existing values: %s", repr(exists))
 
     return Response(data=exists, status=status)
