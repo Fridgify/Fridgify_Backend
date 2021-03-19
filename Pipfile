@@ -10,7 +10,7 @@ pydotplus = "==2.0.2"
 
 [packages]
 django-cors-headers="==3.3.0"
-Django = "==2.2.13"
+Django = "==2.2.18"
 drf-yasg="==1.17.1"
 behave = "==1.2.6"
 djangorestframework = "==3.10.3"
